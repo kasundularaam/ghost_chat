@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "924140147316",
+    "project_id": "ghost-chat-dc6d3",
+    "storage_bucket": "ghost-chat-dc6d3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924140147316:android:8099dcf646ca471c157721",
+        "android_client_info": {
+          "package_name": "com.example.ghost_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "924140147316-mehbrv7j149qlf98ukhktmd7a5q1aq3u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBR_E89-OHLGJKWNmc8np3ngxKZhS0PZ-o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "924140147316-mehbrv7j149qlf98ukhktmd7a5q1aq3u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

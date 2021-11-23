@@ -1,0 +1,32 @@
+name: ghost_chat
+description: A new Flutter project.
+
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  bloc: ^8.0.1
+  contacts_service: ^0.6.3
+  cupertino_icons: ^1.0.2
+  firebase_auth: ^3.2.0
+  firebase_core: ^1.10.0
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^8.0.0
+  hydrated_bloc: ^8.0.0
+  sizer: ^2.0.15
+
+dev_dependencies:
+  flutter_lints: ^1.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/logo.png
