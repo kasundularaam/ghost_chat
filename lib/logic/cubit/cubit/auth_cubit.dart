@@ -42,8 +42,13 @@ class AuthCubit extends Cubit<AuthState> {
   void codeSentState({required String verificationId, required String phone}) {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       timeLeft--;
-      emit(AuthCodeSent(
-          verificationId: verificationId, timeLeft: "$timeLeft", phone: phone));
+      emit(
+        AuthCodeSent(
+          verificationId: verificationId,
+          timeLeft: "$timeLeft",
+          phone: phone,
+        ),
+      );
     });
   }
 
@@ -56,16 +61,28 @@ class AuthCubit extends Cubit<AuthState> {
       if (smsCode.length == 6) {
         AuthCredential credential = await AuthRepo.verifyOTP(
             smsCode: smsCode, verificationId: verificationId);
+        timeLeft = 60;
+        timer!.cancel();
+        timer = null;
         await AuthRepo.signIn(credential: credential);
         emit(AuthSucceed());
       } else {
-        emit(AuthFailed(errorMsg: "Invalid OTP"));
+        emit(AuthInvalidOTP(
+            errorMsg: "Invalid OTP", verificationId: verificationId));
+        codeSentState(verificationId: verificationId, phone: phone);
       }
     } catch (e) {
       emit(AuthInvalidOTP(
           errorMsg: e.toString(), verificationId: verificationId));
       codeSentState(verificationId: verificationId, phone: phone);
     }
+  }
+
+  void changeNumber() {
+    timeLeft = 60;
+    timer!.cancel();
+    timer = null;
+    emit(AuthInitial());
   }
 
   Future<void> signIn({required AuthCredential credential}) async {

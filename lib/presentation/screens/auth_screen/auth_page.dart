@@ -1,10 +1,10 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/core/constants/app_colors.dart';
 import 'package:ghost_chat/logic/cubit/cubit/auth_cubit.dart';
 import 'package:ghost_chat/presentation/glob_widgets/app_button.dart';
 import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
-import 'package:ghost_chat/presentation/glob_widgets/big_button.dart';
 import 'package:ghost_chat/presentation/router/app_router.dart';
 import 'package:sizer/sizer.dart';
 
@@ -65,6 +65,10 @@ class AuthPage extends StatelessWidget {
                                 color: AppColors.lightColor, fontSize: 12.sp),
                           ),
                           TextSpan(
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () =>
+                                  BlocProvider.of<AuthCubit>(context)
+                                      .changeNumber(),
                             text: "\nChange",
                             style: TextStyle(
                               color: Colors.green,
@@ -197,6 +201,10 @@ class AuthPage extends StatelessWidget {
                                 color: AppColors.lightColor, fontSize: 12.sp),
                           ),
                           TextSpan(
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () =>
+                                  BlocProvider.of<AuthCubit>(context)
+                                      .changeNumber(),
                             text: "\nChange",
                             style: TextStyle(
                               color: Colors.green,
