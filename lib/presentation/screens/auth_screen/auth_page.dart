@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/core/constants/app_colors.dart';
-import 'package:ghost_chat/logic/cubit/cubit/auth_cubit.dart';
+import 'package:ghost_chat/logic/cubit/auth_cubit/auth_cubit.dart';
 import 'package:ghost_chat/presentation/glob_widgets/app_button.dart';
 import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
 import 'package:ghost_chat/presentation/router/app_router.dart';

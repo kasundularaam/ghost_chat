@@ -1,8 +1,9 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ghost_chat/core/constants/app_colors.dart';
 import 'package:ghost_chat/presentation/screens/home_screen/widgets/chat_card.dart';
+import 'package:ghost_chat/presentation/screens/home_screen/widgets/home_action_bar.dart';
+import 'package:ghost_chat/presentation/screens/home_screen/widgets/new_chat_btn.dart';
 import 'package:sizer/sizer.dart';
 
 class HomePage extends StatelessWidget {
@@ -13,42 +14,22 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.darkColor,
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            Container(
-              color: AppColors.darkGrey,
-              padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Image.asset(
-                    "assets/images/logo.png",
-                    width: 40.w,
-                    fit: BoxFit.fitWidth,
-                  ),
-                  ClipOval(
-                    child: Image.asset(
-                      "assets/images/profile.jpeg",
-                      width: 10.w,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ],
-              ),
+            Column(
+              children: [
+                HomeActionBar(),
+                Expanded(
+                  child: ListView.builder(
+                      itemCount: 20,
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return ChatCard();
+                      }),
+                )
+              ],
             ),
-            Container(
-              color: AppColors.lightColor,
-              height: 0.1.h,
-              width: 100.w,
-            ),
-            Expanded(
-              child: ListView.builder(
-                  itemCount: 20,
-                  physics: const BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    return ChatCard();
-                  }),
-            )
+            Positioned(right: 3.w, bottom: 3.w, child: const NewMsgBtn())
           ],
         ),
       ),

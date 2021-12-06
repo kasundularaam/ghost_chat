@@ -51,7 +51,7 @@ class AppTextInput extends StatelessWidget {
             fontSize: 14.sp,
             color: textColor.withOpacity(0.7),
           ),
-          contentPadding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 5.w),
+          contentPadding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 5.w),
           border: InputBorder.none,
         ),
         textInputAction: textInputAction,
