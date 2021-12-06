@@ -16,6 +16,8 @@ class AppRouter {
   static const String authPage = '/authPage';
   static const String contactsPage = '/contactsPage';
 
+  static ContactsCubit contactsCubit = ContactsCubit();
+
   const AppRouter._();
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -40,8 +42,8 @@ class AppRouter {
         );
       case contactsPage:
         return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => ContactsCubit(),
+          builder: (_) => BlocProvider.value(
+            value: contactsCubit,
             child: const ContactsPage(),
           ),
         );
