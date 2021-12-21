@@ -1,14 +1,54 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart' as storage;
+import 'package:ghost_chat/data/models/app_user.dart';
 
 class AuthRepo {
   static FirebaseAuth auth = FirebaseAuth.instance;
+  static DocumentReference reference =
+      FirebaseFirestore.instance.collection("users").doc(currentUid());
+
+  static String imageFilePath = "images/${currentUid()}/userImg.png";
+
+  static storage.Reference profilePicRef =
+      storage.FirebaseStorage.instance.ref(imageFilePath);
+
+  static const String noAccount = "No Account Found!";
 
   static bool isSigned() {
-    User? user = FirebaseAuth.instance.currentUser;
+    User? user = auth.currentUser;
     if (user != null) {
       return true;
     } else {
       return false;
+    }
+  }
+
+  static String currentUid() {
+    try {
+      User? currenUser = FirebaseAuth.instance.currentUser;
+      if (currenUser != null) {
+        return currenUser.uid;
+      } else {
+        throw "user not available";
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  static String currentunum() {
+    try {
+      User? currenUser = FirebaseAuth.instance.currentUser;
+      if (currenUser != null) {
+        return currenUser.phoneNumber!;
+      } else {
+        throw "user not available";
+      }
+    } catch (e) {
+      throw e.toString();
     }
   }
 
@@ -52,6 +92,65 @@ class AuthRepo {
   static Future<void> signIn({required AuthCredential credential}) async {
     try {
       await auth.signInWithCredential(credential);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  static Future<AppUser> getUserDetails() async {
+    try {
+      DocumentSnapshot snapshot = await reference.get();
+      if (snapshot.exists) {
+        Map<String, dynamic>? data = snapshot.data() as Map<String, dynamic>;
+        return AppUser.fromMap(data);
+      } else {
+        throw noAccount;
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  static Future<void> initUserFirestore() async {
+    try {
+      AppUser newUser = AppUser(
+        userId: currentUid(),
+        userName: "",
+        userNumber: currentunum(),
+        userBio: "",
+        userImg: "null",
+      );
+      await reference.set(newUser.toMap());
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  static Future<void> addProfilePic({required File imageFile}) async {
+    try {
+      await profilePicRef.putFile(imageFile);
+      String downloadUrl = await profilePicRef.getDownloadURL();
+      await reference.update({"userImg": downloadUrl});
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  static Future<void> updateUserName({required String userName}) async {
+    try {
+      if (userName.isNotEmpty) {
+        await reference.update({'userName': userName});
+      } else {
+        throw "Name is empty!";
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  static Future<void> updateUserBio({required String userBio}) async {
+    try {
+      await reference.update({'userBio': userBio});
     } catch (e) {
       throw e.toString();
     }

@@ -1,23 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:ghost_chat/core/constants/app_colors.dart';
 import 'package:sizer/sizer.dart';
 
-class ChatCard extends StatelessWidget {
-  const ChatCard({Key? key}) : super(key: key);
+import 'package:ghost_chat/core/constants/app_colors.dart';
+import 'package:ghost_chat/data/screen_args/chat_card_args.dart';
 
+class ChatCard extends StatelessWidget {
+  final ChatCardArgs chatCardArgs;
+  const ChatCard({
+    Key? key,
+    required this.chatCardArgs,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
           padding: EdgeInsets.all(5.w),
-          color: Colors.black,
+          decoration: BoxDecoration(
+              border: Border.all(width: 0.1.w),
+              color: AppColors.darkColor,
+              borderRadius: BorderRadius.circular(2.w)),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipOval(
                 child: Image.asset(
-                  "assets/images/milene.png",
+                  // "assets/images/milene.png",
+                  chatCardArgs.profileImg,
                   width: 14.w,
                   height: 14.w,
                   fit: BoxFit.cover,
@@ -34,7 +43,7 @@ class ChatCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            "Milene Mayer",
+                            chatCardArgs.userName,
                             style: TextStyle(
                               color: AppColors.lightColor,
                               fontSize: 14.sp,
@@ -43,7 +52,7 @@ class ChatCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "19:30",
+                          chatCardArgs.lastMsgTime,
                           style: TextStyle(
                               color: AppColors.lightColor.withOpacity(0.7),
                               fontSize: 11.sp,
@@ -58,7 +67,7 @@ class ChatCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam",
+                            chatCardArgs.lastMsg,
                             style: TextStyle(
                               color: AppColors.lightColor.withOpacity(0.7),
                               fontSize: 11.sp,
@@ -73,7 +82,7 @@ class ChatCard extends StatelessWidget {
                               color: AppColors.primaryColor,
                               shape: BoxShape.circle),
                           child: Text(
-                            "2",
+                            "${chatCardArgs.unreadMsgCount}",
                             style: TextStyle(
                                 color: AppColors.lightColor.withOpacity(0.7),
                                 fontSize: 10.sp,
@@ -88,10 +97,8 @@ class ChatCard extends StatelessWidget {
             ],
           ),
         ),
-        Container(
-          color: AppColors.primaryColor.withOpacity(0.3),
-          height: 0.1.h,
-          width: 100.w,
+        SizedBox(
+          height: 0.5.w,
         ),
       ],
     );

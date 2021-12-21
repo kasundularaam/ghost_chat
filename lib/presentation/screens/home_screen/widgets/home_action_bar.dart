@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:ghost_chat/core/constants/app_colors.dart';
-import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
 import 'package:sizer/sizer.dart';
 
+import 'package:ghost_chat/core/constants/app_colors.dart';
+import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
+
 class HomeActionBar extends StatefulWidget {
-  const HomeActionBar({Key? key}) : super(key: key);
+  final String userImage;
+  const HomeActionBar({
+    Key? key,
+    required this.userImage,
+  }) : super(key: key);
 
   @override
   _HomeActionBarState createState() => _HomeActionBarState();
@@ -46,8 +51,9 @@ class _HomeActionBarState extends State<HomeActionBar> {
                       width: 5.w,
                     ),
                     ClipOval(
-                      child: Image.asset(
-                        "assets/images/profile.jpeg",
+                      child: FadeInImage.assetNetwork(
+                        placeholder: "assets/images/ghost_ph.gif",
+                        image: widget.userImage,
                         width: 10.w,
                         fit: BoxFit.cover,
                       ),
@@ -101,8 +107,8 @@ class _HomeActionBarState extends State<HomeActionBar> {
                 )
               : const SizedBox(),
           Container(
-            color: AppColors.lightColor,
-            height: 0.1.h,
+            color: AppColors.lightColor.withOpacity(1),
+            height: 0.05.h,
             width: 100.w,
           ),
         ],

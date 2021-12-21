@@ -8,23 +8,23 @@ class ContactsInitial extends ContactsState {}
 class ContactsLoading extends ContactsState {}
 
 class ContactsLoaded extends ContactsState {
-  final List<Contact> contacts;
+  final List<AppUser> users;
   ContactsLoaded({
-    required this.contacts,
+    required this.users,
   });
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is ContactsLoaded && listEquals(other.contacts, contacts);
+    return other is ContactsLoaded && listEquals(other.users, users);
   }
 
   @override
-  int get hashCode => contacts.hashCode;
+  int get hashCode => users.hashCode;
 
   @override
-  String toString() => 'ContactsLoaded(contacts: $contacts)';
+  String toString() => 'ContactsLoaded(users: $users)';
 }
 
 class ContactsFailed extends ContactsState {

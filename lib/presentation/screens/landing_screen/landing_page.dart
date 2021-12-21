@@ -18,9 +18,16 @@ class LandingPage extends StatelessWidget {
             if (state is LandingPageNoUser) {
               Navigator.pushNamedAndRemoveUntil(
                   context, AppRouter.authPage, (route) => false);
-            } else if (state is LandingPageUserIn) {
+            } else if (state is LandingPageUserReady) {
               Navigator.pushNamedAndRemoveUntil(
-                  context, AppRouter.homePage, (route) => false);
+                context,
+                AppRouter.homePage,
+                (route) => false,
+                arguments: state.appUser,
+              );
+            } else if (state is LandingPageNewAccount) {
+              Navigator.pushNamedAndRemoveUntil(
+                  context, AppRouter.createProfilePage, (route) => false);
             }
           },
           child: Hero(

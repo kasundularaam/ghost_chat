@@ -30,10 +30,11 @@ class BigButton extends StatelessWidget {
           color: AppColors.primaryColor,
           boxShadow: [
             BoxShadow(
-                color: AppColors.primaryColor.withOpacity(0.2),
-                blurRadius: 4,
-                spreadRadius: 2,
-                offset: Offset.fromDirection(1, 1))
+              color: AppColors.primaryColor.withOpacity(0.2),
+              blurRadius: 4,
+              spreadRadius: 2,
+              offset: Offset.fromDirection(1, 1),
+            ),
           ],
         ),
         child: Center(

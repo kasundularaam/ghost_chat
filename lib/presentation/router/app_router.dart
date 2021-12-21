@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghost_chat/data/models/app_user.dart';
+import 'package:ghost_chat/logic/cubit/add_pro_pic_cubit/add_pro_pic_cubit.dart';
 import 'package:ghost_chat/logic/cubit/auth_cubit/auth_cubit.dart';
+import 'package:ghost_chat/logic/cubit/chat_list_cubit/chat_list_cubit.dart';
 import 'package:ghost_chat/logic/cubit/contacts_cubit/contacts_cubit.dart';
 import 'package:ghost_chat/logic/cubit/landing_page_cubit/landing_page_cubit.dart';
+import 'package:ghost_chat/logic/cubit/update_acc_cubit/update_acc_cubit.dart';
 import 'package:ghost_chat/presentation/screens/auth_screen/auth_page.dart';
+import 'package:ghost_chat/presentation/screens/auth_screen/create_profile_page.dart';
 import 'package:ghost_chat/presentation/screens/contacts_screen/contacts_page.dart';
 import 'package:ghost_chat/presentation/screens/landing_screen/landing_page.dart';
 
@@ -15,6 +20,7 @@ class AppRouter {
   static const String homePage = '/home';
   static const String authPage = '/authPage';
   static const String contactsPage = '/contactsPage';
+  static const String createProfilePage = '/createProfilePage';
 
   static ContactsCubit contactsCubit = ContactsCubit();
 
@@ -30,8 +36,14 @@ class AppRouter {
           ),
         );
       case homePage:
+        final AppUser appUser = settings.arguments as AppUser;
         return MaterialPageRoute(
-          builder: (_) => const HomePage(),
+          builder: (_) => BlocProvider(
+            create: (context) => ChatListCubit(),
+            child: HomePage(
+              appUser: appUser,
+            ),
+          ),
         );
       case authPage:
         return MaterialPageRoute(
@@ -45,6 +57,21 @@ class AppRouter {
           builder: (_) => BlocProvider.value(
             value: contactsCubit,
             child: const ContactsPage(),
+          ),
+        );
+
+      case createProfilePage:
+        return MaterialPageRoute(
+          builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider<AddProPicCubit>(
+                create: (context) => AddProPicCubit(),
+              ),
+              BlocProvider<UpdateAccCubit>(
+                create: (context) => UpdateAccCubit(),
+              ),
+            ],
+            child: const CreateProfilePage(),
           ),
         );
       default:

@@ -1,7 +1,7 @@
-import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/core/constants/app_colors.dart';
+import 'package:ghost_chat/data/models/app_user.dart';
 import 'package:ghost_chat/logic/cubit/contacts_cubit/contacts_cubit.dart';
 import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
 import 'package:sizer/sizer.dart';
@@ -39,7 +39,7 @@ class _ContactsActionBarState extends State<ContactsActionBar> {
                 ? AppTextInput(
                     onChanged: (searchText) =>
                         BlocProvider.of<ContactsCubit>(context)
-                            .searchContacts(searchText: searchText),
+                            .searchFriends(searchText: searchText),
                     textInputAction: TextInputAction.search,
                     isPassword: false,
                     hintText: "Search...",
@@ -61,7 +61,7 @@ class _ContactsActionBarState extends State<ContactsActionBar> {
                       BlocBuilder<ContactsCubit, ContactsState>(
                         builder: (context, state) {
                           if (state is ContactsLoaded) {
-                            List<Contact> contacts = state.contacts;
+                            List<AppUser> contacts = state.users;
                             return Text(
                               "${contacts.length} Contacts",
                               style: TextStyle(

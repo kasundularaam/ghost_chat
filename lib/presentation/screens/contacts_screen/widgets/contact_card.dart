@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
+import 'package:ghost_chat/data/models/app_user.dart';
 
 class ContactCard extends StatelessWidget {
-  final String contactName;
+  final AppUser appUser;
   const ContactCard({
     Key? key,
-    required this.contactName,
+    required this.appUser,
   }) : super(key: key);
 
   @override
@@ -21,8 +22,9 @@ class ContactCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ClipOval(
-                child: Image.asset(
-                  "assets/images/milene.png",
+                child: FadeInImage.assetNetwork(
+                  placeholder: "assets/images/ghost_ph.gif",
+                  image: appUser.userImg,
                   width: 14.w,
                   height: 14.w,
                   fit: BoxFit.cover,
@@ -36,7 +38,7 @@ class ContactCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      contactName,
+                      appUser.userName,
                       style: TextStyle(
                         color: AppColors.lightColor,
                         fontSize: 14.sp,
@@ -47,7 +49,7 @@ class ContactCard extends StatelessWidget {
                       height: 0.3.h,
                     ),
                     Text(
-                      "Hey there im using ghost chat",
+                      appUser.userBio,
                       style: TextStyle(
                         color: AppColors.lightColor.withOpacity(0.7),
                         fontSize: 11.sp,
