@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghost_chat/logic/cubit/home_action_bar_cubit/home_action_bar_cubit.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
@@ -28,8 +29,9 @@ class HomePage extends StatelessWidget {
           children: [
             Column(
               children: [
-                HomeActionBar(
-                  userImage: appUser.userImg,
+                BlocProvider(
+                  create: (context) => HomeActionBarCubit(),
+                  child: const HomeActionBar(),
                 ),
                 Expanded(
                   child: BlocConsumer<ChatListCubit, ChatListState>(

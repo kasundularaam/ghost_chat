@@ -11,6 +11,8 @@ import 'package:ghost_chat/presentation/screens/auth_screen/auth_page.dart';
 import 'package:ghost_chat/presentation/screens/auth_screen/create_profile_page.dart';
 import 'package:ghost_chat/presentation/screens/contacts_screen/contacts_page.dart';
 import 'package:ghost_chat/presentation/screens/landing_screen/landing_page.dart';
+import 'package:ghost_chat/presentation/screens/profile_screen/profile_page.dart';
+import 'package:ghost_chat/presentation/screens/user_profile_screen/user_profile_page.dart';
 
 import '../../core/exceptions/route_exception.dart';
 import '../screens/home_screen/home_page.dart';
@@ -21,6 +23,8 @@ class AppRouter {
   static const String authPage = '/authPage';
   static const String contactsPage = '/contactsPage';
   static const String createProfilePage = '/createProfilePage';
+  static const String profilePage = '/profilePage';
+  static const String userProfilePage = '/userprofilePage';
 
   static ContactsCubit contactsCubit = ContactsCubit();
 
@@ -72,6 +76,23 @@ class AppRouter {
               ),
             ],
             child: const CreateProfilePage(),
+          ),
+        );
+      case profilePage:
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: contactsCubit,
+            child: const ProfilePage(),
+          ),
+        );
+      case userProfilePage:
+        final String userId = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: contactsCubit,
+            child: UserProfilePage(
+              userId: userId,
+            ),
           ),
         );
       default:

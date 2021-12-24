@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghost_chat/core/constants/strings.dart';
+import 'package:ghost_chat/logic/cubit/home_action_bar_cubit/home_action_bar_cubit.dart';
+import 'package:ghost_chat/presentation/router/app_router.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
 import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
 
 class HomeActionBar extends StatefulWidget {
-  final String userImage;
-  const HomeActionBar({
-    Key? key,
-    required this.userImage,
-  }) : super(key: key);
+  const HomeActionBar({Key? key}) : super(key: key);
 
   @override
   _HomeActionBarState createState() => _HomeActionBarState();
@@ -19,6 +19,7 @@ class _HomeActionBarState extends State<HomeActionBar> {
   bool searchMode = false;
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<HomeActionBarCubit>(context).getUserImg();
     return Container(
       color: AppColors.darkGrey,
       child: Column(
@@ -29,7 +30,7 @@ class _HomeActionBarState extends State<HomeActionBar> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Image.asset(
-                  "assets/images/logo.png",
+                  Strings.logo,
                   width: 40.w,
                   fit: BoxFit.fitWidth,
                 ),
@@ -50,12 +51,38 @@ class _HomeActionBarState extends State<HomeActionBar> {
                     SizedBox(
                       width: 5.w,
                     ),
-                    ClipOval(
-                      child: FadeInImage.assetNetwork(
-                        placeholder: "assets/images/ghost_ph.gif",
-                        image: widget.userImage,
-                        width: 10.w,
-                        fit: BoxFit.cover,
+                    GestureDetector(
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRouter.profilePage),
+                      child: ClipOval(
+                        child:
+                            BlocBuilder<HomeActionBarCubit, HomeActionBarState>(
+                          builder: (context, state) {
+                            if (state is HomeActionBarLoaded) {
+                              return state.userImg != "null"
+                                  ? FadeInImage.assetNetwork(
+                                      placeholder: Strings.ghostPlaceHolder,
+                                      image: state.userImg,
+                                      width: 10.w,
+                                      height: 10.w,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      Strings.ghostPlaceHolder,
+                                      width: 10.w,
+                                      height: 10.w,
+                                      fit: BoxFit.cover,
+                                    );
+                            } else {
+                              return Image.asset(
+                                Strings.ghostPlaceHolder,
+                                width: 10.w,
+                                height: 10.w,
+                                fit: BoxFit.cover,
+                              );
+                            }
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -106,11 +133,6 @@ class _HomeActionBarState extends State<HomeActionBar> {
                   ],
                 )
               : const SizedBox(),
-          Container(
-            color: AppColors.lightColor.withOpacity(1),
-            height: 0.05.h,
-            width: 100.w,
-          ),
         ],
       ),
     );

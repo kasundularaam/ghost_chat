@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/core/constants/app_colors.dart';
-import 'package:ghost_chat/data/models/app_user.dart';
+import 'package:ghost_chat/data/models/friend_model.dart';
 import 'package:ghost_chat/logic/cubit/contacts_cubit/contacts_cubit.dart';
 import 'package:ghost_chat/presentation/router/app_router.dart';
 import 'package:ghost_chat/presentation/screens/contacts_screen/widgets/contact_card.dart';
@@ -32,24 +32,25 @@ class ContactsPage extends StatelessWidget {
               },
               builder: (context, state) {
                 if (state is ContactsLoaded) {
-                  List<AppUser> users = state.users;
+                  List<Friend> friends = state.friends;
                   return Expanded(
                     child: ListView.builder(
-                        itemCount: users.length,
+                        itemCount: friends.length,
                         physics: const BouncingScrollPhysics(),
                         itemBuilder: (context, index) {
-                          AppUser appUser = users[index];
+                          Friend friend = friends[index];
                           return ContactCard(
-                            appUser: appUser,
+                            friend: friend,
                           );
                         }),
                   );
                 } else if (state is ContactsLoading) {
                   return const Expanded(
                     child: Center(
-                        child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
-                    )),
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
                   );
                 } else {
                   return Expanded(

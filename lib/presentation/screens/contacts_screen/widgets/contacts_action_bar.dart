@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/core/constants/app_colors.dart';
-import 'package:ghost_chat/data/models/app_user.dart';
+import 'package:ghost_chat/data/models/friend_model.dart';
 import 'package:ghost_chat/logic/cubit/contacts_cubit/contacts_cubit.dart';
 import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
 import 'package:sizer/sizer.dart';
@@ -61,9 +61,19 @@ class _ContactsActionBarState extends State<ContactsActionBar> {
                       BlocBuilder<ContactsCubit, ContactsState>(
                         builder: (context, state) {
                           if (state is ContactsLoaded) {
-                            List<AppUser> contacts = state.users;
+                            List<Friend> friends = state.friends;
                             return Text(
-                              "${contacts.length} Contacts",
+                              friends.isNotEmpty
+                                  ? "${friends.length} Contacts"
+                                  : "No Contacts",
+                              style: TextStyle(
+                                color: AppColors.lightColor,
+                                fontSize: 10.sp,
+                              ),
+                            );
+                          } else if (state is ContactsFailed) {
+                            return Text(
+                              "No Contacts",
                               style: TextStyle(
                                 color: AppColors.lightColor,
                                 fontSize: 10.sp,

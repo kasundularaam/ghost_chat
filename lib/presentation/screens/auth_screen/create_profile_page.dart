@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/core/constants/app_colors.dart';
+import 'package:ghost_chat/core/constants/strings.dart';
 import 'package:ghost_chat/logic/cubit/add_pro_pic_cubit/add_pro_pic_cubit.dart';
 import 'package:ghost_chat/logic/cubit/update_acc_cubit/update_acc_cubit.dart';
 import 'package:ghost_chat/presentation/glob_widgets/app_button.dart';
@@ -63,14 +64,14 @@ class CreateProfilePage extends StatelessWidget {
                             child: ClipOval(
                               child: state.userImg != "null"
                                   ? FadeInImage.assetNetwork(
-                                      placeholder: "assets/images/ghost_ph.gif",
+                                      placeholder: Strings.ghostPlaceHolder,
                                       image: state.userImg,
                                       width: 40.w,
                                       height: 40.w,
                                       fit: BoxFit.cover,
                                     )
                                   : Image.asset(
-                                      "assets/images/ghost_ph.gif",
+                                      Strings.ghostPlaceHolder,
                                       width: 40.w,
                                       height: 40.w,
                                       fit: BoxFit.cover,
@@ -91,7 +92,7 @@ class CreateProfilePage extends StatelessWidget {
                                     .uploadProPic(),
                             child: ClipOval(
                               child: Image.asset(
-                                "assets/images/ghost_ph.gif",
+                                Strings.ghostPlaceHolder,
                                 width: 40.w,
                                 height: 40.w,
                                 fit: BoxFit.cover,
@@ -130,8 +131,8 @@ class CreateProfilePage extends StatelessWidget {
                   BlocConsumer<UpdateAccCubit, UpdateAccState>(
                     listener: (context, state) {
                       if (state is UpdateAccFailed) {
-                        SnackBar snackBar = const SnackBar(
-                            content: Text("Some error occured!"));
+                        SnackBar snackBar =
+                            const SnackBar(content: Text("An error occured!"));
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       } else if (state is UpdateAccSucceed) {
                         Navigator.pushNamedAndRemoveUntil(
