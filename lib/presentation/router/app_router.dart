@@ -9,6 +9,7 @@ import 'package:ghost_chat/logic/cubit/landing_page_cubit/landing_page_cubit.dar
 import 'package:ghost_chat/logic/cubit/update_acc_cubit/update_acc_cubit.dart';
 import 'package:ghost_chat/presentation/screens/auth_screen/auth_page.dart';
 import 'package:ghost_chat/presentation/screens/auth_screen/create_profile_page.dart';
+import 'package:ghost_chat/presentation/screens/chat_screen/chat_page.dart';
 import 'package:ghost_chat/presentation/screens/contacts_screen/contacts_page.dart';
 import 'package:ghost_chat/presentation/screens/landing_screen/landing_page.dart';
 import 'package:ghost_chat/presentation/screens/profile_screen/profile_page.dart';
@@ -25,6 +26,7 @@ class AppRouter {
   static const String createProfilePage = '/createProfilePage';
   static const String profilePage = '/profilePage';
   static const String userProfilePage = '/userprofilePage';
+  static const String chatPage = '/chatPage';
 
   static ContactsCubit contactsCubit = ContactsCubit();
 
@@ -91,6 +93,16 @@ class AppRouter {
           builder: (_) => BlocProvider.value(
             value: contactsCubit,
             child: UserProfilePage(
+              userId: userId,
+            ),
+          ),
+        );
+      case chatPage:
+        final String userId = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: contactsCubit,
+            child: ChatPage(
               userId: userId,
             ),
           ),

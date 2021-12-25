@@ -8,7 +8,7 @@ class NewMsgBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: () => Navigator.pushNamed(context, AppRouter.contactsPage),
       child: Container(
         padding: EdgeInsets.all(4.w),

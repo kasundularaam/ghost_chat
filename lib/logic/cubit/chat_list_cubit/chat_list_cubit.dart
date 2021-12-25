@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ghost_chat/core/constants/app_enums.dart';
+import 'package:ghost_chat/data/models/friend_model.dart';
 import 'package:ghost_chat/data/screen_args/chat_card_args.dart';
 import 'package:meta/meta.dart';
 
@@ -15,46 +16,23 @@ class ChatListCubit extends Cubit<ChatListState> {
       await Future.delayed(const Duration(seconds: 2));
 
       ChatCardArgs milene = ChatCardArgs(
-          userName: "Milene Mayer",
-          profileImg: "assets/images/milene.png",
+          friend: Friend(
+              contactName: "Milene Mayer M",
+              userBio: 'a',
+              userId: '1',
+              userImg: "assets/images/milene.png",
+              userName: 'Mil',
+              userNumber: '12'),
           msgType: MsgType.text,
           lastMsgTime: "19:50",
           unreadMsgCount: 3,
-          lastMsg: "Hey Milene!");
-      ChatCardArgs berry = ChatCardArgs(
-          userName: "Milene Mayer",
-          profileImg: "assets/images/milene.png",
-          msgType: MsgType.text,
-          lastMsgTime: "19:50",
-          unreadMsgCount: 3,
-          lastMsg: "Hey Milene!");
-      ChatCardArgs pakete = ChatCardArgs(
-          userName: "Milene Mayer",
-          profileImg: "assets/images/milene.png",
-          msgType: MsgType.text,
-          lastMsgTime: "19:50",
-          unreadMsgCount: 3,
-          lastMsg: "Hey Milene!");
-      ChatCardArgs angustia = ChatCardArgs(
-          userName: "Milene Mayer",
-          profileImg: "assets/images/milene.png",
-          msgType: MsgType.text,
-          lastMsgTime: "19:50",
-          unreadMsgCount: 3,
-          lastMsg: "Hey Milene!");
-      ChatCardArgs kamunas = ChatCardArgs(
-          userName: "Milene Mayer",
-          profileImg: "assets/images/milene.png",
-          msgType: MsgType.text,
-          lastMsgTime: "19:50",
-          unreadMsgCount: 3,
-          lastMsg: "Hey Milene!");
+          lastMsg: "Hey Pakete!");
       List<ChatCardArgs> chatCardArgsList = [
         milene,
-        berry,
-        pakete,
-        angustia,
-        kamunas
+        // berry,
+        // pakete,
+        // angustia,
+        // kamunas
       ];
       emit(ChatListLoaded(chatCardArgsList: chatCardArgsList));
     } catch (e) {
