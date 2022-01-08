@@ -26,6 +26,7 @@ dependencies:
   intl: ^0.17.0
   permission_handler: ^8.3.0
   sizer: ^2.0.15
+  sqflite: ^2.0.1
   timeago: ^3.1.0
 
 dev_dependencies:

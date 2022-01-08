@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/core/constants/strings.dart';
+import 'package:ghost_chat/data/models/friend_model.dart';
+import 'package:ghost_chat/logic/cubit/user_stats_cubit/user_stats_cubit.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
 
 class FriendProfilePage extends StatelessWidget {
-  final String userId;
+  final Friend friend;
   const FriendProfilePage({
     Key? key,
-    required this.userId,
+    required this.friend,
   }) : super(key: key);
 
   @override
@@ -73,7 +76,7 @@ class FriendProfilePage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            "Kasun Dulara",
+                            friend.contactName,
                             style: TextStyle(
                                 color: AppColors.lightColor,
                                 fontSize: 16.sp,
@@ -83,7 +86,7 @@ class FriendProfilePage extends StatelessWidget {
                             height: 1.h,
                           ),
                           Text(
-                            "+94703554519",
+                            friend.userNumber,
                             style: TextStyle(
                               color: AppColors.lightColor.withOpacity(0.7),
                               fontSize: 14.sp,
@@ -92,12 +95,36 @@ class FriendProfilePage extends StatelessWidget {
                           SizedBox(
                             height: 1.h,
                           ),
-                          Text(
-                            "Online",
-                            style: TextStyle(
-                                color: Colors.green,
-                                fontSize: 12.sp,
-                                fontWeight: FontWeight.w600),
+                          BlocBuilder<UserStatsCubit, UserStatsState>(
+                            builder: (context, state) {
+                              if (state is UserStatsLoading) {
+                                return Text(
+                                  "Loading...",
+                                  style: TextStyle(
+                                      color:
+                                          AppColors.lightColor.withOpacity(0.7),
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w600),
+                                );
+                              } else if (state is UserStatsLoaded) {
+                                return Text(
+                                  state.userStatus,
+                                  style: TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w600),
+                                );
+                              } else {
+                                return Text(
+                                  "Unavailable",
+                                  style: TextStyle(
+                                      color:
+                                          AppColors.lightColor.withOpacity(0.7),
+                                      fontSize: 12.sp,
+                                      fontWeight: FontWeight.w600),
+                                );
+                              }
+                            },
                           ),
                         ],
                       ),
@@ -106,7 +133,7 @@ class FriendProfilePage extends StatelessWidget {
                       height: 5.h,
                     ),
                     Text(
-                      "Berry 😎",
+                      friend.userName,
                       style: TextStyle(
                         color: AppColors.lightColor,
                         fontSize: 12.sp,
@@ -116,7 +143,7 @@ class FriendProfilePage extends StatelessWidget {
                       height: 1.h,
                     ),
                     Text(
-                      "S I N C E 1 9 5 6",
+                      friend.userBio,
                       style: TextStyle(
                         color: AppColors.lightColor.withOpacity(0.7),
                         fontSize: 12.sp,

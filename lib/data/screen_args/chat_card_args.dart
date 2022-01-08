@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:ghost_chat/core/constants/app_enums.dart';
 import 'package:ghost_chat/data/models/friend_model.dart';
 

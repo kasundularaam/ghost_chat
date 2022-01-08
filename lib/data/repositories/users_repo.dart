@@ -109,6 +109,8 @@ class UsersRepo {
       String userStatus = map["userStatus"];
       if (userStatus == "Online") {
         yield userStatus;
+      } else if (userStatus == "null") {
+        yield "Unavailable";
       } else {
         yield timeago.format(
           DateTime.fromMillisecondsSinceEpoch(

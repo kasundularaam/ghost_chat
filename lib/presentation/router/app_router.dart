@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/data/models/app_user.dart';
+import 'package:ghost_chat/data/models/friend_model.dart';
 import 'package:ghost_chat/logic/cubit/add_pro_pic_cubit/add_pro_pic_cubit.dart';
 import 'package:ghost_chat/logic/cubit/auth_cubit/auth_cubit.dart';
 import 'package:ghost_chat/logic/cubit/chat_list_cubit/chat_list_cubit.dart';
 import 'package:ghost_chat/logic/cubit/contacts_cubit/contacts_cubit.dart';
+import 'package:ghost_chat/logic/cubit/edit_bio_cubit/edit_bio_cubit.dart';
+import 'package:ghost_chat/logic/cubit/edit_name_cubit/edit_name_cubit.dart';
+import 'package:ghost_chat/logic/cubit/home_action_bar_cubit/home_action_bar_cubit.dart';
 import 'package:ghost_chat/logic/cubit/landing_page_cubit/landing_page_cubit.dart';
+import 'package:ghost_chat/logic/cubit/profile_page_cubit/profile_page_cubit.dart';
 import 'package:ghost_chat/logic/cubit/update_acc_cubit/update_acc_cubit.dart';
+import 'package:ghost_chat/logic/cubit/user_stats_cubit/user_stats_cubit.dart';
 import 'package:ghost_chat/presentation/screens/auth_screen/auth_page.dart';
 import 'package:ghost_chat/presentation/screens/auth_screen/create_profile_page.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/chat_page.dart';
 import 'package:ghost_chat/presentation/screens/contacts_screen/contacts_page.dart';
+import 'package:ghost_chat/presentation/screens/friend_profile_screen/friend_profile_page.dart';
 import 'package:ghost_chat/presentation/screens/landing_screen/landing_page.dart';
 import 'package:ghost_chat/presentation/screens/profile_screen/profile_page.dart';
-import 'package:ghost_chat/presentation/screens/user_profile_screen/friend_profile_page.dart';
 
 import '../../core/exceptions/route_exception.dart';
 import '../screens/home_screen/home_page.dart';
@@ -29,6 +35,7 @@ class AppRouter {
   static const String chatPage = '/chatPage';
 
   static ContactsCubit contactsCubit = ContactsCubit();
+  static HomeActionBarCubit homeActionBarCubit = HomeActionBarCubit();
 
   const AppRouter._();
 
@@ -65,7 +72,6 @@ class AppRouter {
             child: const ContactsPage(),
           ),
         );
-
       case createProfilePage:
         return MaterialPageRoute(
           builder: (_) => MultiBlocProvider(
@@ -82,18 +88,34 @@ class AppRouter {
         );
       case profilePage:
         return MaterialPageRoute(
-          builder: (_) => BlocProvider.value(
-            value: contactsCubit,
+          builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) => ProfilePageCubit(),
+              ),
+              BlocProvider(
+                create: (context) => AddProPicCubit(),
+              ),
+              BlocProvider(
+                create: (context) => EditNameCubit(),
+              ),
+              BlocProvider(
+                create: (context) => EditBioCubit(),
+              ),
+              BlocProvider.value(
+                value: homeActionBarCubit,
+              ),
+            ],
             child: const ProfilePage(),
           ),
         );
       case friendProfilePage:
-        final String userId = settings.arguments as String;
+        final Friend friend = settings.arguments as Friend;
         return MaterialPageRoute(
-          builder: (_) => BlocProvider.value(
-            value: contactsCubit,
+          builder: (_) => BlocProvider(
+            create: (context) => UserStatsCubit(),
             child: FriendProfilePage(
-              userId: userId,
+              friend: friend,
             ),
           ),
         );
