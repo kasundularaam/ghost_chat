@@ -46,3 +46,23 @@ class ContactsFailed extends ContactsState {
   @override
   String toString() => 'ContactsFailed(errorMsg: $errorMsg)';
 }
+
+class ContactsNoPermission extends ContactsState {
+  final String errorMsg;
+  ContactsNoPermission({
+    required this.errorMsg,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is ContactsNoPermission && other.errorMsg == errorMsg;
+  }
+
+  @override
+  int get hashCode => errorMsg.hashCode;
+
+  @override
+  String toString() => 'ContactsNoPermission(errorMsg: $errorMsg)';
+}

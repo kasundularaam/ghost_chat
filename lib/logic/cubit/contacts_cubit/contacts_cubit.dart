@@ -22,9 +22,21 @@ class ContactsCubit extends Cubit<ContactsState> {
       if (permissionStatus) {
         List<Contact> contacts = await ContactsService.getContacts();
         friends = await UsersRepo.getFriends(contacts: contacts);
+      } else {
+        emit(ContactsNoPermission(errorMsg: "Contact permission required"));
+      }
+    } catch (e) {
+      emit(ContactsFailed(errorMsg: e.toString()));
+    }
+  }
+
+  Future<void> getFriends() async {
+    try {
+      if (friends.isNotEmpty) {
         emit(ContactsLoaded(friends: friends));
       } else {
-        emit(ContactsFailed(errorMsg: "Contact permission required"));
+        await loadContacts();
+        getFriends();
       }
     } catch (e) {
       emit(ContactsFailed(errorMsg: e.toString()));

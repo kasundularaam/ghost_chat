@@ -119,6 +119,8 @@ class AuthRepo {
         userNumber: currentunum(),
         userBio: "",
         userImg: "null",
+        userStatus: "null",
+        typingTo: "null",
       );
       await reference.set(newUser.toMap());
     } catch (e) {
@@ -153,6 +155,34 @@ class AuthRepo {
       await reference.update({'userBio': userBio});
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  static Future<void> goOnline() async {
+    try {
+      await reference.update({"userStatus": "Online"});
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  static Future<void> goOffline() async {
+    try {
+      int now = DateTime.now().millisecondsSinceEpoch;
+      await reference.update({"userStatus": "$now"});
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  static Future<void> updateTypeStatus(
+      {required Stream<String> typingTo}) async {
+    try {
+      typingTo.listen((status) async {
+        await reference.update({"typingTo": status});
+      });
+    } catch (e) {
+      e.toString();
     }
   }
 }

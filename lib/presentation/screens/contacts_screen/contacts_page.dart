@@ -13,7 +13,7 @@ class ContactsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<ContactsCubit>(context).loadContacts();
+    BlocProvider.of<ContactsCubit>(context).getFriends();
     return Scaffold(
       backgroundColor: AppColors.darkColor,
       body: SafeArea(
@@ -26,6 +26,9 @@ class ContactsPage extends StatelessWidget {
             BlocConsumer<ContactsCubit, ContactsState>(
               listener: (context, state) {
                 if (state is ContactsFailed) {
+                  SnackBar snackBar = SnackBar(content: Text(state.errorMsg));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                } else if (state is ContactsNoPermission) {
                   SnackBar snackBar = SnackBar(content: Text(state.errorMsg));
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 }
@@ -52,12 +55,22 @@ class ContactsPage extends StatelessWidget {
                       ),
                     ),
                   );
-                } else {
+                } else if (state is ContactsNoPermission) {
                   return Expanded(
                     child: Center(
                       child: TextButton(
                           onPressed: () => openAppSettings(),
                           child: const Text("Grant Permissions")),
+                    ),
+                  );
+                } else {
+                  return Expanded(
+                    child: Center(
+                      child: TextButton(
+                          onPressed: () =>
+                              BlocProvider.of<ContactsCubit>(context)
+                                  .getFriends(),
+                          child: const Text("Retry")),
                     ),
                   );
                 }

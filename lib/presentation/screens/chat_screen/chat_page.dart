@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
+import 'package:ghost_chat/presentation/router/app_router.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
@@ -38,37 +39,49 @@ class ChatPage extends StatelessWidget {
                   SizedBox(
                     width: 2.w,
                   ),
-                  ClipOval(
-                    child: Image.asset(
-                      Strings.ghostPlaceHolder,
-                      width: 10.w,
-                      height: 10.w,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 3.w,
-                  ),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Kasun Dulara",
-                          style: TextStyle(
-                            color: AppColors.lightColor,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
+                    child: GestureDetector(
+                      onTap: () => Navigator.pushNamed(
+                          context, AppRouter.friendProfilePage,
+                          arguments: userId),
+                      child: Row(
+                        children: [
+                          ClipOval(
+                            child: Image.asset(
+                              Strings.ghostPlaceHolder,
+                              width: 10.w,
+                              height: 10.w,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                        Text(
-                          "Typing...",
-                          style: TextStyle(
-                            color: AppColors.lightColor.withOpacity(0.7),
-                            fontSize: 10.sp,
+                          SizedBox(
+                            width: 3.w,
                           ),
-                        ),
-                      ],
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Kasun Dulara",
+                                  style: TextStyle(
+                                    color: AppColors.lightColor,
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Text(
+                                  "Typing...",
+                                  style: TextStyle(
+                                    color:
+                                        AppColors.lightColor.withOpacity(0.7),
+                                    fontSize: 10.sp,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -78,6 +91,7 @@ class ChatPage extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.all(0),
                 physics: const BouncingScrollPhysics(),
+                reverse: true,
                 children: [
                   SizedBox(
                     height: 1.h,
@@ -87,7 +101,6 @@ class ChatPage extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: 3.w),
                     physics: const BouncingScrollPhysics(),
                     shrinkWrap: true,
-                    reverse: true,
                     itemBuilder: (context, index) {
                       return Align(
                         alignment: index % 2 == 0

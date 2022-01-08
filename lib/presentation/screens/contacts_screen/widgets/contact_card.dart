@@ -18,7 +18,7 @@ class ContactCard extends StatelessWidget {
     return Column(
       children: [
         GestureDetector(
-          onTap: () => Navigator.pushNamed(context, AppRouter.userProfilePage,
+          onTap: () => Navigator.pushNamed(context, AppRouter.friendProfilePage,
               arguments: friend.userId),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),

@@ -4,9 +4,9 @@ import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
 
-class UserProfilePage extends StatelessWidget {
+class FriendProfilePage extends StatelessWidget {
   final String userId;
-  const UserProfilePage({
+  const FriendProfilePage({
     Key? key,
     required this.userId,
   }) : super(key: key);

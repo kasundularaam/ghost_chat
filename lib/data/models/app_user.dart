@@ -6,12 +6,16 @@ class AppUser {
   final String userNumber;
   final String userBio;
   final String userImg;
+  final String? userStatus;
+  final String? typingTo;
   AppUser({
     required this.userId,
     required this.userName,
     required this.userNumber,
     required this.userBio,
     required this.userImg,
+    this.userStatus,
+    this.typingTo,
   });
 
   AppUser copyWith({
@@ -20,6 +24,8 @@ class AppUser {
     String? userNumber,
     String? userBio,
     String? userImg,
+    String? userStatus,
+    String? typingTo,
   }) {
     return AppUser(
       userId: userId ?? this.userId,
@@ -27,6 +33,8 @@ class AppUser {
       userNumber: userNumber ?? this.userNumber,
       userBio: userBio ?? this.userBio,
       userImg: userImg ?? this.userImg,
+      userStatus: userStatus ?? this.userStatus,
+      typingTo: typingTo ?? this.typingTo,
     );
   }
 
@@ -37,6 +45,8 @@ class AppUser {
       'userNumber': userNumber,
       'userBio': userBio,
       'userImg': userImg,
+      'userStatus': userStatus,
+      'typingTo': typingTo,
     };
   }
 
@@ -47,6 +57,8 @@ class AppUser {
       userNumber: map['userNumber'] ?? '',
       userBio: map['userBio'] ?? '',
       userImg: map['userImg'] ?? '',
+      userStatus: map['userStatus'],
+      typingTo: map['typingTo'],
     );
   }
 
@@ -57,7 +69,7 @@ class AppUser {
 
   @override
   String toString() {
-    return 'AppUser(userId: $userId, userName: $userName, userNumber: $userNumber, userBio: $userBio, userImg: $userImg)';
+    return 'AppUser(userId: $userId, userName: $userName, userNumber: $userNumber, userBio: $userBio, userImg: $userImg, userStatus: $userStatus, typingTo: $typingTo)';
   }
 
   @override
@@ -69,7 +81,9 @@ class AppUser {
         other.userName == userName &&
         other.userNumber == userNumber &&
         other.userBio == userBio &&
-        other.userImg == userImg;
+        other.userImg == userImg &&
+        other.userStatus == userStatus &&
+        other.typingTo == typingTo;
   }
 
   @override
@@ -78,6 +92,8 @@ class AppUser {
         userName.hashCode ^
         userNumber.hashCode ^
         userBio.hashCode ^
-        userImg.hashCode;
+        userImg.hashCode ^
+        userStatus.hashCode ^
+        typingTo.hashCode;
   }
 }
