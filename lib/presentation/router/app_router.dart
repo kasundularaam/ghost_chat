@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/data/models/app_user.dart';
 import 'package:ghost_chat/data/models/friend_model.dart';
+import 'package:ghost_chat/data/screen_args/chat_screen_args.dart';
 import 'package:ghost_chat/logic/cubit/add_pro_pic_cubit/add_pro_pic_cubit.dart';
 import 'package:ghost_chat/logic/cubit/auth_cubit/auth_cubit.dart';
 import 'package:ghost_chat/logic/cubit/chat_list_cubit/chat_list_cubit.dart';
+import 'package:ghost_chat/logic/cubit/chat_page_cubit/chat_page_cubit.dart';
 import 'package:ghost_chat/logic/cubit/contacts_cubit/contacts_cubit.dart';
 import 'package:ghost_chat/logic/cubit/edit_bio_cubit/edit_bio_cubit.dart';
 import 'package:ghost_chat/logic/cubit/edit_name_cubit/edit_name_cubit.dart';
+import 'package:ghost_chat/logic/cubit/go_chat_cubit/go_chat_cubit.dart';
 import 'package:ghost_chat/logic/cubit/home_action_bar_cubit/home_action_bar_cubit.dart';
 import 'package:ghost_chat/logic/cubit/landing_page_cubit/landing_page_cubit.dart';
 import 'package:ghost_chat/logic/cubit/profile_page_cubit/profile_page_cubit.dart';
+import 'package:ghost_chat/logic/cubit/send_message_cubit/send_message_cubit.dart';
 import 'package:ghost_chat/logic/cubit/update_acc_cubit/update_acc_cubit.dart';
 import 'package:ghost_chat/logic/cubit/user_stats_cubit/user_stats_cubit.dart';
 import 'package:ghost_chat/presentation/screens/auth_screen/auth_page.dart';
@@ -112,20 +116,34 @@ class AppRouter {
       case friendProfilePage:
         final Friend friend = settings.arguments as Friend;
         return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => UserStatsCubit(),
+          builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) => UserStatsCubit(),
+              ),
+              BlocProvider(
+                create: (context) => GoChatCubit(),
+              ),
+            ],
             child: FriendProfilePage(
               friend: friend,
             ),
           ),
         );
       case chatPage:
-        final String userId = settings.arguments as String;
+        final ChatScreenArgs args = settings.arguments as ChatScreenArgs;
         return MaterialPageRoute(
-          builder: (_) => BlocProvider.value(
-            value: contactsCubit,
+          builder: (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider(
+                create: (context) => ChatPageCubit(),
+              ),
+              BlocProvider(
+                create: (context) => SendMessageCubit(),
+              ),
+            ],
             child: ChatPage(
-              userId: userId,
+              args: args,
             ),
           ),
         );

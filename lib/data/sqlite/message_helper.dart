@@ -37,7 +37,7 @@ class MessageHelper {
             "$columnReciverId TEXT,"
             "$columnSentTimestamp TEXT,"
             "$columnMessageStatus TEXT,"
-            "$columnMessage TEXT,"
+            "$columnMessage TEXT"
             ")");
       });
       return database;
@@ -50,11 +50,19 @@ class MessageHelper {
       {required DecodedMessageModel decodedMessage}) async {
     try {
       final db = await database;
-      List<Map<String, dynamic>> results = await db!.rawQuery(
-          "SELECT * FROM $table WHERE $columnMessageId = ${decodedMessage.messageId}");
+      List<Map<String, dynamic>> results = await db!.query(table,
+          where: "$columnMessageId = ?", whereArgs: [decodedMessage.messageId]);
       if (results.isEmpty) {
-        await db.execute(
-            "INSERT INTO $table VALUES (${decodedMessage.messageId}, ${decodedMessage.senderId}, ${decodedMessage.reciverId}, ${decodedMessage.sentTimestamp}, ${decodedMessage.messageStatus}, ${decodedMessage.message},)");
+        await db.rawInsert(
+            "INSERT INTO $table ($columnMessageId, $columnSenderId, $columnReciverId, $columnSentTimestamp, $columnMessageStatus, $columnMessage) VALUES(?, ?, ?, ?, ?, ?)",
+            [
+              decodedMessage.messageId,
+              decodedMessage.senderId,
+              decodedMessage.reciverId,
+              decodedMessage.sentTimestamp,
+              decodedMessage.messageStatus,
+              decodedMessage.message
+            ]);
       }
     } catch (e) {
       throw e.toString();
@@ -79,12 +87,18 @@ class MessageHelper {
     try {
       final db = await database;
       List<Map<String, dynamic>> results = await db!
-          .rawQuery("SELECT * FROM $table WHERE $columnMessageId = $messageId");
+          .query(table, where: "$columnMessageId = ?", whereArgs: [messageId]);
       List<DecodedMessageModel> messages = [];
       for (var result in results) {
-        messages.add(DecodedMessageModel.fromMap(result));
+        messages.add(DecodedMessageModel(
+            messageId: result[columnMessageId],
+            senderId: result[columnSenderId],
+            reciverId: result[columnReciverId],
+            sentTimestamp: result[columnSentTimestamp],
+            messageStatus: result[columnMessageStatus],
+            message: result[columnMessage]));
       }
-      if (results.isNotEmpty) {
+      if (messages.isNotEmpty) {
         return messages[0];
       } else {
         throw "No Message found!";
@@ -98,10 +112,16 @@ class MessageHelper {
     try {
       final db = await database;
       List<Map<String, dynamic>> results = await db!
-          .rawQuery("SELECT * FROM $table WHERE $columnMessageId = $messageId");
+          .query(table, where: "$columnMessageId = ?", whereArgs: [messageId]);
       List<DecodedMessageModel> messages = [];
       for (var result in results) {
-        messages.add(DecodedMessageModel.fromMap(result));
+        messages.add(DecodedMessageModel(
+            messageId: result[columnMessageId],
+            senderId: result[columnSenderId],
+            reciverId: result[columnReciverId],
+            sentTimestamp: result[columnSentTimestamp],
+            messageStatus: result[columnMessageStatus],
+            message: result[columnMessage]));
       }
       if (results.isNotEmpty) {
         return true;

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/core/constants/strings.dart';
 import 'package:ghost_chat/data/models/friend_model.dart';
+import 'package:ghost_chat/data/screen_args/chat_screen_args.dart';
+import 'package:ghost_chat/logic/cubit/go_chat_cubit/go_chat_cubit.dart';
 import 'package:ghost_chat/logic/cubit/user_stats_cubit/user_stats_cubit.dart';
+import 'package:ghost_chat/presentation/router/app_router.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
@@ -16,6 +19,8 @@ class FriendProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<UserStatsCubit>(context)
+        .getUserStatus(userId: friend.userId);
     return Scaffold(
       backgroundColor: AppColors.darkColor,
       body: SafeArea(
@@ -59,12 +64,20 @@ class FriendProfilePage extends StatelessWidget {
                     ),
                     Center(
                       child: ClipOval(
-                        child: Image.asset(
-                          Strings.ghostPlaceHolder,
-                          width: 32.w,
-                          height: 32.w,
-                          fit: BoxFit.cover,
-                        ),
+                        child: friend.userImg != "null"
+                            ? FadeInImage.assetNetwork(
+                                placeholder: Strings.ghostPlaceHolder,
+                                image: friend.userImg,
+                                width: 32.w,
+                                height: 32.w,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                Strings.ghostPlaceHolder,
+                                width: 32.w,
+                                height: 32.w,
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                     SizedBox(
@@ -110,7 +123,10 @@ class FriendProfilePage extends StatelessWidget {
                                 return Text(
                                   state.userStatus,
                                   style: TextStyle(
-                                      color: Colors.green,
+                                      color: state.userStatus == "Online"
+                                          ? Colors.green
+                                          : AppColors.lightColor
+                                              .withOpacity(0.7),
                                       fontSize: 12.sp,
                                       fontWeight: FontWeight.w600),
                                 );
@@ -163,7 +179,8 @@ class FriendProfilePage extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 5.w),
                       child: GestureDetector(
-                        onTap: () {},
+                        onTap: () => BlocProvider.of<GoChatCubit>(context)
+                            .goChat(friendId: friend.userId),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -174,10 +191,43 @@ class FriendProfilePage extends StatelessWidget {
                                   fontSize: 12.sp,
                                   fontWeight: FontWeight.w600),
                             ),
-                            Icon(
-                              Icons.message_rounded,
-                              color: AppColors.primaryColor,
-                              size: 18.sp,
+                            BlocConsumer<GoChatCubit, GoChatState>(
+                              listener: (context, state) {
+                                if (state is GoChatFailed) {
+                                  SnackBar snackBar =
+                                      SnackBar(content: Text(state.errorMsg));
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(snackBar);
+                                }
+                                if (state is GoChatSucceed) {
+                                  print("ID === " + state.conversationId);
+                                  Navigator.popAndPushNamed(
+                                    context,
+                                    AppRouter.chatPage,
+                                    arguments: ChatScreenArgs(
+                                      friendId: state.friendId,
+                                      conversationId: state.conversationId,
+                                    ),
+                                  );
+                                }
+                              },
+                              builder: (context, state) {
+                                if (state is GoChatLoading) {
+                                  return SizedBox(
+                                    width: 18.sp,
+                                    height: 18.sp,
+                                    child: const CircularProgressIndicator(
+                                      color: AppColors.primaryColor,
+                                    ),
+                                  );
+                                } else {
+                                  return Icon(
+                                    Icons.message_rounded,
+                                    color: AppColors.primaryColor,
+                                    size: 18.sp,
+                                  );
+                                }
+                              },
                             ),
                           ],
                         ),

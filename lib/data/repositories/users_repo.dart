@@ -102,22 +102,23 @@ class UsersRepo {
     }
   }
 
-  static Stream<String> getStatus({required String userId}) async* {
+  static Stream<String> getUserStatus({required String userId}) async* {
     try {
-      Stream documentStram = usersRef.doc(userId).snapshots();
-      Map<String, dynamic>? map = documentStram as Map<String, dynamic>;
-      String userStatus = map["userStatus"];
-      if (userStatus == "Online") {
-        yield userStatus;
-      } else if (userStatus == "null") {
-        yield "Unavailable";
-      } else {
-        yield timeago.format(
-          DateTime.fromMillisecondsSinceEpoch(
-            int.parse(userStatus),
-          ),
-        );
-      }
+      Stream<DocumentSnapshot<Object?>> querySnapshots =
+          usersRef.doc(userId).snapshots();
+      Stream<String> userStatus = querySnapshots.map((document) {
+        Map<String, dynamic> map = document.data() as Map<String, dynamic>;
+        String status = map["userStatus"];
+        if (status == "null") {
+          return "Unavalable";
+        } else if (status == "Online") {
+          return "Online";
+        } else {
+          return timeago
+              .format(DateTime.fromMillisecondsSinceEpoch(int.parse(status)));
+        }
+      });
+      yield* userStatus;
     } catch (e) {
       throw e.toString();
     }

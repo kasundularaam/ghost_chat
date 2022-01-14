@@ -27,3 +27,5 @@ class ChatPageShowMessages extends ChatPageState {
   @override
   String toString() => 'ChatPageShowMessages(messegesList: $messegesList)';
 }
+
+class ChatPageNoMessages extends ChatPageState {}

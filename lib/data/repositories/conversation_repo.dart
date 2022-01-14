@@ -15,7 +15,7 @@ class ConversationRepo {
           .collection("conversations")
           .doc(friendId)
           .set({
-        "conervsationId": conversationId,
+        "conversationId": conversationId,
         "friendId": friendId,
         "lastUpdate": lastUpdate,
         "active": active
@@ -27,7 +27,7 @@ class ConversationRepo {
           .collection("conversations")
           .doc(AuthRepo.currentUid)
           .set({
-        "conervsationId": conversationId,
+        "conversationId": conversationId,
         "friendId": AuthRepo.currentUid,
         "lastUpdate": lastUpdate,
         "active": active
@@ -65,6 +65,7 @@ class ConversationRepo {
           .doc(friendId)
           .get();
       Map<String, dynamic>? map = snapshot.data() as Map<String, dynamic>;
+
       return ConversationModel.fromMap(map);
     } catch (e) {
       throw e.toString();

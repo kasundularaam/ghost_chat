@@ -16,6 +16,8 @@ class GoChatCubit extends Cubit<GoChatState> {
       if (exist) {
         ConversationModel conversation =
             await ConversationRepo.getConversation(friendId: friendId);
+        print(conversation.friendId + " FriendID");
+        print(conversation.conversationId + " ConvID");
         emit(
           GoChatSucceed(
             friendId: conversation.friendId,
@@ -25,6 +27,7 @@ class GoChatCubit extends Cubit<GoChatState> {
       } else {
         Uuid uuid = const Uuid();
         String genConvId = uuid.v1();
+        genConvId = genConvId.replaceAll(RegExp(r'[^\w\s]+'), '');
         String lastUpdate = DateTime.now().microsecondsSinceEpoch.toString();
         await ConversationRepo.updateConversation(
           friendId: friendId,

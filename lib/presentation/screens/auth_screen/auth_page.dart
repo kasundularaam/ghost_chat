@@ -26,7 +26,6 @@ class AuthPage extends StatelessWidget {
             ),
             BlocConsumer<AuthCubit, AuthState>(listener: (context, state) {
               if (state is AuthFailed) {
-                print(state.errorMsg);
                 SnackBar snackBar = SnackBar(content: Text(state.errorMsg));
                 ScaffoldMessenger.of(context).showSnackBar(snackBar);
               } else if (state is AuthInvalidOTP) {

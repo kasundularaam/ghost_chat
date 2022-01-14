@@ -28,14 +28,13 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    AuthRepo.goOnline();
     WidgetsBinding.instance?.addObserver(this);
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed) {
-      await AuthRepo.goOnline();
-    } else {
+    if (state != AppLifecycleState.resumed) {
       await AuthRepo.goOffline();
     }
     super.didChangeAppLifecycleState(state);

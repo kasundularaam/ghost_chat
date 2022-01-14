@@ -1,20 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
-import 'package:ghost_chat/presentation/router/app_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghost_chat/data/models/decoded_message_model.dart';
+import 'package:ghost_chat/data/repositories/auth_repo.dart';
+import 'package:ghost_chat/logic/cubit/chat_page_cubit/chat_page_cubit.dart';
+import 'package:ghost_chat/logic/cubit/message_cubit/message_cubit.dart';
+import 'package:ghost_chat/logic/cubit/send_message_cubit/send_message_cubit.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
 import 'package:ghost_chat/core/constants/strings.dart';
+import 'package:ghost_chat/data/screen_args/chat_screen_args.dart';
+import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
+import 'package:ghost_chat/presentation/router/app_router.dart';
+import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatelessWidget {
-  final String userId;
+  final ChatScreenArgs args;
   const ChatPage({
     Key? key,
-    required this.userId,
+    required this.args,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController controller = TextEditingController();
+    String message = "";
+    BlocProvider.of<ChatPageCubit>(context)
+        .showMessages(conversationId: args.conversationId);
     return Scaffold(
       backgroundColor: AppColors.darkColor,
       body: SafeArea(
@@ -43,7 +55,7 @@ class ChatPage extends StatelessWidget {
                     child: GestureDetector(
                       onTap: () => Navigator.pushNamed(
                           context, AppRouter.friendProfilePage,
-                          arguments: userId),
+                          arguments: args.friendId),
                       child: Row(
                         children: [
                           ClipOval(
@@ -88,47 +100,69 @@ class ChatPage extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(0),
-                physics: const BouncingScrollPhysics(),
-                reverse: true,
-                children: [
-                  SizedBox(
-                    height: 1.h,
-                  ),
-                  ListView.builder(
-                    itemCount: 100,
-                    padding: EdgeInsets.symmetric(horizontal: 3.w),
-                    physics: const BouncingScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return Align(
-                        alignment: index % 2 == 0
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: Container(
-                          padding: EdgeInsets.all(2.w),
-                          decoration: BoxDecoration(
-                            color: index % 2 == 0
-                                ? Colors.black
-                                : AppColors.primaryColor,
-                            borderRadius: BorderRadius.circular(3.w),
-                          ),
-                          child: Text(
-                            "Hey my index is $index",
-                            style: TextStyle(
-                              color: AppColors.lightColor,
-                              fontSize: 12.sp,
-                            ),
-                          ),
+              child: BlocBuilder<ChatPageCubit, ChatPageState>(
+                builder: (context, state) {
+                  if (state is ChatPageShowMessages) {
+                    return ListView(
+                      padding: const EdgeInsets.all(0),
+                      physics: const BouncingScrollPhysics(),
+                      reverse: true,
+                      children: [
+                        SizedBox(
+                          height: 1.h,
                         ),
-                      );
-                    },
-                  ),
-                  SizedBox(
-                    height: 1.h,
-                  ),
-                ],
+                        ListView.builder(
+                          itemCount: 100,
+                          padding: EdgeInsets.symmetric(horizontal: 3.w),
+                          physics: const BouncingScrollPhysics(),
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return Align(
+                              alignment: index % 2 == 0
+                                  ? Alignment.centerRight
+                                  : Alignment.centerLeft,
+                              child: Container(
+                                padding: EdgeInsets.all(2.w),
+                                decoration: BoxDecoration(
+                                  color: index % 2 == 0
+                                      ? Colors.black
+                                      : AppColors.primaryColor,
+                                  borderRadius: BorderRadius.circular(3.w),
+                                ),
+                                child: Text(
+                                  "Hey my index is $index",
+                                  style: TextStyle(
+                                    color: AppColors.lightColor,
+                                    fontSize: 12.sp,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        SizedBox(
+                          height: 1.h,
+                        ),
+                      ],
+                    );
+                  } else if (state is ChatPageLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryColor,
+                      ),
+                    );
+                  } else {
+                    return Center(
+                      child: Text(
+                        "No Messages",
+                        style: TextStyle(
+                          color: AppColors.lightColor.withOpacity(0.7),
+                          fontSize: 10.sp,
+                        ),
+                      ),
+                    );
+                  }
+                },
               ),
             ),
             Container(
@@ -140,25 +174,69 @@ class ChatPage extends StatelessWidget {
                 children: [
                   Expanded(
                     child: AppTextInput(
-                        onChanged: (message) {},
-                        textInputAction: TextInputAction.send,
-                        isPassword: false,
-                        hintText: "Text Message",
-                        bgColor: AppColors.darkGrey.withOpacity(0.2),
-                        textColor: AppColors.lightColor),
+                      onChanged: (messageText) => message = messageText,
+                      textInputAction: TextInputAction.newline,
+                      controller: controller,
+                      isPassword: false,
+                      textInputType: TextInputType.multiline,
+                      hintText: "Text Message",
+                      bgColor: AppColors.darkGrey.withOpacity(0.2),
+                      textColor: AppColors.lightColor,
+                    ),
                   ),
                   SizedBox(
                     width: 3.w,
                   ),
-                  Container(
-                    padding: EdgeInsets.all(2.w),
-                    decoration: const BoxDecoration(
-                        color: AppColors.primaryColor, shape: BoxShape.circle),
-                    child: Icon(
-                      Icons.send_rounded,
-                      color: AppColors.lightColor,
-                      size: 18.sp,
-                    ),
+                  BlocBuilder<SendMessageCubit, SendMessageState>(
+                    builder: (context, state) {
+                      if (state is SendMessageAddingToDB) {
+                        return SizedBox(
+                          width: 18.sp,
+                          height: 18.sp,
+                          child: const CircularProgressIndicator(
+                            color: AppColors.primaryColor,
+                          ),
+                        );
+                      } else {
+                        return GestureDetector(
+                          onTap: () {
+                            if (message.isNotEmpty) {
+                              Uuid uuid = const Uuid();
+                              String messageId = uuid.v1();
+                              messageId =
+                                  messageId.replaceAll(RegExp(r'[^\w\s]+'), '');
+                              String sentTimestamp = DateTime.now()
+                                  .millisecondsSinceEpoch
+                                  .toString();
+                              BlocProvider.of<SendMessageCubit>(context)
+                                  .sendMessage(
+                                      messageToSend: DecodedMessageModel(
+                                        messageId: messageId,
+                                        senderId: AuthRepo.currentUid,
+                                        reciverId: args.friendId,
+                                        sentTimestamp: sentTimestamp,
+                                        messageStatus: "Sending",
+                                        message: message,
+                                      ),
+                                      conversationId: args.conversationId);
+                              controller.clear();
+                              message = "";
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(2.w),
+                            decoration: const BoxDecoration(
+                                color: AppColors.primaryColor,
+                                shape: BoxShape.circle),
+                            child: Icon(
+                              Icons.send_rounded,
+                              color: AppColors.lightColor,
+                              size: 18.sp,
+                            ),
+                          ),
+                        );
+                      }
+                    },
                   )
                 ],
               ),

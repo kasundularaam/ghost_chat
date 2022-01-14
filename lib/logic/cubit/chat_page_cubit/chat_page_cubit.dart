@@ -11,11 +11,14 @@ class ChatPageCubit extends Cubit<ChatPageState> {
 
   Future<void> showMessages({required String conversationId}) async {
     try {
-      emit(ChatPageLoading());
       Stream<List<DownloadMessage>> messageStream =
           MessageRepo.getMessages(conversationId: conversationId);
-      messageStream.listen((recived) {
-        emit(ChatPageShowMessages(messegesList: recived));
+      messageStream.listen((messageList) {
+        if (messageList.isNotEmpty && messageList != null) {
+          emit(ChatPageShowMessages(messegesList: messageList));
+        } else {
+          emit(ChatPageNoMessages());
+        }
       });
     } catch (e) {
       print(e.toString());

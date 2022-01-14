@@ -33,7 +33,6 @@ class MessageRepo {
           "conversation/$conversationId/${message.messageId}.png";
       storage.Reference stImageRef =
           storage.FirebaseStorage.instance.ref(stImageFilePath);
-
       await stImageRef.putFile(message.stImage);
 
       String downloadUrl = await stImageRef.getDownloadURL();

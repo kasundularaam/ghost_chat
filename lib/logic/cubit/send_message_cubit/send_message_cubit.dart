@@ -24,6 +24,7 @@ class SendMessageCubit extends Cubit<SendMessageState> {
       await MessageHelper.addMessage(decodedMessage: messageToSend);
       DecodedMessageModel messageToEncode =
           await MessageHelper.getMessage(messageId: messageToSend.messageId);
+
       emit(SendMessageUploading());
       String token = messageToEncode.senderId.substring(2, 10) +
           messageToEncode.reciverId.substring(2, 10);
@@ -37,6 +38,7 @@ class SendMessageCubit extends Cubit<SendMessageState> {
           sentTimestamp: messageToEncode.sentTimestamp,
           messageStatus: messageToEncode.messageStatus,
           stImage: stImage);
+
       await MessageRepo.sendMessage(
           message: encodedMessage, conversationId: conversationId);
       await ConversationRepo.updateConversation(

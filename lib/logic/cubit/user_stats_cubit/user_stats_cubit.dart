@@ -10,7 +10,7 @@ class UserStatsCubit extends Cubit<UserStatsState> {
   Future<void> getUserStatus({required String userId}) async {
     try {
       emit(UserStatsLoading());
-      UsersRepo.getStatus(userId: userId).listen((userStatus) {
+      UsersRepo.getUserStatus(userId: userId).listen((userStatus) {
         emit(UserStatsLoaded(userStatus: userStatus));
       });
     } catch (e) {

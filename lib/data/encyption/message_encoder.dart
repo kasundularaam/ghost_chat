@@ -17,9 +17,15 @@ Uint16List msg2bytes(String msg) {
   return Uint16List.fromList(msg.codeUnits);
 }
 
-Future<Uint16List> loadAsset(String assetName) async {
+Future<Uint16List> loadAssetUnit16List(String assetName) async {
   ByteData bytes = await rootBundle.load(assetName);
   Uint16List data = bytes.buffer.asUint16List();
+  return data;
+}
+
+Future<Uint8List> loadAssetUnit8List(String assetName) async {
+  ByteData bytes = await rootBundle.load(assetName);
+  Uint8List data = bytes.buffer.asUint8List();
   return data;
 }
 
@@ -59,32 +65,40 @@ Uint16List expandMsg(Uint16List msg) {
 }
 
 Future<File> encodeMessageIntoImage(EncodeRequest req) async {
-  Uint16List img = await loadAsset("assets/images/original.png");
-  String msg = req.msg;
-  String? token = req.token;
-  if (req.shouldEncrypt()) {
-    crypto.Key key = crypto.Key.fromUtf8(padCryptionKey(token!));
-    crypto.IV iv = crypto.IV.fromLength(16);
-    crypto.Encrypter encrypter = crypto.Encrypter(crypto.AES(key));
-    crypto.Encrypted encrypted = encrypter.encrypt(msg, iv: iv);
-    msg = encrypted.base64;
-  }
-  Uint16List encodedImg = img;
-  if (getEncoderCapacity(img) < getMsgSize(msg)) {
-    throw FlutterError('image_capacity_not_enough');
-  }
-  Uint16List expandedMsg = expandMsg(msg2bytes(msg));
-  Uint16List paddedMsg = padMsg(getEncoderCapacity(img), expandedMsg);
-  if (paddedMsg.length != getEncoderCapacity(img)) {
-    throw FlutterError('msg_container_size_not_match');
-  }
-  for (int i = 0; i < getEncoderCapacity(img); ++i) {
-    encodedImg[i] = encodeOnePixel(img[i], paddedMsg[i]);
-  }
-  imglib.Image editableImage =
-      imglib.Image.fromBytes(1080, 1080, encodedImg.toList());
-  Uint8List data = Uint8List.fromList(imglib.encodePng(editableImage));
+  try {
+    Uint16List img = await loadAssetUnit16List("assets/images/original.png");
+    Uint8List img8List = await loadAssetUnit8List("assets/images/original.png");
+    imglib.Image? original = imglib.decodeImage(img8List);
+    String msg = req.msg;
+    String? token = req.token;
+    if (req.shouldEncrypt()) {
+      crypto.Key key = crypto.Key.fromUtf8(padCryptionKey(token!));
+      crypto.IV iv = crypto.IV.fromLength(16);
+      crypto.Encrypter encrypter = crypto.Encrypter(crypto.AES(key));
+      crypto.Encrypted encrypted = encrypter.encrypt(msg, iv: iv);
+      msg = encrypted.base64;
+    }
+    Uint16List encodedImg = img;
+    if (getEncoderCapacity(img) < getMsgSize(msg)) {
+      throw FlutterError('image_capacity_not_enough');
+    }
+    Uint16List expandedMsg = expandMsg(msg2bytes(msg));
 
-  File file = File.fromRawPath(data);
-  return file;
+    Uint16List paddedMsg = padMsg(getEncoderCapacity(img), expandedMsg);
+
+    if (paddedMsg.length != getEncoderCapacity(img)) {
+      throw FlutterError('msg_container_size_not_match');
+    }
+    for (int i = 0; i < getEncoderCapacity(img); ++i) {
+      encodedImg[i] = encodeOnePixel(img[i], paddedMsg[i]);
+    }
+    imglib.Image editableImage = imglib.Image.fromBytes(
+        original!.width, original.height, encodedImg.toList());
+
+    Uint8List data = Uint8List.fromList(encodedImg);
+    File file = File.fromRawPath(data);
+    return file;
+  } catch (e) {
+    throw e.toString();
+  }
 }
