@@ -113,6 +113,7 @@ class ProfilePage extends StatelessWidget {
                           SizedBox(
                             height: 4.h,
                           ),
+                          //Profile Picture
                           Center(
                             child: BlocConsumer<AddProPicCubit, AddProPicState>(
                               listener: (context, addProPicState) {
@@ -231,8 +232,12 @@ class ProfilePage extends StatelessWidget {
                                 },
                                 builder: (context, editNameState) {
                                   if (editNameState is EditNameUpdating) {
-                                    return const CircularProgressIndicator(
-                                      color: AppColors.primaryColor,
+                                    return SizedBox(
+                                      width: 18.sp,
+                                      height: 18.sp,
+                                      child: const CircularProgressIndicator(
+                                        color: AppColors.primaryColor,
+                                      ),
                                     );
                                   } else {
                                     return GestureDetector(
@@ -390,8 +395,12 @@ class ProfilePage extends StatelessWidget {
                                 },
                                 builder: (context, editBioState) {
                                   if (editBioState is EditBioUpdating) {
-                                    return const CircularProgressIndicator(
-                                      color: AppColors.primaryColor,
+                                    return SizedBox(
+                                      width: 18.sp,
+                                      height: 18.sp,
+                                      child: const CircularProgressIndicator(
+                                        color: AppColors.primaryColor,
+                                      ),
                                     );
                                   } else {
                                     return GestureDetector(

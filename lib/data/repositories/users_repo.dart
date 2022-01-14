@@ -22,7 +22,7 @@ class UsersRepo {
         snapshot.docs.map((doc) {
           Map<String, dynamic> map = doc.data() as Map<String, dynamic>;
           AppUser appUser = AppUser.fromMap(map);
-          if (appUser.userId != AuthRepo.currentUid()) {
+          if (appUser.userId != AuthRepo.currentUid) {
             friends.add(Friend(
                 userId: appUser.userId,
                 userName: appUser.userName,

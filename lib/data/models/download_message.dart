@@ -1,36 +1,36 @@
 import 'dart:convert';
 
-class MessageModel {
+class DownloadMessage {
   final String messageId;
   final String senderId;
   final String reciverId;
   final String sentTimestamp;
   final String messageStatus;
-  final String stImage;
-  MessageModel({
+  final String stImgDownloadUrl;
+  DownloadMessage({
     required this.messageId,
     required this.senderId,
     required this.reciverId,
     required this.sentTimestamp,
     required this.messageStatus,
-    required this.stImage,
+    required this.stImgDownloadUrl,
   });
 
-  MessageModel copyWith({
+  DownloadMessage copyWith({
     String? messageId,
     String? senderId,
     String? reciverId,
     String? sentTimestamp,
     String? messageStatus,
-    String? stImage,
+    String? stImgDownloadUrl,
   }) {
-    return MessageModel(
+    return DownloadMessage(
       messageId: messageId ?? this.messageId,
       senderId: senderId ?? this.senderId,
       reciverId: reciverId ?? this.reciverId,
       sentTimestamp: sentTimestamp ?? this.sentTimestamp,
       messageStatus: messageStatus ?? this.messageStatus,
-      stImage: stImage ?? this.stImage,
+      stImgDownloadUrl: stImgDownloadUrl ?? this.stImgDownloadUrl,
     );
   }
 
@@ -41,42 +41,42 @@ class MessageModel {
       'reciverId': reciverId,
       'sentTimestamp': sentTimestamp,
       'messageStatus': messageStatus,
-      'stImage': stImage,
+      'stImgDownloadUrl': stImgDownloadUrl,
     };
   }
 
-  factory MessageModel.fromMap(Map<String, dynamic> map) {
-    return MessageModel(
+  factory DownloadMessage.fromMap(Map<String, dynamic> map) {
+    return DownloadMessage(
       messageId: map['messageId'] ?? '',
       senderId: map['senderId'] ?? '',
       reciverId: map['reciverId'] ?? '',
       sentTimestamp: map['sentTimestamp'] ?? '',
       messageStatus: map['messageStatus'] ?? '',
-      stImage: map['stImage'] ?? '',
+      stImgDownloadUrl: map['stImgDownloadUrl'] ?? '',
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory MessageModel.fromJson(String source) =>
-      MessageModel.fromMap(json.decode(source));
+  factory DownloadMessage.fromJson(String source) =>
+      DownloadMessage.fromMap(json.decode(source));
 
   @override
   String toString() {
-    return 'MessageModel(messageId: $messageId, senderId: $senderId, reciverId: $reciverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, stImage: $stImage)';
+    return 'DownloadMessage(messageId: $messageId, senderId: $senderId, reciverId: $reciverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, stImgDownloadUrl: $stImgDownloadUrl)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is MessageModel &&
+    return other is DownloadMessage &&
         other.messageId == messageId &&
         other.senderId == senderId &&
         other.reciverId == reciverId &&
         other.sentTimestamp == sentTimestamp &&
         other.messageStatus == messageStatus &&
-        other.stImage == stImage;
+        other.stImgDownloadUrl == stImgDownloadUrl;
   }
 
   @override
@@ -86,6 +86,6 @@ class MessageModel {
         reciverId.hashCode ^
         sentTimestamp.hashCode ^
         messageStatus.hashCode ^
-        stImage.hashCode;
+        stImgDownloadUrl.hashCode;
   }
 }

@@ -8,9 +8,9 @@ import 'package:ghost_chat/data/models/app_user.dart';
 class AuthRepo {
   static FirebaseAuth auth = FirebaseAuth.instance;
   static DocumentReference reference =
-      FirebaseFirestore.instance.collection("users").doc(currentUid());
+      FirebaseFirestore.instance.collection("users").doc(currentUid);
 
-  static String imageFilePath = "images/${currentUid()}/userImg.png";
+  static String imageFilePath = "images/$currentUid/userImg.png";
 
   static storage.Reference profilePicRef =
       storage.FirebaseStorage.instance.ref(imageFilePath);
@@ -26,7 +26,7 @@ class AuthRepo {
     }
   }
 
-  static String currentUid() {
+  static String get currentUid {
     try {
       User? currenUser = FirebaseAuth.instance.currentUser;
       if (currenUser != null) {
@@ -114,7 +114,7 @@ class AuthRepo {
   static Future<void> initUserFirestore() async {
     try {
       AppUser newUser = AppUser(
-        userId: currentUid(),
+        userId: currentUid,
         userName: "",
         userNumber: currentunum(),
         userBio: "",
