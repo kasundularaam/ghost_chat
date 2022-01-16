@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
-import 'package:ghost_chat/data/encyption/message_decoder.dart';
+import 'package:ghost_chat/data/encrypt_services/handle_decode.dart';
 import 'package:ghost_chat/data/models/decoded_message_model.dart';
 import 'package:ghost_chat/data/models/download_message.dart';
+import 'package:ghost_chat/data/repositories/local_repo.dart';
 import 'package:ghost_chat/data/repositories/message_repo.dart';
-import 'package:ghost_chat/data/requests/decode_request.dart';
 import 'package:ghost_chat/data/sqlite/message_helper.dart';
 import 'package:meta/meta.dart';
 
@@ -24,13 +24,22 @@ class MessageCubit extends Cubit<MessageState> {
       if (exist) {
         DecodedMessageModel messageFromDb = await MessageHelper.getMessage(
             messageId: downloadMessage.messageId);
-        emit(MessageLoaded(message: messageFromDb));
-      } else {
-        String decryptedMsg = await decodeMessageFromImage(
-          req: DecodeRequest(
-            imgToDecode: downloadMessage.stImgDownloadUrl,
+        emit(
+          MessageLoaded(
+            message: messageFromDb,
           ),
         );
+      } else {
+        String encodedImgPath = await LocalRepo.getStImagePath(
+            conversationId: conversationId,
+            messageId: downloadMessage.messageId,
+            stImgStoragePath: downloadMessage.stImageStoragePath);
+
+        String decryptedMsg = handleDecodeRequest(
+          imagePath: encodedImgPath,
+          messageLength: downloadMessage.messageLen,
+        );
+
         DecodedMessageModel decodedMessage = DecodedMessageModel(
             messageId: downloadMessage.messageId,
             senderId: downloadMessage.senderId,

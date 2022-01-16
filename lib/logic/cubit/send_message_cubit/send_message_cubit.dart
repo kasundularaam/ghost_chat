@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
-import 'package:ghost_chat/data/encyption/message_encoder.dart';
+import 'package:ghost_chat/data/encrypt_services/handle_encode.dart';
 import 'package:ghost_chat/data/models/decoded_message_model.dart';
 import 'package:ghost_chat/data/models/encoded_message_model.dart';
 import 'package:ghost_chat/data/repositories/conversation_repo.dart';
+import 'package:ghost_chat/data/repositories/local_repo.dart';
 import 'package:ghost_chat/data/repositories/message_repo.dart';
 import 'package:ghost_chat/data/requests/encode_request.dart';
 import 'package:ghost_chat/data/sqlite/message_helper.dart';
@@ -26,26 +27,36 @@ class SendMessageCubit extends Cubit<SendMessageState> {
           await MessageHelper.getMessage(messageId: messageToSend.messageId);
 
       emit(SendMessageUploading());
-      String token = messageToEncode.senderId.substring(2, 10) +
-          messageToEncode.reciverId.substring(2, 10);
-      File stImage = await encodeMessageIntoImage(
-          EncodeRequest(msg: messageToEncode.message, token: token));
 
-      EncodedMessageModel encodedMessage = EncodedMessageModel(
+      String originalPath = await LocalRepo.getImageFileFromAssets();
+
+      String encodedImgPath = await handleEncodeRequest(
+        request: EncodeRequest(
+          imagePath: originalPath,
+          message: messageToEncode.message,
+          conversatioId: conversationId,
           messageId: messageToEncode.messageId,
-          senderId: messageToEncode.senderId,
-          reciverId: messageToEncode.reciverId,
-          sentTimestamp: messageToEncode.sentTimestamp,
-          messageStatus: messageToEncode.messageStatus,
-          stImage: stImage);
+        ),
+      );
+      File stImage = File(encodedImgPath);
+      EncodedMessageModel encodedMessage = EncodedMessageModel(
+        messageId: messageToEncode.messageId,
+        senderId: messageToEncode.senderId,
+        reciverId: messageToEncode.reciverId,
+        sentTimestamp: messageToEncode.sentTimestamp,
+        messageStatus: messageToEncode.messageStatus,
+        stImage: stImage,
+        messageLen: messageToEncode.message.length,
+      );
 
       await MessageRepo.sendMessage(
           message: encodedMessage, conversationId: conversationId);
       await ConversationRepo.updateConversation(
-          friendId: encodedMessage.reciverId,
-          lastUpdate: encodedMessage.sentTimestamp,
-          conversationId: conversationId,
-          active: true);
+        friendId: encodedMessage.reciverId,
+        lastUpdate: encodedMessage.sentTimestamp,
+        conversationId: conversationId,
+        active: true,
+      );
       await MessageRepo.updateMessageStatus(
           conversationId: conversationId,
           messageId: encodedMessage.messageId,

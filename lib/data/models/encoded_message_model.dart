@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 class EncodedMessageModel {
@@ -7,6 +8,7 @@ class EncodedMessageModel {
   final String sentTimestamp;
   final String messageStatus;
   final File stImage;
+  final int messageLen;
   EncodedMessageModel({
     required this.messageId,
     required this.senderId,
@@ -14,6 +16,7 @@ class EncodedMessageModel {
     required this.sentTimestamp,
     required this.messageStatus,
     required this.stImage,
+    required this.messageLen,
   });
 
   EncodedMessageModel copyWith({
@@ -23,6 +26,7 @@ class EncodedMessageModel {
     String? sentTimestamp,
     String? messageStatus,
     File? stImage,
+    int? messageLen,
   }) {
     return EncodedMessageModel(
       messageId: messageId ?? this.messageId,
@@ -31,12 +35,13 @@ class EncodedMessageModel {
       sentTimestamp: sentTimestamp ?? this.sentTimestamp,
       messageStatus: messageStatus ?? this.messageStatus,
       stImage: stImage ?? this.stImage,
+      messageLen: messageLen ?? this.messageLen,
     );
   }
 
   @override
   String toString() {
-    return 'EncodedMessageModel(messageId: $messageId, senderId: $senderId, reciverId: $reciverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, stImage: $stImage)';
+    return 'EncodedMessageModel(messageId: $messageId, senderId: $senderId, reciverId: $reciverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, stImage: $stImage, messageLen: $messageLen)';
   }
 
   @override
@@ -49,7 +54,8 @@ class EncodedMessageModel {
         other.reciverId == reciverId &&
         other.sentTimestamp == sentTimestamp &&
         other.messageStatus == messageStatus &&
-        other.stImage == stImage;
+        other.stImage == stImage &&
+        other.messageLen == messageLen;
   }
 
   @override
@@ -59,6 +65,7 @@ class EncodedMessageModel {
         reciverId.hashCode ^
         sentTimestamp.hashCode ^
         messageStatus.hashCode ^
-        stImage.hashCode;
+        stImage.hashCode ^
+        messageLen.hashCode;
   }
 }

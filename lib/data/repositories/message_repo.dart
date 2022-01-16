@@ -29,21 +29,21 @@ class MessageRepo {
       {required EncodedMessageModel message,
       required String conversationId}) async {
     try {
-      String stImageFilePath =
+      String stImageStoragePath =
           "conversation/$conversationId/${message.messageId}.png";
       storage.Reference stImageRef =
-          storage.FirebaseStorage.instance.ref(stImageFilePath);
+          storage.FirebaseStorage.instance.ref(stImageStoragePath);
       await stImageRef.putFile(message.stImage);
 
-      String downloadUrl = await stImageRef.getDownloadURL();
-
       DownloadMessage downloadMessage = DownloadMessage(
-          messageId: message.messageId,
-          senderId: message.senderId,
-          reciverId: message.reciverId,
-          sentTimestamp: message.sentTimestamp,
-          messageStatus: message.messageStatus,
-          stImgDownloadUrl: downloadUrl);
+        messageId: message.messageId,
+        senderId: message.senderId,
+        reciverId: message.reciverId,
+        sentTimestamp: message.sentTimestamp,
+        messageStatus: message.messageStatus,
+        stImageStoragePath: stImageStoragePath,
+        messageLen: message.messageLen,
+      );
 
       await conversationRef
           .doc(conversationId)

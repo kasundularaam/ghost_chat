@@ -1,11 +1,36 @@
 class EncodeRequest {
-  String msg;
-  String? token;
+  final String imagePath;
+  final String message;
+  final String conversatioId;
+  final String messageId;
   EncodeRequest({
-    required this.msg,
-    this.token,
+    required this.imagePath,
+    required this.message,
+    required this.conversatioId,
+    required this.messageId,
   });
-  bool shouldEncrypt() {
-    return (token != null && token!.isNotEmpty);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is EncodeRequest &&
+        other.imagePath == imagePath &&
+        other.message == message &&
+        other.conversatioId == conversatioId &&
+        other.messageId == messageId;
+  }
+
+  @override
+  int get hashCode {
+    return imagePath.hashCode ^
+        message.hashCode ^
+        conversatioId.hashCode ^
+        messageId.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'EncodeRequest(imagePath: $imagePath, message: $message, conversatioId: $conversatioId, messageId: $messageId)';
   }
 }

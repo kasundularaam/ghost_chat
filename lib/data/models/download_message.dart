@@ -6,14 +6,16 @@ class DownloadMessage {
   final String reciverId;
   final String sentTimestamp;
   final String messageStatus;
-  final String stImgDownloadUrl;
+  final String stImageStoragePath;
+  final int messageLen;
   DownloadMessage({
     required this.messageId,
     required this.senderId,
     required this.reciverId,
     required this.sentTimestamp,
     required this.messageStatus,
-    required this.stImgDownloadUrl,
+    required this.stImageStoragePath,
+    required this.messageLen,
   });
 
   DownloadMessage copyWith({
@@ -22,7 +24,8 @@ class DownloadMessage {
     String? reciverId,
     String? sentTimestamp,
     String? messageStatus,
-    String? stImgDownloadUrl,
+    String? stImageStoragePath,
+    int? messageLen,
   }) {
     return DownloadMessage(
       messageId: messageId ?? this.messageId,
@@ -30,7 +33,8 @@ class DownloadMessage {
       reciverId: reciverId ?? this.reciverId,
       sentTimestamp: sentTimestamp ?? this.sentTimestamp,
       messageStatus: messageStatus ?? this.messageStatus,
-      stImgDownloadUrl: stImgDownloadUrl ?? this.stImgDownloadUrl,
+      stImageStoragePath: stImageStoragePath ?? this.stImageStoragePath,
+      messageLen: messageLen ?? this.messageLen,
     );
   }
 
@@ -41,7 +45,8 @@ class DownloadMessage {
       'reciverId': reciverId,
       'sentTimestamp': sentTimestamp,
       'messageStatus': messageStatus,
-      'stImgDownloadUrl': stImgDownloadUrl,
+      'stImageStoragePath': stImageStoragePath,
+      'messageLen': messageLen,
     };
   }
 
@@ -52,7 +57,8 @@ class DownloadMessage {
       reciverId: map['reciverId'] ?? '',
       sentTimestamp: map['sentTimestamp'] ?? '',
       messageStatus: map['messageStatus'] ?? '',
-      stImgDownloadUrl: map['stImgDownloadUrl'] ?? '',
+      stImageStoragePath: map['stImageStoragePath'] ?? '',
+      messageLen: map['messageLen']?.toInt() ?? 0,
     );
   }
 
@@ -63,7 +69,7 @@ class DownloadMessage {
 
   @override
   String toString() {
-    return 'DownloadMessage(messageId: $messageId, senderId: $senderId, reciverId: $reciverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, stImgDownloadUrl: $stImgDownloadUrl)';
+    return 'DownloadMessage(messageId: $messageId, senderId: $senderId, reciverId: $reciverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, stImageStoragePath: $stImageStoragePath, messageLen: $messageLen)';
   }
 
   @override
@@ -76,7 +82,8 @@ class DownloadMessage {
         other.reciverId == reciverId &&
         other.sentTimestamp == sentTimestamp &&
         other.messageStatus == messageStatus &&
-        other.stImgDownloadUrl == stImgDownloadUrl;
+        other.stImageStoragePath == stImageStoragePath &&
+        other.messageLen == messageLen;
   }
 
   @override
@@ -86,6 +93,7 @@ class DownloadMessage {
         reciverId.hashCode ^
         sentTimestamp.hashCode ^
         messageStatus.hashCode ^
-        stImgDownloadUrl.hashCode;
+        stImageStoragePath.hashCode ^
+        messageLen.hashCode;
   }
 }
