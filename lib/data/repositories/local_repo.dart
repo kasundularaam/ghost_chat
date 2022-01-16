@@ -40,9 +40,9 @@ class LocalRepo {
       required String messageId,
       required String stImgStoragePath}) async {
     Directory directory = await getApplicationDocumentsDirectory();
-    File file =
-        File('${directory.path}/recived/$conversationId/$messageId.png');
-
+    String filePath =
+        "${directory.path}/recived/$conversationId/$messageId.png";
+    File file = await File(filePath).create(recursive: true);
     try {
       await storage.FirebaseStorage.instance
           .ref(stImgStoragePath)

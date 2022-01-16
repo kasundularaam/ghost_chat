@@ -200,7 +200,6 @@ class FriendProfilePage extends StatelessWidget {
                                       .showSnackBar(snackBar);
                                 }
                                 if (state is GoChatSucceed) {
-                                  print("ID === " + state.conversationId);
                                   Navigator.popAndPushNamed(
                                     context,
                                     AppRouter.chatPage,

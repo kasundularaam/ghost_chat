@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/data/models/encoded_message_model.dart';
@@ -12,8 +10,11 @@ class MessageRepo {
   static Stream<List<DownloadMessage>> getMessages(
       {required String conversationId}) async* {
     try {
-      Stream<QuerySnapshot<Object?>> querySnapshot =
-          conversationRef.doc(conversationId).collection("message").snapshots();
+      Stream<QuerySnapshot<Object?>> querySnapshot = conversationRef
+          .doc(conversationId)
+          .collection("message")
+          .orderBy("sentTimestamp", descending: true)
+          .snapshots();
       Stream<List<DownloadMessage>> messageStream = querySnapshot.map(
           (snapshot) => snapshot.docs
               .map((document) => DownloadMessage.fromMap(

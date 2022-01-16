@@ -16,8 +16,6 @@ class GoChatCubit extends Cubit<GoChatState> {
       if (exist) {
         ConversationModel conversation =
             await ConversationRepo.getConversation(friendId: friendId);
-        print(conversation.friendId + " FriendID");
-        print(conversation.conversationId + " ConvID");
         emit(
           GoChatSucceed(
             friendId: conversation.friendId,

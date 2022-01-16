@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/data/models/decoded_message_model.dart';
+import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/data/repositories/auth_repo.dart';
 import 'package:ghost_chat/logic/cubit/chat_page_cubit/chat_page_cubit.dart';
 import 'package:ghost_chat/logic/cubit/message_cubit/message_cubit.dart';
+import 'package:ghost_chat/logic/cubit/message_status_cubit/message_status_cubit.dart';
 import 'package:ghost_chat/logic/cubit/send_message_cubit/send_message_cubit.dart';
+import 'package:ghost_chat/presentation/screens/chat_screen/widgets/message_card.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
@@ -112,31 +115,22 @@ class ChatPage extends StatelessWidget {
                           height: 1.h,
                         ),
                         ListView.builder(
-                          itemCount: 100,
+                          itemCount: state.messegesList.length,
                           padding: EdgeInsets.symmetric(horizontal: 3.w),
                           physics: const BouncingScrollPhysics(),
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
-                            return Align(
-                              alignment: index % 2 == 0
-                                  ? Alignment.centerRight
-                                  : Alignment.centerLeft,
-                              child: Container(
-                                padding: EdgeInsets.all(2.w),
-                                decoration: BoxDecoration(
-                                  color: index % 2 == 0
-                                      ? Colors.black
-                                      : AppColors.primaryColor,
-                                  borderRadius: BorderRadius.circular(3.w),
-                                ),
-                                child: Text(
-                                  "Hey my index is $index",
-                                  style: TextStyle(
-                                    color: AppColors.lightColor,
-                                    fontSize: 12.sp,
-                                  ),
-                                ),
-                              ),
+                            DownloadMessage message = state.messegesList[index];
+                            return MultiBlocProvider(
+                              providers: [
+                                BlocProvider(
+                                    create: (context) => MessageCubit()),
+                                BlocProvider(
+                                    create: (context) => MessageStatusCubit()),
+                              ],
+                              child: MessageCard(
+                                  message: message,
+                                  conversationId: args.conversationId),
                             );
                           },
                         ),
@@ -187,7 +181,10 @@ class ChatPage extends StatelessWidget {
                   SizedBox(
                     width: 3.w,
                   ),
-                  BlocBuilder<SendMessageCubit, SendMessageState>(
+                  BlocConsumer<SendMessageCubit, SendMessageState>(
+                    listener: (context, state) {
+                      if (state is SendMessageUploading) {}
+                    },
                     builder: (context, state) {
                       if (state is SendMessageAddingToDB) {
                         return SizedBox(

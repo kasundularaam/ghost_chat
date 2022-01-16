@@ -15,7 +15,8 @@ class ChatPageCubit extends Cubit<ChatPageState> {
           MessageRepo.getMessages(conversationId: conversationId);
       messageStream.listen((messageList) {
         if (messageList.isNotEmpty && messageList != null) {
-          emit(ChatPageShowMessages(messegesList: messageList));
+          emit(ChatPageShowMessages(
+              messegesList: messageList.reversed.toList()));
         } else {
           emit(ChatPageNoMessages());
         }

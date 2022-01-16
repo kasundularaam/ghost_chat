@@ -30,6 +30,11 @@ Future<String> handleEncodeRequest({required EncodeRequest request}) async {
       "${dir.path}/send/${request.conversatioId}/${request.messageId}.png";
 
   image_lib.Image newImage = coder.encodeMessage(request.message);
-  await File(filePath).writeAsBytes(image_lib.encodePng(newImage));
-  return filePath;
+  try {
+    File file = await File(filePath).create(recursive: true);
+    await file.writeAsBytes(image_lib.encodePng(newImage));
+    return file.path;
+  } catch (e) {
+    throw e.toString();
+  }
 }
