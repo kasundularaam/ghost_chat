@@ -8,6 +8,7 @@ import 'package:ghost_chat/data/encyption/pad_cryption_key.dart';
 import 'package:image/image.dart' as imglib;
 import 'package:flutter/material.dart';
 import 'package:ghost_chat/data/requests/encode_request.dart';
+import 'package:path_provider/path_provider.dart';
 
 int getEncoderCapacity(Uint16List img) {
   return img.length;
@@ -66,8 +67,8 @@ Uint16List expandMsg(Uint16List msg) {
 
 Future<File> encodeMessageIntoImage(EncodeRequest req) async {
   try {
-    Uint16List img = await loadAssetUnit16List("assets/images/original.png");
-    Uint8List img8List = await loadAssetUnit8List("assets/images/original.png");
+    Uint16List img = await loadAssetUnit16List("assets/images/original2.png");
+    Uint8List img8List = await loadAssetUnit8List("assets/images/original2.png");
     imglib.Image? original = imglib.decodeImage(img8List);
     String msg = req.msg;
     String? token = req.token;
@@ -96,7 +97,13 @@ Future<File> encodeMessageIntoImage(EncodeRequest req) async {
         original!.width, original.height, encodedImg.toList());
 
     Uint8List data = Uint8List.fromList(encodedImg);
+    MemoryImage image = MemoryImage(data);
     File file = File.fromRawPath(data);
+     Directory directory = await getApplicationDocumentsDirectory();
+     String path = directory.path;
+     print(path);
+    await file.copy('$path/image2.png');
+
     return file;
   } catch (e) {
     throw e.toString();
