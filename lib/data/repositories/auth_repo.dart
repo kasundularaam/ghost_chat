@@ -39,7 +39,7 @@ class AuthRepo {
     }
   }
 
-  static String currentunum() {
+  static String get currentNum {
     try {
       User? currenUser = FirebaseAuth.instance.currentUser;
       if (currenUser != null) {
@@ -116,7 +116,7 @@ class AuthRepo {
       AppUser newUser = AppUser(
         userId: currentUid,
         userName: "",
-        userNumber: currentunum(),
+        userNumber: currentNum,
         userBio: "",
         userImg: "null",
         userStatus: "null",

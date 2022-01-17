@@ -3,11 +3,13 @@ import 'package:ghost_chat/data/models/conversation_model.dart';
 import 'package:ghost_chat/data/repositories/auth_repo.dart';
 
 class ConversationRepo {
-  static Future<void> updateConversation(
-      {required String friendId,
-      required String lastUpdate,
-      required String conversationId,
-      required bool active}) async {
+  static Future<void> updateConversation({
+    required String friendId,
+    required String lastUpdate,
+    required String conversationId,
+    required bool active,
+    required String friendNumber,
+  }) async {
     try {
       await FirebaseFirestore.instance
           .collection("users")
@@ -18,6 +20,7 @@ class ConversationRepo {
         "conversationId": conversationId,
         "friendId": friendId,
         "lastUpdate": lastUpdate,
+        "friendNumber": friendNumber,
         "active": active
       }, SetOptions(merge: true));
 
@@ -30,6 +33,7 @@ class ConversationRepo {
         "conversationId": conversationId,
         "friendId": AuthRepo.currentUid,
         "lastUpdate": lastUpdate,
+        "friendNumber": AuthRepo.currentNum,
         "active": active
       }, SetOptions(merge: true));
     } catch (e) {
@@ -43,6 +47,8 @@ class ConversationRepo {
           .collection("users")
           .doc(AuthRepo.currentUid)
           .collection("conversations")
+          .where("active", isEqualTo: true)
+          .orderBy("lastUpdate", descending: true)
           .snapshots();
       Stream<List<ConversationModel>> convStream = querySnapshot.map(
           (snapshot) => snapshot.docs

@@ -9,7 +9,8 @@ part 'go_chat_state.dart';
 class GoChatCubit extends Cubit<GoChatState> {
   GoChatCubit() : super(GoChatInitial());
 
-  Future<void> goChat({required String friendId}) async {
+  Future<void> goChat(
+      {required String friendId, required String friendNumber}) async {
     try {
       emit(GoChatLoading());
       bool exist = await ConversationRepo.checkConvExist(friendId: friendId);
@@ -29,6 +30,7 @@ class GoChatCubit extends Cubit<GoChatState> {
         String lastUpdate = DateTime.now().microsecondsSinceEpoch.toString();
         await ConversationRepo.updateConversation(
           friendId: friendId,
+          friendNumber: friendNumber,
           lastUpdate: lastUpdate,
           conversationId: genConvId,
           active: false,

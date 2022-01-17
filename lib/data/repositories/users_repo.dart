@@ -14,24 +14,39 @@ class UsersRepo {
       {required List<Contact> contacts}) async {
     List<AppContact> appContacts = await getAppContacts(contacts: contacts);
     try {
+      List<Friend> users = [];
+      QuerySnapshot snapshot = await usersRef.get();
+      snapshot.docs.map((doc) {
+        Map<String, dynamic> map = doc.data() as Map<String, dynamic>;
+        AppUser appUser = AppUser.fromMap(map);
+        if (appUser.userId != AuthRepo.currentUid) {
+          users.add(Friend(
+              userId: appUser.userId,
+              userName: appUser.userName,
+              userNumber: appUser.userNumber,
+              userBio: appUser.userBio,
+              userImg: appUser.userImg,
+              contactName: "null"));
+        }
+      }).toList();
+
       List<Friend> friends = [];
-      for (AppContact appcontact in appContacts) {
-        QuerySnapshot snapshot = await usersRef
-            .where("userNumber", isEqualTo: appcontact.userPhone)
-            .get();
-        snapshot.docs.map((doc) {
-          Map<String, dynamic> map = doc.data() as Map<String, dynamic>;
-          AppUser appUser = AppUser.fromMap(map);
-          if (appUser.userId != AuthRepo.currentUid) {
-            friends.add(Friend(
-                userId: appUser.userId,
-                userName: appUser.userName,
-                userNumber: appUser.userNumber,
-                userBio: appUser.userBio,
-                userImg: appUser.userImg,
-                contactName: appcontact.userName));
+
+      for (AppContact appContact in appContacts) {
+        for (Friend user in users) {
+          if (user.userNumber == appContact.userPhone) {
+            friends.add(
+              Friend(
+                userId: user.userId,
+                userName: user.userName,
+                userNumber: user.userNumber,
+                userBio: user.userBio,
+                userImg: user.userImg,
+                contactName: appContact.userName,
+              ),
+            );
           }
-        }).toList();
+        }
       }
 
       return friends;

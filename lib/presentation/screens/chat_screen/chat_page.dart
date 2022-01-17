@@ -207,15 +207,17 @@ class ChatPage extends StatelessWidget {
                                   .toString();
                               BlocProvider.of<SendMessageCubit>(context)
                                   .sendMessage(
-                                      messageToSend: DecodedMessageModel(
-                                        messageId: messageId,
-                                        senderId: AuthRepo.currentUid,
-                                        reciverId: args.friendId,
-                                        sentTimestamp: sentTimestamp,
-                                        messageStatus: "Sending",
-                                        message: message,
-                                      ),
-                                      conversationId: args.conversationId);
+                                messageToSend: DecodedMessageModel(
+                                  messageId: messageId,
+                                  senderId: AuthRepo.currentUid,
+                                  reciverId: args.friendId,
+                                  sentTimestamp: sentTimestamp,
+                                  messageStatus: "Sending",
+                                  message: message,
+                                ),
+                                conversationId: args.conversationId,
+                                friendNumber: args.friendNumber,
+                              );
                               controller.clear();
                               message = "";
                             }

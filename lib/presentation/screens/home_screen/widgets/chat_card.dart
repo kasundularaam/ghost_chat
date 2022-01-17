@@ -1,23 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:ghost_chat/presentation/router/app_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghost_chat/core/constants/strings.dart';
+import 'package:ghost_chat/data/repositories/users_repo.dart';
+import 'package:ghost_chat/data/screen_args/chat_screen_args.dart';
+import 'package:ghost_chat/logic/cubit/chat_card_cubit/chat_card_cubit.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
-import 'package:ghost_chat/data/screen_args/chat_card_args.dart';
+import 'package:ghost_chat/data/models/conversation_model.dart';
+import 'package:ghost_chat/presentation/router/app_router.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ChatCard extends StatelessWidget {
-  final ChatCardArgs chatCardArgs;
+  final ConversationModel conversation;
   const ChatCard({
     Key? key,
-    required this.chatCardArgs,
+    required this.conversation,
   }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<ChatCardCubit>(context).loadChatCard(
+        conversationId: conversation.conversationId,
+        friendId: conversation.friendId);
     return Column(
       children: [
         GestureDetector(
-          onTap: () => Navigator.pushNamed(context, AppRouter.chatPage,
-              arguments: chatCardArgs.friend.userId),
+          onTap: () => Navigator.pushNamed(
+            context,
+            AppRouter.chatPage,
+            arguments: ChatScreenArgs(
+                friendId: conversation.friendId,
+                conversationId: conversation.conversationId,
+                friendNumber: conversation.friendNumber),
+          ),
           child: Container(
             padding: EdgeInsets.all(5.w),
             decoration: BoxDecoration(
@@ -27,14 +43,36 @@ class ChatCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipOval(
-                  child: Image.asset(
-                    // "assets/images/milene.png",
-                    chatCardArgs.friend.userImg,
-                    width: 14.w,
-                    height: 14.w,
-                    fit: BoxFit.cover,
-                  ),
+                BlocBuilder<ChatCardCubit, ChatCardState>(
+                  builder: (context, state) {
+                    if (state is ChatCardLoaded) {
+                      return ClipOval(
+                        child: state.friendImage != "null"
+                            ? FadeInImage.assetNetwork(
+                                placeholder: Strings.ghostPlaceHolder,
+                                image: state.friendImage,
+                                width: 14.w,
+                                height: 14.w,
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                Strings.ghostPlaceHolder,
+                                width: 14.w,
+                                height: 14.w,
+                                fit: BoxFit.cover,
+                              ),
+                      );
+                    } else {
+                      return ClipOval(
+                        child: Image.asset(
+                          Strings.ghostPlaceHolder,
+                          width: 14.w,
+                          height: 14.w,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    }
+                  },
                 ),
                 SizedBox(
                   width: 5.w,
@@ -46,17 +84,39 @@ class ChatCard extends StatelessWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: Text(
-                              chatCardArgs.friend.contactName,
-                              style: TextStyle(
-                                color: AppColors.lightColor,
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            child: FutureBuilder<String>(
+                                future: UsersRepo.getSavedName(
+                                    userPhone: conversation.friendNumber),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    return Text(
+                                      snapshot.data!,
+                                      style: TextStyle(
+                                        color: AppColors.lightColor,
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    );
+                                  } else {
+                                    return Text(
+                                      conversation.friendNumber,
+                                      style: TextStyle(
+                                        color: AppColors.lightColor,
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    );
+                                  }
+                                }),
                           ),
                           Text(
-                            chatCardArgs.lastMsgTime,
+                            timeago.format(
+                              DateTime.fromMillisecondsSinceEpoch(
+                                int.parse(
+                                  conversation.lastUpdate,
+                                ),
+                              ),
+                            ),
                             style: TextStyle(
                                 color: AppColors.lightColor.withOpacity(0.7),
                                 fontSize: 11.sp,
@@ -65,35 +125,48 @@ class ChatCard extends StatelessWidget {
                         ],
                       ),
                       SizedBox(
-                        height: 0.3.h,
+                        height: 1.4.h,
                       ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              chatCardArgs.lastMsg,
+                      BlocBuilder<ChatCardCubit, ChatCardState>(
+                        builder: (context, state) {
+                          if (state is ChatCardLoaded) {
+                            if (state.unreadMsgCount > 0) {
+                              return Expanded(
+                                child: Text(
+                                  state.unreadMsgCount > 1
+                                      ? "${state.unreadMsgCount} new messages"
+                                      : "One new message",
+                                  style: TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 11.sp,
+                                      fontWeight: FontWeight.w600),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            } else {
+                              return Text(
+                                "No new messages",
+                                style: TextStyle(
+                                  color: AppColors.lightColor.withOpacity(0.7),
+                                  fontSize: 11.sp,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            }
+                          } else {
+                            return Text(
+                              "No new messages",
                               style: TextStyle(
                                 color: AppColors.lightColor.withOpacity(0.7),
                                 fontSize: 11.sp,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(2.w),
-                            decoration: const BoxDecoration(
-                                color: AppColors.primaryColor,
-                                shape: BoxShape.circle),
-                            child: Text(
-                              "${chatCardArgs.unreadMsgCount}",
-                              style: TextStyle(
-                                  color: AppColors.lightColor.withOpacity(0.7),
-                                  fontSize: 10.sp,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ],
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),

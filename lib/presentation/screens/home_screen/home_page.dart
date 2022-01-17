@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghost_chat/data/models/conversation_model.dart';
 import 'package:ghost_chat/data/repositories/auth_repo.dart';
+import 'package:ghost_chat/logic/cubit/chat_card_cubit/chat_card_cubit.dart';
 import 'package:ghost_chat/presentation/router/app_router.dart';
 import 'package:sizer/sizer.dart';
 
@@ -65,17 +67,18 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     },
                     builder: (context, state) {
                       if (state is ChatListLoaded) {
-                        List<ChatCardArgs> chaCardArgsList =
-                            state.chatCardArgsList;
                         return ListView.builder(
                             padding: EdgeInsets.symmetric(horizontal: 0.5.w),
-                            itemCount: chaCardArgsList.length,
+                            itemCount: state.conversations.length,
                             physics: const BouncingScrollPhysics(),
                             itemBuilder: (context, index) {
-                              ChatCardArgs chatCardArgs =
-                                  chaCardArgsList[index];
-                              return ChatCard(
-                                chatCardArgs: chatCardArgs,
+                              ConversationModel conversation =
+                                  state.conversations[index];
+                              return BlocProvider(
+                                create: (context) => ChatCardCubit(),
+                                child: ChatCard(
+                                  conversation: conversation,
+                                ),
                               );
                             });
                       } else if (state is ChatListLoading) {

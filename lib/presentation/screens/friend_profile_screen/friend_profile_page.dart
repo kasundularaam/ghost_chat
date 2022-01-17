@@ -179,8 +179,11 @@ class FriendProfilePage extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 5.w),
                       child: GestureDetector(
-                        onTap: () => BlocProvider.of<GoChatCubit>(context)
-                            .goChat(friendId: friend.userId),
+                        onTap: () =>
+                            BlocProvider.of<GoChatCubit>(context).goChat(
+                          friendId: friend.userId,
+                          friendNumber: friend.userNumber,
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -204,9 +207,9 @@ class FriendProfilePage extends StatelessWidget {
                                     context,
                                     AppRouter.chatPage,
                                     arguments: ChatScreenArgs(
-                                      friendId: state.friendId,
-                                      conversationId: state.conversationId,
-                                    ),
+                                        friendId: state.friendId,
+                                        conversationId: state.conversationId,
+                                        friendNumber: friend.userNumber),
                                   );
                                 }
                               },

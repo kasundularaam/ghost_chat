@@ -19,6 +19,7 @@ class SendMessageCubit extends Cubit<SendMessageState> {
   Future<void> sendMessage({
     required DecodedMessageModel messageToSend,
     required String conversationId,
+    required String friendNumber,
   }) async {
     try {
       emit(SendMessageAddingToDB());
@@ -55,6 +56,7 @@ class SendMessageCubit extends Cubit<SendMessageState> {
         friendId: encodedMessage.reciverId,
         lastUpdate: encodedMessage.sentTimestamp,
         conversationId: conversationId,
+        friendNumber: friendNumber,
         active: true,
       );
       await MessageRepo.updateMessageStatus(

@@ -26,6 +26,19 @@ class MessageRepo {
     }
   }
 
+  static Future<int> getUnreadMsgCount({required String conversationId}) async {
+    try {
+      QuerySnapshot snapshot = await conversationRef
+          .doc(conversationId)
+          .collection("message")
+          .where("messageStatus", isNotEqualTo: "Seen")
+          .get();
+      return snapshot.size;
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   static Future<void> sendMessage(
       {required EncodedMessageModel message,
       required String conversationId}) async {

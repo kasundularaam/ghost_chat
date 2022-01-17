@@ -8,9 +8,9 @@ class ChatListInitial extends ChatListState {}
 class ChatListLoading extends ChatListState {}
 
 class ChatListLoaded extends ChatListState {
-  final List<ChatCardArgs> chatCardArgsList;
+  final List<ConversationModel> conversations;
   ChatListLoaded({
-    required this.chatCardArgsList,
+    required this.conversations,
   });
 
   @override
@@ -18,14 +18,14 @@ class ChatListLoaded extends ChatListState {
     if (identical(this, other)) return true;
 
     return other is ChatListLoaded &&
-        listEquals(other.chatCardArgsList, chatCardArgsList);
+        listEquals(other.conversations, conversations);
   }
 
   @override
-  int get hashCode => chatCardArgsList.hashCode;
+  int get hashCode => conversations.hashCode;
 
   @override
-  String toString() => 'ChatListLoaded(chatCardArgsList: $chatCardArgsList)';
+  String toString() => 'ChatListLoaded(conversations: $conversations)';
 }
 
 class ChatListFailed extends ChatListState {

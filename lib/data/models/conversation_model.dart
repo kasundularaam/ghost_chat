@@ -3,11 +3,13 @@ import 'dart:convert';
 class ConversationModel {
   final String conversationId;
   final String friendId;
+  final String friendNumber;
   final String lastUpdate;
   final bool active;
   ConversationModel({
     required this.conversationId,
     required this.friendId,
+    required this.friendNumber,
     required this.lastUpdate,
     required this.active,
   });
@@ -15,12 +17,14 @@ class ConversationModel {
   ConversationModel copyWith({
     String? conversationId,
     String? friendId,
+    String? friendNumber,
     String? lastUpdate,
     bool? active,
   }) {
     return ConversationModel(
       conversationId: conversationId ?? this.conversationId,
       friendId: friendId ?? this.friendId,
+      friendNumber: friendNumber ?? this.friendNumber,
       lastUpdate: lastUpdate ?? this.lastUpdate,
       active: active ?? this.active,
     );
@@ -30,6 +34,7 @@ class ConversationModel {
     return {
       'conversationId': conversationId,
       'friendId': friendId,
+      'friendNumber': friendNumber,
       'lastUpdate': lastUpdate,
       'active': active,
     };
@@ -39,6 +44,7 @@ class ConversationModel {
     return ConversationModel(
       conversationId: map['conversationId'] ?? '',
       friendId: map['friendId'] ?? '',
+      friendNumber: map['friendNumber'] ?? '',
       lastUpdate: map['lastUpdate'] ?? '',
       active: map['active'] ?? false,
     );
@@ -51,7 +57,7 @@ class ConversationModel {
 
   @override
   String toString() {
-    return 'ConversationModel(conversationId: $conversationId, friendId: $friendId, lastUpdate: $lastUpdate, active: $active)';
+    return 'ConversationModel(conversationId: $conversationId, friendId: $friendId, friendNumber: $friendNumber, lastUpdate: $lastUpdate, active: $active)';
   }
 
   @override
@@ -61,6 +67,7 @@ class ConversationModel {
     return other is ConversationModel &&
         other.conversationId == conversationId &&
         other.friendId == friendId &&
+        other.friendNumber == friendNumber &&
         other.lastUpdate == lastUpdate &&
         other.active == active;
   }
@@ -69,6 +76,7 @@ class ConversationModel {
   int get hashCode {
     return conversationId.hashCode ^
         friendId.hashCode ^
+        friendNumber.hashCode ^
         lastUpdate.hashCode ^
         active.hashCode;
   }
