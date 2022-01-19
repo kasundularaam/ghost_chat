@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/core/constants/strings.dart';
+import 'package:ghost_chat/core/permissions_service.dart';
 import 'package:ghost_chat/data/repositories/users_repo.dart';
 import 'package:ghost_chat/data/screen_args/chat_screen_args.dart';
 import 'package:ghost_chat/logic/cubit/chat_card_cubit/chat_card_cubit.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
@@ -17,6 +19,22 @@ class ChatCard extends StatelessWidget {
     Key? key,
     required this.conversation,
   }) : super(key: key);
+
+  Future<String> getSavedName({required String friendNumber}) async {
+    try {
+      bool permissionStatus = await PermissionService.getPermission(
+          permission: Permission.contacts);
+      if (permissionStatus) {
+        String friendName =
+            await UsersRepo.getSavedName(userPhone: friendNumber);
+        return friendName;
+      } else {
+        return friendNumber;
+      }
+    } catch (e) {
+      throw e.toString();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,12 +103,13 @@ class ChatCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: FutureBuilder<String>(
-                                future: UsersRepo.getSavedName(
-                                    userPhone: conversation.friendNumber),
+                                future: getSavedName(
+                                    friendNumber: conversation.friendNumber),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
                                     return Text(
                                       snapshot.data!,
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         color: AppColors.lightColor,
                                         fontSize: 14.sp,
@@ -100,6 +119,7 @@ class ChatCard extends StatelessWidget {
                                   } else {
                                     return Text(
                                       conversation.friendNumber,
+                                      overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         color: AppColors.lightColor,
                                         fontSize: 14.sp,
@@ -131,18 +151,16 @@ class ChatCard extends StatelessWidget {
                         builder: (context, state) {
                           if (state is ChatCardLoaded) {
                             if (state.unreadMsgCount > 0) {
-                              return Expanded(
-                                child: Text(
-                                  state.unreadMsgCount > 1
-                                      ? "${state.unreadMsgCount} new messages"
-                                      : "One new message",
-                                  style: TextStyle(
-                                      color: Colors.green,
-                                      fontSize: 11.sp,
-                                      fontWeight: FontWeight.w600),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                              return Text(
+                                state.unreadMsgCount > 1
+                                    ? "${state.unreadMsgCount} new messages"
+                                    : "One new message",
+                                style: TextStyle(
+                                    color: Colors.green,
+                                    fontSize: 11.sp,
+                                    fontWeight: FontWeight.w600),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               );
                             } else {
                               return Text(
@@ -155,6 +173,16 @@ class ChatCard extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                               );
                             }
+                          } else if (state is ChatCardLoading) {
+                            return Text(
+                              "Checking for new messages..",
+                              style: TextStyle(
+                                color: AppColors.lightColor.withOpacity(0.7),
+                                fontSize: 11.sp,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            );
                           } else {
                             return Text(
                               "No new messages",

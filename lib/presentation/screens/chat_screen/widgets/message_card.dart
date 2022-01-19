@@ -127,7 +127,7 @@ class MyMsgLayout extends StatelessWidget {
                                     } else {
                                       return Icon(
                                         Icons.access_time_rounded,
-                                        color: AppColors.primaryColor,
+                                        color: AppColors.lightColor,
                                         size: 14.sp,
                                       );
                                     }

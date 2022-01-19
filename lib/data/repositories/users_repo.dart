@@ -139,13 +139,12 @@ class UsersRepo {
     }
   }
 
-  static Stream<bool> typingStatus(
-      {required String friendId, required String myId}) async* {
+  static Stream<bool> typingStatus({required String friendId}) async* {
     try {
       Stream documentStram = usersRef.doc(friendId).snapshots();
       Map<String, dynamic>? map = documentStram as Map<String, dynamic>;
       String typingTo = map["typingTo"];
-      if (typingTo == myId) {
+      if (typingTo == AuthRepo.currentUid) {
         yield true;
       } else {
         yield false;

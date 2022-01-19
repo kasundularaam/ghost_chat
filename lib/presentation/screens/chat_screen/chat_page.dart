@@ -3,18 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/data/models/decoded_message_model.dart';
 import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/data/repositories/auth_repo.dart';
+import 'package:ghost_chat/logic/cubit/chat_action_bar_cubit/chat_action_bar_cubit.dart';
 import 'package:ghost_chat/logic/cubit/chat_page_cubit/chat_page_cubit.dart';
 import 'package:ghost_chat/logic/cubit/message_cubit/message_cubit.dart';
 import 'package:ghost_chat/logic/cubit/message_status_cubit/message_status_cubit.dart';
 import 'package:ghost_chat/logic/cubit/send_message_cubit/send_message_cubit.dart';
+import 'package:ghost_chat/logic/cubit/typing_status_cubit/typing_status_cubit.dart';
+import 'package:ghost_chat/presentation/screens/chat_screen/widgets/chat_action_bar.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/message_card.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
-import 'package:ghost_chat/core/constants/strings.dart';
 import 'package:ghost_chat/data/screen_args/chat_screen_args.dart';
 import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
-import 'package:ghost_chat/presentation/router/app_router.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatelessWidget {
@@ -35,77 +36,23 @@ class ChatPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 3.w,
-                vertical: 2.h,
-              ),
-              color: AppColors.darkGrey,
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Icon(
-                      Icons.arrow_back_rounded,
-                      color: AppColors.lightColor,
-                      size: 18.sp,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 2.w,
-                  ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => Navigator.pushNamed(
-                          context, AppRouter.friendProfilePage,
-                          arguments: args.friendId),
-                      child: Row(
-                        children: [
-                          ClipOval(
-                            child: Image.asset(
-                              Strings.ghostPlaceHolder,
-                              width: 10.w,
-                              height: 10.w,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 3.w,
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Kasun Dulara",
-                                  style: TextStyle(
-                                    color: AppColors.lightColor,
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Text(
-                                  "Typing...",
-                                  style: TextStyle(
-                                    color:
-                                        AppColors.lightColor.withOpacity(0.7),
-                                    fontSize: 10.sp,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (context) => ChatActionBarCubit(),
+                ),
+                BlocProvider(
+                  create: (context) => TypingStatusCubit(),
+                )
+              ],
+              child: ChatActionBar(
+                  friendId: args.friendId, friendNumber: args.friendNumber),
             ),
             Expanded(
               child: BlocBuilder<ChatPageCubit, ChatPageState>(
                 builder: (context, state) {
                   if (state is ChatPageShowMessages) {
+                    print("SHOWING>>>>");
                     return ListView(
                       padding: const EdgeInsets.all(0),
                       physics: const BouncingScrollPhysics(),
@@ -164,38 +111,41 @@ class ChatPage extends StatelessWidget {
               decoration: const BoxDecoration(
                 color: AppColors.darkColor,
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: AppTextInput(
-                      onChanged: (messageText) => message = messageText,
-                      textInputAction: TextInputAction.newline,
-                      controller: controller,
-                      isPassword: false,
-                      textInputType: TextInputType.multiline,
-                      hintText: "Text Message",
-                      bgColor: AppColors.darkGrey.withOpacity(0.2),
-                      textColor: AppColors.lightColor,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 3.w,
-                  ),
-                  BlocConsumer<SendMessageCubit, SendMessageState>(
-                    listener: (context, state) {
-                      if (state is SendMessageUploading) {}
-                    },
-                    builder: (context, state) {
-                      if (state is SendMessageAddingToDB) {
-                        return SizedBox(
-                          width: 18.sp,
-                          height: 18.sp,
-                          child: const CircularProgressIndicator(
-                            color: AppColors.primaryColor,
+              child: BlocConsumer<SendMessageCubit, SendMessageState>(
+                listener: (context, state) {
+                  if (state is SendMessageUploading) {
+                    BlocProvider.of<ChatPageCubit>(context)
+                        .addSendMessage(downloadedMsg: state.sendingMsg);
+                  }
+                },
+                builder: (context, state) {
+                  if (state is SendMessageAddingToDB) {
+                    return Text(
+                      "Encrypting...",
+                      style: TextStyle(
+                        color: AppColors.lightColor.withOpacity(0.7),
+                        fontSize: 10.sp,
+                      ),
+                    );
+                  } else {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: AppTextInput(
+                            onChanged: (messageText) => message = messageText,
+                            textInputAction: TextInputAction.newline,
+                            controller: controller,
+                            isPassword: false,
+                            textInputType: TextInputType.multiline,
+                            hintText: "Text Message",
+                            bgColor: AppColors.darkGrey.withOpacity(0.2),
+                            textColor: AppColors.lightColor,
                           ),
-                        );
-                      } else {
-                        return GestureDetector(
+                        ),
+                        SizedBox(
+                          width: 3.w,
+                        ),
+                        GestureDetector(
                           onTap: () {
                             if (message.isNotEmpty) {
                               Uuid uuid = const Uuid();
@@ -233,11 +183,11 @@ class ChatPage extends StatelessWidget {
                               size: 18.sp,
                             ),
                           ),
-                        );
-                      }
-                    },
-                  )
-                ],
+                        ),
+                      ],
+                    );
+                  }
+                },
               ),
             ),
           ],

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:ghost_chat/data/encrypt_services/handle_encode.dart';
 import 'package:ghost_chat/data/models/decoded_message_model.dart';
+import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/data/models/encoded_message_model.dart';
 import 'package:ghost_chat/data/repositories/conversation_repo.dart';
 import 'package:ghost_chat/data/repositories/local_repo.dart';
@@ -27,7 +28,19 @@ class SendMessageCubit extends Cubit<SendMessageState> {
       DecodedMessageModel messageToEncode =
           await MessageHelper.getMessage(messageId: messageToSend.messageId);
 
-      emit(SendMessageUploading());
+      emit(
+        SendMessageUploading(
+          sendingMsg: DownloadMessage(
+            messageId: messageToEncode.messageId,
+            senderId: messageToEncode.senderId,
+            reciverId: messageToEncode.reciverId,
+            sentTimestamp: messageToEncode.sentTimestamp,
+            messageStatus: messageToEncode.messageStatus,
+            stImageStoragePath: "null",
+            messageLen: 0,
+          ),
+        ),
+      );
 
       String originalPath = await LocalRepo.getImageFileFromAssets();
 

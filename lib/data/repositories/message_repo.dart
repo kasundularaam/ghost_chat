@@ -3,6 +3,8 @@ import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/data/models/encoded_message_model.dart';
 import 'package:firebase_storage/firebase_storage.dart' as storage;
 
+import 'auth_repo.dart';
+
 class MessageRepo {
   static CollectionReference conversationRef =
       FirebaseFirestore.instance.collection("conversation");
@@ -33,7 +35,17 @@ class MessageRepo {
           .collection("message")
           .where("messageStatus", isNotEqualTo: "Seen")
           .get();
-      return snapshot.size;
+
+      List<DownloadMessage> messages = [];
+
+      snapshot.docs.map((doc) {
+        Map<String, dynamic> map = doc.data() as Map<String, dynamic>;
+        DownloadMessage downloadMessage = DownloadMessage.fromMap(map);
+        if (downloadMessage.reciverId == AuthRepo.currentUid) {
+          messages.add(downloadMessage);
+        }
+      }).toList();
+      return messages.length;
     } catch (e) {
       throw e.toString();
     }

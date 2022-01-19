@@ -7,7 +7,25 @@ class SendMessageInitial extends SendMessageState {}
 
 class SendMessageAddingToDB extends SendMessageState {}
 
-class SendMessageUploading extends SendMessageState {}
+class SendMessageUploading extends SendMessageState {
+  final DownloadMessage sendingMsg;
+  SendMessageUploading({
+    required this.sendingMsg,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is SendMessageUploading && other.sendingMsg == sendingMsg;
+  }
+
+  @override
+  int get hashCode => sendingMsg.hashCode;
+
+  @override
+  String toString() => 'SendMessageUploading(sendingMsg: $sendingMsg)';
+}
 
 class SendMessageSent extends SendMessageState {}
 

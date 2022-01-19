@@ -12,46 +12,57 @@ part 'message_state.dart';
 class MessageCubit extends Cubit<MessageState> {
   MessageCubit() : super(MessageInitial());
 
+  DecodedMessageModel? _loadedMsg;
+
   Future<void> loadMessage(
       {required DownloadMessage downloadMessage,
       required String conversationId}) async {
     try {
-      emit(MessageLoading());
-      bool exist = await MessageHelper.checkMessageExist(
-          messageId: downloadMessage.messageId);
-      if (exist) {
-        DecodedMessageModel messageFromDb = await MessageHelper.getMessage(
-            messageId: downloadMessage.messageId);
+      if (_loadedMsg != null) {
         emit(
           MessageLoaded(
-            message: messageFromDb,
+            message: _loadedMsg!,
           ),
         );
       } else {
-        String encodedImgPath = await LocalRepo.getStImagePath(
-            conversationId: conversationId,
-            messageId: downloadMessage.messageId,
-            stImgStoragePath: downloadMessage.stImageStoragePath);
+        emit(MessageLoading());
+        bool exist = await MessageHelper.checkMessageExist(
+            messageId: downloadMessage.messageId);
+        if (exist) {
+          DecodedMessageModel messageFromDb = await MessageHelper.getMessage(
+              messageId: downloadMessage.messageId);
+          _loadedMsg = messageFromDb;
+          emit(
+            MessageLoaded(
+              message: _loadedMsg!,
+            ),
+          );
+        } else {
+          String encodedImgPath = await LocalRepo.getStImagePath(
+              conversationId: conversationId,
+              messageId: downloadMessage.messageId,
+              stImgStoragePath: downloadMessage.stImageStoragePath);
 
-        String decryptedMsg = handleDecodeRequest(
-          imagePath: encodedImgPath,
-          messageLength: downloadMessage.messageLen,
-        );
+          String decryptedMsg = handleDecodeRequest(
+            imagePath: encodedImgPath,
+            messageLength: downloadMessage.messageLen,
+          );
 
-        DecodedMessageModel decodedMessage = DecodedMessageModel(
-            messageId: downloadMessage.messageId,
-            senderId: downloadMessage.senderId,
-            reciverId: downloadMessage.reciverId,
-            sentTimestamp: downloadMessage.sentTimestamp,
-            messageStatus: "Seen",
-            message: decryptedMsg);
-        await MessageHelper.addMessage(decodedMessage: decodedMessage);
-        await MessageRepo.updateMessageStatus(
-            conversationId: conversationId,
-            messageId: decodedMessage.messageId,
-            messageStatus: "Seen");
-        loadMessage(
-            downloadMessage: downloadMessage, conversationId: conversationId);
+          DecodedMessageModel decodedMessage = DecodedMessageModel(
+              messageId: downloadMessage.messageId,
+              senderId: downloadMessage.senderId,
+              reciverId: downloadMessage.reciverId,
+              sentTimestamp: downloadMessage.sentTimestamp,
+              messageStatus: "Seen",
+              message: decryptedMsg);
+          await MessageHelper.addMessage(decodedMessage: decodedMessage);
+          await MessageRepo.updateMessageStatus(
+              conversationId: conversationId,
+              messageId: decodedMessage.messageId,
+              messageStatus: "Seen");
+          loadMessage(
+              downloadMessage: downloadMessage, conversationId: conversationId);
+        }
       }
     } catch (e) {
       emit(MessageFailed(errorMsg: e.toString()));
