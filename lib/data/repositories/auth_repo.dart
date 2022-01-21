@@ -175,12 +175,9 @@ class AuthRepo {
     }
   }
 
-  static Future<void> updateTypeStatus(
-      {required Stream<String> typingTo}) async {
+  static Future<void> updateTypeStatus({required String friendId}) async {
     try {
-      typingTo.listen((status) async {
-        await reference.update({"typingTo": status});
-      });
+      await reference.update({"typingTo": friendId});
     } catch (e) {
       e.toString();
     }

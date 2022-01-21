@@ -110,6 +110,7 @@ class ChatActionBar extends StatelessWidget {
                             }
                           },
                         ),
+                        SizedBox(height: 1.h),
                         BlocBuilder<TypingStatusCubit, TypingStatusState>(
                           builder: (context, state) {
                             if (state is TypingStatusLoaded) {

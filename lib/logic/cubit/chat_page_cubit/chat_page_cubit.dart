@@ -18,22 +18,16 @@ class ChatPageCubit extends Cubit<ChatPageState> {
       Stream<List<DownloadMessage>> fireStream =
           MessageRepo.getMessages(conversationId: conversationId);
       fireStream.listen((fireList) {
-        for (DownloadMessage fireMsg in fireList) {
-          bool exist = allMessages
-              .map((messageFromAll) => messageFromAll.messageId)
-              .contains(fireMsg.messageId);
-          if (!exist) {
-            allMessages.add(fireMsg);
-            if (allMessages.isNotEmpty) {
-              emit(
-                ChatPageShowMessages(
-                  messegesList: allMessages.reversed.toList(),
-                ),
-              );
-            } else {
-              emit(ChatPageNoMessages());
-            }
-          }
+        allMessages.clear();
+        allMessages += fireList;
+        if (allMessages.isNotEmpty) {
+          emit(
+            ChatPageShowMessages(
+              messegesList: allMessages.reversed.toList(),
+            ),
+          );
+        } else {
+          emit(ChatPageNoMessages());
         }
       });
     } catch (e) {

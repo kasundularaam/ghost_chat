@@ -119,9 +119,9 @@ class UsersRepo {
 
   static Stream<String> getUserStatus({required String userId}) async* {
     try {
-      Stream<DocumentSnapshot<Object?>> querySnapshots =
+      Stream<DocumentSnapshot<Object?>> documentSnapshots =
           usersRef.doc(userId).snapshots();
-      Stream<String> userStatus = querySnapshots.map((document) {
+      Stream<String> userStatus = documentSnapshots.map((document) {
         Map<String, dynamic> map = document.data() as Map<String, dynamic>;
         String status = map["userStatus"];
         if (status == "null") {
@@ -141,14 +141,19 @@ class UsersRepo {
 
   static Stream<bool> typingStatus({required String friendId}) async* {
     try {
-      Stream documentStram = usersRef.doc(friendId).snapshots();
-      Map<String, dynamic>? map = documentStram as Map<String, dynamic>;
-      String typingTo = map["typingTo"];
-      if (typingTo == AuthRepo.currentUid) {
-        yield true;
-      } else {
-        yield false;
-      }
+      Stream<DocumentSnapshot<Object?>> documentSnapshots =
+          usersRef.doc(friendId).snapshots();
+      Stream<bool> typingStatus = documentSnapshots.map((document) {
+        Map<String, dynamic> map = document.data() as Map<String, dynamic>;
+        String typingTo = map["typingTo"];
+        if (typingTo == AuthRepo.currentUid) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+
+      yield* typingStatus;
     } catch (e) {
       throw e.toString();
     }

@@ -31,7 +31,7 @@ class AppTextInput extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(2.w),
+        borderRadius: BorderRadius.circular(10.w),
       ),
       child: TextField(
         controller: controller,

@@ -9,7 +9,6 @@ import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
 import 'package:ghost_chat/data/models/app_user.dart';
-import 'package:ghost_chat/data/screen_args/chat_card_args.dart';
 import 'package:ghost_chat/logic/cubit/chat_list_cubit/chat_list_cubit.dart';
 import 'package:ghost_chat/presentation/screens/home_screen/widgets/chat_card.dart';
 import 'package:ghost_chat/presentation/screens/home_screen/widgets/home_action_bar.dart';
@@ -67,20 +66,29 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                     },
                     builder: (context, state) {
                       if (state is ChatListLoaded) {
-                        return ListView.builder(
-                            padding: EdgeInsets.symmetric(horizontal: 0.5.w),
-                            itemCount: state.conversations.length,
-                            physics: const BouncingScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              ConversationModel conversation =
-                                  state.conversations[index];
-                              return BlocProvider(
-                                create: (context) => ChatCardCubit(),
-                                child: ChatCard(
-                                  conversation: conversation,
-                                ),
-                              );
-                            });
+                        return ListView(
+                          physics: const BouncingScrollPhysics(),
+                          children: [
+                            SizedBox(
+                              height: 1.h,
+                            ),
+                            ListView.builder(
+                                padding: EdgeInsets.symmetric(horizontal: 1.w),
+                                itemCount: state.conversations.length,
+                                physics: const BouncingScrollPhysics(),
+                                shrinkWrap: true,
+                                itemBuilder: (context, index) {
+                                  ConversationModel conversation =
+                                      state.conversations[index];
+                                  return BlocProvider(
+                                    create: (context) => ChatCardCubit(),
+                                    child: ChatCard(
+                                      conversation: conversation,
+                                    ),
+                                  );
+                                }),
+                          ],
+                        );
                       } else if (state is ChatListLoading) {
                         return const Center(
                           child: CircularProgressIndicator(

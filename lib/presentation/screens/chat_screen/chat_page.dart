@@ -1,24 +1,28 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghost_chat/data/repositories/users_repo.dart';
+import 'package:sizer/sizer.dart';
+import 'package:stream_transform/stream_transform.dart';
+import 'package:uuid/uuid.dart';
+
+import 'package:ghost_chat/core/constants/app_colors.dart';
 import 'package:ghost_chat/data/models/decoded_message_model.dart';
 import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/data/repositories/auth_repo.dart';
+import 'package:ghost_chat/data/screen_args/chat_screen_args.dart';
 import 'package:ghost_chat/logic/cubit/chat_action_bar_cubit/chat_action_bar_cubit.dart';
 import 'package:ghost_chat/logic/cubit/chat_page_cubit/chat_page_cubit.dart';
 import 'package:ghost_chat/logic/cubit/message_cubit/message_cubit.dart';
 import 'package:ghost_chat/logic/cubit/message_status_cubit/message_status_cubit.dart';
 import 'package:ghost_chat/logic/cubit/send_message_cubit/send_message_cubit.dart';
 import 'package:ghost_chat/logic/cubit/typing_status_cubit/typing_status_cubit.dart';
+import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/chat_action_bar.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/message_card.dart';
-import 'package:sizer/sizer.dart';
 
-import 'package:ghost_chat/core/constants/app_colors.dart';
-import 'package:ghost_chat/data/screen_args/chat_screen_args.dart';
-import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
-import 'package:uuid/uuid.dart';
-
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
   final ChatScreenArgs args;
   const ChatPage({
     Key? key,
@@ -26,11 +30,38 @@ class ChatPage extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  final StreamController<String> streamController = StreamController();
+  @override
+  void initState() {
+    streamController.stream.listen((msgText) {
+      String messageText = msgText;
+
+      if (msgText.isNotEmpty) {
+        AuthRepo.updateTypeStatus(friendId: widget.args.friendId);
+      } else {
+        AuthRepo.updateTypeStatus(friendId: "null");
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    AuthRepo.updateTypeStatus(friendId: "null");
+    streamController.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     TextEditingController controller = TextEditingController();
     String message = "";
     BlocProvider.of<ChatPageCubit>(context)
-        .showMessages(conversationId: args.conversationId);
+        .showMessages(conversationId: widget.args.conversationId);
     return Scaffold(
       backgroundColor: AppColors.darkColor,
       body: SafeArea(
@@ -46,13 +77,13 @@ class ChatPage extends StatelessWidget {
                 )
               ],
               child: ChatActionBar(
-                  friendId: args.friendId, friendNumber: args.friendNumber),
+                  friendId: widget.args.friendId,
+                  friendNumber: widget.args.friendNumber),
             ),
             Expanded(
               child: BlocBuilder<ChatPageCubit, ChatPageState>(
                 builder: (context, state) {
                   if (state is ChatPageShowMessages) {
-                    print("SHOWING>>>>");
                     return ListView(
                       padding: const EdgeInsets.all(0),
                       physics: const BouncingScrollPhysics(),
@@ -77,7 +108,7 @@ class ChatPage extends StatelessWidget {
                               ],
                               child: MessageCard(
                                   message: message,
-                                  conversationId: args.conversationId),
+                                  conversationId: widget.args.conversationId),
                             );
                           },
                         ),
@@ -132,7 +163,10 @@ class ChatPage extends StatelessWidget {
                       children: [
                         Expanded(
                           child: AppTextInput(
-                            onChanged: (messageText) => message = messageText,
+                            onChanged: (messageText) {
+                              message = messageText;
+                              streamController.add(messageText);
+                            },
                             textInputAction: TextInputAction.newline,
                             controller: controller,
                             isPassword: false,
@@ -148,6 +182,7 @@ class ChatPage extends StatelessWidget {
                         GestureDetector(
                           onTap: () {
                             if (message.isNotEmpty) {
+                              AuthRepo.updateTypeStatus(friendId: "null");
                               Uuid uuid = const Uuid();
                               String messageId = uuid.v1();
                               messageId =
@@ -160,13 +195,13 @@ class ChatPage extends StatelessWidget {
                                 messageToSend: DecodedMessageModel(
                                   messageId: messageId,
                                   senderId: AuthRepo.currentUid,
-                                  reciverId: args.friendId,
+                                  reciverId: widget.args.friendId,
                                   sentTimestamp: sentTimestamp,
                                   messageStatus: "Sending",
                                   message: message,
                                 ),
-                                conversationId: args.conversationId,
-                                friendNumber: args.friendNumber,
+                                conversationId: widget.args.conversationId,
+                                friendNumber: widget.args.friendNumber,
                               );
                               controller.clear();
                               message = "";

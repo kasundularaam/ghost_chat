@@ -53,10 +53,10 @@ class ChatCard extends StatelessWidget {
                 friendNumber: conversation.friendNumber),
           ),
           child: Container(
-            padding: EdgeInsets.all(5.w),
+            padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.5.h),
             decoration: BoxDecoration(
                 border: Border.all(width: 0.1.w),
-                color: AppColors.darkColor,
+                color: AppColors.darkSecondary,
                 borderRadius: BorderRadius.circular(2.w)),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -204,7 +204,7 @@ class ChatCard extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 0.5.w,
+          height: 1.h,
         ),
       ],
     );
