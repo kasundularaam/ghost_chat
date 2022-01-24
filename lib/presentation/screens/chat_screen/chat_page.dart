@@ -1,26 +1,27 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ghost_chat/data/repositories/users_repo.dart';
+import 'package:ghost_chat/data/models/decoded_message_model.dart';
+import 'package:ghost_chat/data/repositories/auth_repo.dart';
+import 'package:ghost_chat/logic/cubit/message_box_cubit/message_box_cubit.dart';
+import 'package:ghost_chat/logic/cubit/message_button_cubit/message_button_cubit.dart';
+import 'package:ghost_chat/logic/cubit/send_message_cubit/send_message_cubit.dart';
+import 'package:ghost_chat/presentation/screens/chat_screen/widgets/message_box.dart';
+import 'package:ghost_chat/presentation/screens/chat_screen/widgets/send_button.dart';
+import 'package:ghost_chat/presentation/screens/chat_screen/widgets/voice_box.dart';
+import 'package:ghost_chat/presentation/screens/chat_screen/widgets/voice_button.dart';
 import 'package:sizer/sizer.dart';
-import 'package:stream_transform/stream_transform.dart';
-import 'package:uuid/uuid.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
-import 'package:ghost_chat/data/models/decoded_message_model.dart';
 import 'package:ghost_chat/data/models/download_message.dart';
-import 'package:ghost_chat/data/repositories/auth_repo.dart';
 import 'package:ghost_chat/data/screen_args/chat_screen_args.dart';
 import 'package:ghost_chat/logic/cubit/chat_action_bar_cubit/chat_action_bar_cubit.dart';
 import 'package:ghost_chat/logic/cubit/chat_page_cubit/chat_page_cubit.dart';
 import 'package:ghost_chat/logic/cubit/message_cubit/message_cubit.dart';
 import 'package:ghost_chat/logic/cubit/message_status_cubit/message_status_cubit.dart';
-import 'package:ghost_chat/logic/cubit/send_message_cubit/send_message_cubit.dart';
 import 'package:ghost_chat/logic/cubit/typing_status_cubit/typing_status_cubit.dart';
-import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/chat_action_bar.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/message_card.dart';
+import 'package:uuid/uuid.dart';
 
 class ChatPage extends StatefulWidget {
   final ChatScreenArgs args;
@@ -34,32 +35,51 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final StreamController<String> streamController = StreamController();
+  TextEditingController controller = TextEditingController();
   @override
   void initState() {
-    streamController.stream.listen((msgText) {
-      String messageText = msgText;
+    super.initState();
+    controller.addListener(() {
+      String message = controller.text;
 
-      if (msgText.isNotEmpty) {
-        AuthRepo.updateTypeStatus(friendId: widget.args.friendId);
+      if (message.isNotEmpty) {
+        BlocProvider.of<MessageButtonCubit>(context).messageBtnSend();
       } else {
-        AuthRepo.updateTypeStatus(friendId: "null");
+        BlocProvider.of<MessageButtonCubit>(context).messageBtnVoice();
       }
     });
-    super.initState();
+  }
+
+  void sendMessage({required message}) {
+    if (message.isNotEmpty) {
+      Uuid uuid = const Uuid();
+      String messageId = uuid.v1();
+      messageId = messageId.replaceAll(RegExp(r'[^\w\s]+'), '');
+      String sentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
+      BlocProvider.of<SendMessageCubit>(context).sendMessage(
+        messageToSend: DecodedMessageModel(
+          messageId: messageId,
+          senderId: AuthRepo.currentUid,
+          reciverId: widget.args.friendId,
+          sentTimestamp: sentTimestamp,
+          messageStatus: "Sending",
+          message: message,
+        ),
+        conversationId: widget.args.conversationId,
+        friendNumber: widget.args.friendNumber,
+      );
+      controller.clear();
+    }
   }
 
   @override
   void dispose() {
-    AuthRepo.updateTypeStatus(friendId: "null");
-    streamController.close();
+    controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController controller = TextEditingController();
-    String message = "";
     BlocProvider.of<ChatPageCubit>(context)
         .showMessages(conversationId: widget.args.conversationId);
     return Scaffold(
@@ -142,89 +162,50 @@ class _ChatPageState extends State<ChatPage> {
               decoration: const BoxDecoration(
                 color: AppColors.darkColor,
               ),
-              child: BlocConsumer<SendMessageCubit, SendMessageState>(
-                listener: (context, state) {
-                  if (state is SendMessageUploading) {
-                    BlocProvider.of<ChatPageCubit>(context)
-                        .addSendMessage(downloadedMsg: state.sendingMsg);
-                  }
-                },
-                builder: (context, state) {
-                  if (state is SendMessageAddingToDB) {
-                    return Text(
-                      "Encrypting...",
-                      style: TextStyle(
-                        color: AppColors.lightColor.withOpacity(0.7),
-                        fontSize: 10.sp,
-                      ),
-                    );
-                  } else {
-                    return Row(
-                      children: [
-                        Expanded(
-                          child: AppTextInput(
-                            onChanged: (messageText) {
-                              message = messageText;
-                              streamController.add(messageText);
-                            },
-                            textInputAction: TextInputAction.newline,
-                            controller: controller,
-                            isPassword: false,
-                            textInputType: TextInputType.multiline,
-                            hintText: "Text Message",
-                            bgColor: AppColors.darkGrey.withOpacity(0.2),
-                            textColor: AppColors.lightColor,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 3.w,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            if (message.isNotEmpty) {
-                              AuthRepo.updateTypeStatus(friendId: "null");
-                              Uuid uuid = const Uuid();
-                              String messageId = uuid.v1();
-                              messageId =
-                                  messageId.replaceAll(RegExp(r'[^\w\s]+'), '');
-                              String sentTimestamp = DateTime.now()
-                                  .millisecondsSinceEpoch
-                                  .toString();
-                              BlocProvider.of<SendMessageCubit>(context)
-                                  .sendMessage(
-                                messageToSend: DecodedMessageModel(
-                                  messageId: messageId,
-                                  senderId: AuthRepo.currentUid,
-                                  reciverId: widget.args.friendId,
-                                  sentTimestamp: sentTimestamp,
-                                  messageStatus: "Sending",
-                                  message: message,
-                                ),
-                                conversationId: widget.args.conversationId,
-                                friendNumber: widget.args.friendNumber,
-                              );
-                              controller.clear();
-                              message = "";
-                            }
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  BlocBuilder<MessageBoxCubit, MessageBoxState>(
+                    builder: (context, state) {
+                      if (state is MessageBoxText) {
+                        return MessageBox(controller: controller);
+                      } else {
+                        return VoiceBox(
+                          onCancel: () {
+                            BlocProvider.of<MessageButtonCubit>(context)
+                                .messageBtnVoice();
+                            BlocProvider.of<MessageBoxCubit>(context)
+                                .messageBoxText();
                           },
-                          child: Container(
-                            padding: EdgeInsets.all(2.w),
-                            decoration: const BoxDecoration(
-                                color: AppColors.primaryColor,
-                                shape: BoxShape.circle),
-                            child: Icon(
-                              Icons.send_rounded,
-                              color: AppColors.lightColor,
-                              size: 18.sp,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                },
+                        );
+                      }
+                    },
+                  ),
+                  SizedBox(
+                    width: 3.w,
+                  ),
+                  BlocBuilder<MessageButtonCubit, MessageButtonState>(
+                    builder: (context, state) {
+                      if (state is MessageButtonSend) {
+                        return SendButton(
+                          onTap: () => sendMessage(message: controller.text),
+                        );
+                      } else {
+                        return VoiceButton(
+                          onTap: () {
+                            BlocProvider.of<MessageBoxCubit>(context)
+                                .messageBoxVoice();
+
+                            BlocProvider.of<MessageButtonCubit>(context)
+                                .messageBtnSend();
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ],
               ),
-            ),
+            )
           ],
         ),
       ),

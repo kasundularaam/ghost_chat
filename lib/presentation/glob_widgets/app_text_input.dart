@@ -11,6 +11,8 @@ class AppTextInput extends StatelessWidget {
   final String hintText;
   final Color bgColor;
   final Color textColor;
+  final int? maxLines;
+  final int? minLines;
   final TextAlign? textAlign;
   const AppTextInput({
     Key? key,
@@ -23,6 +25,8 @@ class AppTextInput extends StatelessWidget {
     required this.hintText,
     required this.bgColor,
     required this.textColor,
+    this.maxLines,
+    this.minLines,
     this.textAlign,
   }) : super(key: key);
 
@@ -39,6 +43,8 @@ class AppTextInput extends StatelessWidget {
         onChanged: onChanged,
         focusNode: focusNode,
         autofocus: false,
+        maxLines: maxLines ?? 1,
+        minLines: minLines ?? 1,
         keyboardType: textInputType,
         textAlign: textAlign ?? TextAlign.start,
         style: TextStyle(

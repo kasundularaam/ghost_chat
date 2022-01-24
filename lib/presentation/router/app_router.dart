@@ -13,6 +13,8 @@ import 'package:ghost_chat/logic/cubit/edit_name_cubit/edit_name_cubit.dart';
 import 'package:ghost_chat/logic/cubit/go_chat_cubit/go_chat_cubit.dart';
 import 'package:ghost_chat/logic/cubit/home_action_bar_cubit/home_action_bar_cubit.dart';
 import 'package:ghost_chat/logic/cubit/landing_page_cubit/landing_page_cubit.dart';
+import 'package:ghost_chat/logic/cubit/message_box_cubit/message_box_cubit.dart';
+import 'package:ghost_chat/logic/cubit/message_button_cubit/message_button_cubit.dart';
 import 'package:ghost_chat/logic/cubit/profile_page_cubit/profile_page_cubit.dart';
 import 'package:ghost_chat/logic/cubit/send_message_cubit/send_message_cubit.dart';
 import 'package:ghost_chat/logic/cubit/update_acc_cubit/update_acc_cubit.dart';
@@ -140,6 +142,12 @@ class AppRouter {
               ),
               BlocProvider(
                 create: (context) => SendMessageCubit(),
+              ),
+              BlocProvider(
+                create: (context) => MessageButtonCubit(),
+              ),
+              BlocProvider(
+                create: (context) => MessageBoxCubit(),
               ),
             ],
             child: ChatPage(

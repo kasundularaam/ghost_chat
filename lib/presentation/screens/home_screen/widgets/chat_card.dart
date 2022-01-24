@@ -4,7 +4,8 @@ import 'package:ghost_chat/core/constants/strings.dart';
 import 'package:ghost_chat/core/permissions_service.dart';
 import 'package:ghost_chat/data/repositories/users_repo.dart';
 import 'package:ghost_chat/data/screen_args/chat_screen_args.dart';
-import 'package:ghost_chat/logic/cubit/chat_card_cubit/chat_card_cubit.dart';
+import 'package:ghost_chat/logic/cubit/chat_crd_img_cubit/chat_crd_img_cubit.dart';
+import 'package:ghost_chat/logic/cubit/message_count_cubit/message_count_cubit.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sizer/sizer.dart';
 
@@ -38,9 +39,10 @@ class ChatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<ChatCardCubit>(context).loadChatCard(
-        conversationId: conversation.conversationId,
-        friendId: conversation.friendId);
+    BlocProvider.of<ChatCrdImgCubit>(context)
+        .loadFriendImg(friendId: conversation.friendId);
+    BlocProvider.of<MessageCountCubit>(context)
+        .showUnreadMsgCount(conversationId: conversation.conversationId);
     return Column(
       children: [
         GestureDetector(
@@ -61,9 +63,9 @@ class ChatCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BlocBuilder<ChatCardCubit, ChatCardState>(
+                BlocBuilder<ChatCrdImgCubit, ChatCrdImgState>(
                   builder: (context, state) {
-                    if (state is ChatCardLoaded) {
+                    if (state is ChatCrdImgLoaded) {
                       return ClipOval(
                         child: state.friendImage != "null"
                             ? FadeInImage.assetNetwork(
@@ -147,9 +149,9 @@ class ChatCard extends StatelessWidget {
                       SizedBox(
                         height: 1.4.h,
                       ),
-                      BlocBuilder<ChatCardCubit, ChatCardState>(
+                      BlocBuilder<MessageCountCubit, MessageCountState>(
                         builder: (context, state) {
-                          if (state is ChatCardLoaded) {
+                          if (state is MessageCountShow) {
                             if (state.unreadMsgCount > 0) {
                               return Text(
                                 state.unreadMsgCount > 1
@@ -173,16 +175,6 @@ class ChatCard extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                               );
                             }
-                          } else if (state is ChatCardLoading) {
-                            return Text(
-                              "Checking for new messages..",
-                              style: TextStyle(
-                                color: AppColors.lightColor.withOpacity(0.7),
-                                fontSize: 11.sp,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            );
                           } else {
                             return Text(
                               "No new messages",

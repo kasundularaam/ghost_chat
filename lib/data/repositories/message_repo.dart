@@ -28,24 +28,23 @@ class MessageRepo {
     }
   }
 
-  static Future<int> getUnreadMsgCount({required String conversationId}) async {
+  static Stream<int> getUnreadMsgCount(
+      {required String conversationId}) async* {
     try {
-      QuerySnapshot snapshot = await conversationRef
-          .doc(conversationId)
-          .collection("message")
-          .where("messageStatus", isNotEqualTo: "Seen")
-          .get();
+      Stream<QuerySnapshot<Map<String, dynamic>>> querySnapshot =
+          conversationRef
+              .doc(conversationId)
+              .collection("message")
+              .where("reciverId", isEqualTo: AuthRepo.currentUid)
+              .where("messageStatus", isNotEqualTo: "Seen")
+              .snapshots();
 
-      List<DownloadMessage> messages = [];
+      Stream<int> countStream = querySnapshot.map((snapshot) => snapshot.docs
+          .map((document) => DownloadMessage.fromMap(document.data()))
+          .toList()
+          .length);
 
-      snapshot.docs.map((doc) {
-        Map<String, dynamic> map = doc.data() as Map<String, dynamic>;
-        DownloadMessage downloadMessage = DownloadMessage.fromMap(map);
-        if (downloadMessage.reciverId == AuthRepo.currentUid) {
-          messages.add(downloadMessage);
-        }
-      }).toList();
-      return messages.length;
+      yield* countStream;
     } catch (e) {
       throw e.toString();
     }

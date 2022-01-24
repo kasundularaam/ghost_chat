@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/data/models/conversation_model.dart';
 import 'package:ghost_chat/data/repositories/auth_repo.dart';
-import 'package:ghost_chat/logic/cubit/chat_card_cubit/chat_card_cubit.dart';
+import 'package:ghost_chat/logic/cubit/chat_crd_img_cubit/chat_crd_img_cubit.dart';
+import 'package:ghost_chat/logic/cubit/message_count_cubit/message_count_cubit.dart';
 import 'package:ghost_chat/presentation/router/app_router.dart';
 import 'package:sizer/sizer.dart';
 
@@ -80,8 +81,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
                                 itemBuilder: (context, index) {
                                   ConversationModel conversation =
                                       state.conversations[index];
-                                  return BlocProvider(
-                                    create: (context) => ChatCardCubit(),
+                                  return MultiBlocProvider(
+                                    providers: [
+                                      BlocProvider(
+                                        create: (context) => ChatCrdImgCubit(),
+                                      ),
+                                      BlocProvider(
+                                        create: (context) =>
+                                            MessageCountCubit(),
+                                      ),
+                                    ],
                                     child: ChatCard(
                                       conversation: conversation,
                                     ),
