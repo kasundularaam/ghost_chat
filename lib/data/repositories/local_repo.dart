@@ -38,14 +38,33 @@ class LocalRepo {
   static Future<String> getStImagePath(
       {required String conversationId,
       required String messageId,
-      required String stImgStoragePath}) async {
+      required String messageFilePath}) async {
     Directory directory = await getApplicationDocumentsDirectory();
     String filePath =
         "${directory.path}/recived/$conversationId/$messageId.png";
     File file = await File(filePath).create(recursive: true);
     try {
       await storage.FirebaseStorage.instance
-          .ref(stImgStoragePath)
+          .ref(messageFilePath)
+          .writeToFile(file);
+
+      return file.path;
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  static Future<String> getAudioFilePath(
+      {required String conversationId,
+      required String messageId,
+      required String messageFilePath}) async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    String filePath =
+        "${directory.path}/recived/$conversationId/$messageId.aac";
+    File file = await File(filePath).create(recursive: true);
+    try {
+      await storage.FirebaseStorage.instance
+          .ref(messageFilePath)
           .writeToFile(file);
 
       return file.path;

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ghost_chat/data/models/decoded_message_model.dart';
+import 'package:ghost_chat/data/models/fi_text_message.dart';
 import 'package:ghost_chat/data/repositories/auth_repo.dart';
 import 'package:ghost_chat/logic/cubit/message_box_cubit/message_box_cubit.dart';
 import 'package:ghost_chat/logic/cubit/message_button_cubit/message_button_cubit.dart';
 import 'package:ghost_chat/logic/cubit/send_message_cubit/send_message_cubit.dart';
+import 'package:ghost_chat/logic/cubit/voice_message_cubit/voice_message_cubit.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/message_box.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/send_button.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/voice_box.dart';
@@ -36,6 +37,9 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   TextEditingController controller = TextEditingController();
+  String audioFilePath = "";
+  String voiceMesgId = "";
+
   @override
   void initState() {
     super.initState();
@@ -43,21 +47,23 @@ class _ChatPageState extends State<ChatPage> {
       String message = controller.text;
 
       if (message.isNotEmpty) {
-        BlocProvider.of<MessageButtonCubit>(context).messageBtnSend();
+        BlocProvider.of<MessageButtonCubit>(context).messageBtnSendText();
       } else {
         BlocProvider.of<MessageButtonCubit>(context).messageBtnVoice();
       }
     });
   }
 
-  void sendMessage({required message}) {
+  void sendVoiceMessage() {}
+
+  void sendTextMessage({required message}) {
     if (message.isNotEmpty) {
       Uuid uuid = const Uuid();
       String messageId = uuid.v1();
       messageId = messageId.replaceAll(RegExp(r'[^\w\s]+'), '');
       String sentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
-      BlocProvider.of<SendMessageCubit>(context).sendMessage(
-        messageToSend: DecodedMessageModel(
+      BlocProvider.of<SendMessageCubit>(context).sendTextMessage(
+        messageToSend: FiTextMessage(
           messageId: messageId,
           senderId: AuthRepo.currentUid,
           reciverId: widget.args.friendId,
@@ -170,13 +176,18 @@ class _ChatPageState extends State<ChatPage> {
                       if (state is MessageBoxText) {
                         return MessageBox(controller: controller);
                       } else {
-                        return VoiceBox(
-                          onCancel: () {
-                            BlocProvider.of<MessageButtonCubit>(context)
-                                .messageBtnVoice();
-                            BlocProvider.of<MessageBoxCubit>(context)
-                                .messageBoxText();
-                          },
+                        return BlocProvider(
+                          create: (context) => VoiceMessageCubit(),
+                          child: VoiceBox(
+                            onCancel: () {
+                              BlocProvider.of<MessageButtonCubit>(context)
+                                  .messageBtnVoice();
+                              BlocProvider.of<MessageBoxCubit>(context)
+                                  .messageBoxText();
+                            },
+                            getAudioFilePath: (String) {},
+                            getMessageId: (String) {},
+                          ),
                         );
                       }
                     },
@@ -186,9 +197,14 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   BlocBuilder<MessageButtonCubit, MessageButtonState>(
                     builder: (context, state) {
-                      if (state is MessageButtonSend) {
+                      if (state is MessageButtonSendText) {
                         return SendButton(
-                          onTap: () => sendMessage(message: controller.text),
+                          onTap: () =>
+                              sendTextMessage(message: controller.text),
+                        );
+                      } else if (state is MessageButtonSendVoice) {
+                        return SendButton(
+                          onTap: () => sendVoiceMessage(),
                         );
                       } else {
                         return VoiceButton(
@@ -197,7 +213,7 @@ class _ChatPageState extends State<ChatPage> {
                                 .messageBoxVoice();
 
                             BlocProvider.of<MessageButtonCubit>(context)
-                                .messageBtnSend();
+                                .messageBtnSendVoice();
                           },
                         );
                       }

@@ -20,8 +20,8 @@ class MessageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<MessageCubit>(context)
-        .loadMessage(downloadMessage: message, conversationId: conversationId);
+    BlocProvider.of<MessageCubit>(context).loadTextMessage(
+        downloadMessage: message, conversationId: conversationId);
     BlocProvider.of<MessageStatusCubit>(context).getMessageStatus(
         conversationId: conversationId, messageId: message.messageId);
     bool myMsg = message.senderId == AuthRepo.currentUid;
@@ -66,7 +66,7 @@ class MyMsgLayout extends StatelessWidget {
                         ),
                       ),
                     );
-                  } else if (state is MessageLoaded) {
+                  } else if (state is MessageLoadedText) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -214,7 +214,7 @@ class FriendMsgLayout extends StatelessWidget {
                         ),
                       ),
                     );
-                  } else if (state is MessageLoaded) {
+                  } else if (state is MessageLoadedText) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

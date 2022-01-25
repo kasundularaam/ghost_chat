@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:ghost_chat/data/encrypt_services/handle_encode.dart';
-import 'package:ghost_chat/data/models/decoded_message_model.dart';
+import 'package:ghost_chat/data/models/fi_text_message.dart';
 import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/data/models/encoded_message_model.dart';
+import 'package:ghost_chat/data/models/fi_voice_message.dart';
 import 'package:ghost_chat/data/repositories/conversation_repo.dart';
 import 'package:ghost_chat/data/repositories/local_repo.dart';
 import 'package:ghost_chat/data/repositories/message_repo.dart';
@@ -17,28 +18,31 @@ part 'send_message_state.dart';
 class SendMessageCubit extends Cubit<SendMessageState> {
   SendMessageCubit() : super(SendMessageInitial());
 
-  Future<void> sendMessage({
-    required DecodedMessageModel messageToSend,
+  Future<void> sendTextMessage({
+    required FiTextMessage messageToSend,
     required String conversationId,
     required String friendNumber,
   }) async {
     try {
-      emit(SendMessageAddingToDB());
-      await MessageHelper.addMessage(decodedMessage: messageToSend);
-      DecodedMessageModel messageToEncode =
-          await MessageHelper.getMessage(messageId: messageToSend.messageId);
+      emit(
+        SendMessageAddingToDB(),
+      );
+      await MessageHelper.addTextMessage(fiTextMessage: messageToSend);
+      FiTextMessage messageToEncode = await MessageHelper.getTextMessage(
+        messageId: messageToSend.messageId,
+      );
 
       emit(
         SendMessageUploading(
           sendingMsg: DownloadMessage(
-            messageId: messageToEncode.messageId,
-            senderId: messageToEncode.senderId,
-            reciverId: messageToEncode.reciverId,
-            sentTimestamp: messageToEncode.sentTimestamp,
-            messageStatus: messageToEncode.messageStatus,
-            stImageStoragePath: "null",
-            messageLen: 0,
-          ),
+              messageId: messageToEncode.messageId,
+              senderId: messageToEncode.senderId,
+              reciverId: messageToEncode.reciverId,
+              sentTimestamp: messageToEncode.sentTimestamp,
+              messageStatus: messageToEncode.messageStatus,
+              msgFilePath: "null",
+              messageLen: 0,
+              isTextMsg: true),
         ),
       );
 
@@ -63,7 +67,7 @@ class SendMessageCubit extends Cubit<SendMessageState> {
         messageLen: messageToEncode.message.length,
       );
 
-      await MessageRepo.sendMessage(
+      await MessageRepo.sendTextMessage(
           message: encodedMessage, conversationId: conversationId);
       await ConversationRepo.updateConversation(
         friendId: encodedMessage.reciverId,
@@ -75,6 +79,54 @@ class SendMessageCubit extends Cubit<SendMessageState> {
       await MessageRepo.updateMessageStatus(
           conversationId: conversationId,
           messageId: encodedMessage.messageId,
+          messageStatus: "sent");
+      emit(SendMessageSent());
+    } catch (e) {
+      emit(SendMessageFailed(errorMsg: e.toString()));
+    }
+  }
+
+  Future<void> sendVoiceMessage({
+    required FiVoiceMessage messageToSend,
+    required String conversationId,
+    required String friendNumber,
+  }) async {
+    try {
+      emit(
+        SendMessageAddingToDB(),
+      );
+      await MessageHelper.addVoiceMessage(fiVoiceMessage: messageToSend);
+      FiVoiceMessage messageToUpload = await MessageHelper.getVoiceMsg(
+        messageId: messageToSend.messageId,
+      );
+
+      emit(
+        SendMessageUploading(
+          sendingMsg: DownloadMessage(
+            messageId: messageToUpload.messageId,
+            senderId: messageToUpload.senderId,
+            reciverId: messageToUpload.reciverId,
+            sentTimestamp: messageToUpload.sentTimestamp,
+            messageStatus: messageToUpload.messageStatus,
+            msgFilePath: messageToUpload.audioFilePath,
+            messageLen: 0,
+            isTextMsg: false,
+          ),
+        ),
+      );
+
+      await MessageRepo.sendVoiceMessage(
+          message: messageToUpload, conversationId: conversationId);
+      await ConversationRepo.updateConversation(
+        friendId: messageToUpload.reciverId,
+        lastUpdate: messageToUpload.sentTimestamp,
+        conversationId: conversationId,
+        friendNumber: friendNumber,
+        active: true,
+      );
+      await MessageRepo.updateMessageStatus(
+          conversationId: conversationId,
+          messageId: messageToUpload.messageId,
           messageStatus: "sent");
       emit(SendMessageSent());
     } catch (e) {

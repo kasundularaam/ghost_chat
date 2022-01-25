@@ -1,107 +1,91 @@
 import 'dart:convert';
 
-class DownloadMessage {
+class FiVoiceMessage {
   final String messageId;
-  final bool isTextMsg;
   final String senderId;
   final String reciverId;
   final String sentTimestamp;
   final String messageStatus;
-  final String msgFilePath;
-  final int messageLen;
-  DownloadMessage({
+  final String audioFilePath;
+  FiVoiceMessage({
     required this.messageId,
-    required this.isTextMsg,
     required this.senderId,
     required this.reciverId,
     required this.sentTimestamp,
     required this.messageStatus,
-    required this.msgFilePath,
-    required this.messageLen,
+    required this.audioFilePath,
   });
 
-  DownloadMessage copyWith({
+  FiVoiceMessage copyWith({
     String? messageId,
-    bool? isTextMsg,
     String? senderId,
     String? reciverId,
     String? sentTimestamp,
     String? messageStatus,
-    String? msgFilePath,
-    int? messageLen,
+    String? audioFilePath,
   }) {
-    return DownloadMessage(
+    return FiVoiceMessage(
       messageId: messageId ?? this.messageId,
-      isTextMsg: isTextMsg ?? this.isTextMsg,
       senderId: senderId ?? this.senderId,
       reciverId: reciverId ?? this.reciverId,
       sentTimestamp: sentTimestamp ?? this.sentTimestamp,
       messageStatus: messageStatus ?? this.messageStatus,
-      msgFilePath: msgFilePath ?? this.msgFilePath,
-      messageLen: messageLen ?? this.messageLen,
+      audioFilePath: audioFilePath ?? this.audioFilePath,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
       'messageId': messageId,
-      'isTextMsg': isTextMsg,
       'senderId': senderId,
       'reciverId': reciverId,
       'sentTimestamp': sentTimestamp,
       'messageStatus': messageStatus,
-      'msgFilePath': msgFilePath,
-      'messageLen': messageLen,
+      'audioFilePath': audioFilePath,
     };
   }
 
-  factory DownloadMessage.fromMap(Map<String, dynamic> map) {
-    return DownloadMessage(
+  factory FiVoiceMessage.fromMap(Map<String, dynamic> map) {
+    return FiVoiceMessage(
       messageId: map['messageId'] ?? '',
-      isTextMsg: map['isTextMsg'] ?? false,
       senderId: map['senderId'] ?? '',
       reciverId: map['reciverId'] ?? '',
       sentTimestamp: map['sentTimestamp'] ?? '',
       messageStatus: map['messageStatus'] ?? '',
-      msgFilePath: map['msgFilePath'] ?? '',
-      messageLen: map['messageLen']?.toInt() ?? 0,
+      audioFilePath: map['audioFilePath'] ?? '',
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory DownloadMessage.fromJson(String source) =>
-      DownloadMessage.fromMap(json.decode(source));
+  factory FiVoiceMessage.fromJson(String source) =>
+      FiVoiceMessage.fromMap(json.decode(source));
 
   @override
   String toString() {
-    return 'DownloadMessage(messageId: $messageId, isTextMsg: $isTextMsg, senderId: $senderId, reciverId: $reciverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, msgFilePath: $msgFilePath, messageLen: $messageLen)';
+    return 'FiVoiceMessage(messageId: $messageId, senderId: $senderId, reciverId: $reciverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, audioFilePath: $audioFilePath)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is DownloadMessage &&
+    return other is FiVoiceMessage &&
         other.messageId == messageId &&
-        other.isTextMsg == isTextMsg &&
         other.senderId == senderId &&
         other.reciverId == reciverId &&
         other.sentTimestamp == sentTimestamp &&
         other.messageStatus == messageStatus &&
-        other.msgFilePath == msgFilePath &&
-        other.messageLen == messageLen;
+        other.audioFilePath == audioFilePath;
   }
 
   @override
   int get hashCode {
     return messageId.hashCode ^
-        isTextMsg.hashCode ^
         senderId.hashCode ^
         reciverId.hashCode ^
         sentTimestamp.hashCode ^
         messageStatus.hashCode ^
-        msgFilePath.hashCode ^
-        messageLen.hashCode;
+        audioFilePath.hashCode;
   }
 }

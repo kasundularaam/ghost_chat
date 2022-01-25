@@ -5,9 +5,13 @@ import 'package:ghost_chat/core/constants/app_colors.dart';
 
 class VoiceBox extends StatelessWidget {
   final Function onCancel;
+  final Function(String) getMessageId;
+  final Function(String) getAudioFilePath;
   const VoiceBox({
     Key? key,
     required this.onCancel,
+    required this.getMessageId,
+    required this.getAudioFilePath,
   }) : super(key: key);
 
   @override

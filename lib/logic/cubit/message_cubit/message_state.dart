@@ -5,11 +5,29 @@ abstract class MessageState {}
 
 class MessageInitial extends MessageState {}
 
-class MessageLoading extends MessageState {}
+class MessageLoading extends MessageState {
+  final String loadingMsg;
+  MessageLoading({
+    required this.loadingMsg,
+  });
 
-class MessageLoaded extends MessageState {
-  final DecodedMessageModel message;
-  MessageLoaded({
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is MessageLoading && other.loadingMsg == loadingMsg;
+  }
+
+  @override
+  int get hashCode => loadingMsg.hashCode;
+
+  @override
+  String toString() => 'MessageLoading(loadingMsg: $loadingMsg)';
+}
+
+class MessageLoadedText extends MessageState {
+  final FiTextMessage message;
+  MessageLoadedText({
     required this.message,
   });
 
@@ -17,14 +35,34 @@ class MessageLoaded extends MessageState {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is MessageLoaded && other.message == message;
+    return other is MessageLoadedText && other.message == message;
   }
 
   @override
   int get hashCode => message.hashCode;
 
   @override
-  String toString() => 'MessageLoaded(message: $message)';
+  String toString() => 'MessageLoadedText(message: $message)';
+}
+
+class MessageLoadedVoice extends MessageState {
+  final FiVoiceMessage message;
+  MessageLoadedVoice({
+    required this.message,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is MessageLoadedVoice && other.message == message;
+  }
+
+  @override
+  int get hashCode => message.hashCode;
+
+  @override
+  String toString() => 'MessageLoadedVoice(message: $message)';
 }
 
 class MessageFailed extends MessageState {

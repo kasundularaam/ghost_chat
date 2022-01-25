@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-class DecodedMessageModel {
+class FiTextMessage {
   final String messageId;
   final String senderId;
   final String reciverId;
   final String sentTimestamp;
   final String messageStatus;
   final String message;
-  DecodedMessageModel({
+  FiTextMessage({
     required this.messageId,
     required this.senderId,
     required this.reciverId,
@@ -16,7 +16,7 @@ class DecodedMessageModel {
     required this.message,
   });
 
-  DecodedMessageModel copyWith({
+  FiTextMessage copyWith({
     String? messageId,
     String? senderId,
     String? reciverId,
@@ -24,7 +24,7 @@ class DecodedMessageModel {
     String? messageStatus,
     String? message,
   }) {
-    return DecodedMessageModel(
+    return FiTextMessage(
       messageId: messageId ?? this.messageId,
       senderId: senderId ?? this.senderId,
       reciverId: reciverId ?? this.reciverId,
@@ -45,8 +45,8 @@ class DecodedMessageModel {
     };
   }
 
-  factory DecodedMessageModel.fromMap(Map<String, dynamic> map) {
-    return DecodedMessageModel(
+  factory FiTextMessage.fromMap(Map<String, dynamic> map) {
+    return FiTextMessage(
       messageId: map['messageId'] ?? '',
       senderId: map['senderId'] ?? '',
       reciverId: map['reciverId'] ?? '',
@@ -58,19 +58,19 @@ class DecodedMessageModel {
 
   String toJson() => json.encode(toMap());
 
-  factory DecodedMessageModel.fromJson(String source) =>
-      DecodedMessageModel.fromMap(json.decode(source));
+  factory FiTextMessage.fromJson(String source) =>
+      FiTextMessage.fromMap(json.decode(source));
 
   @override
   String toString() {
-    return 'DecodedMessageModel(messageId: $messageId, senderId: $senderId, reciverId: $reciverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, message: $message)';
+    return 'FiTextMessage(messageId: $messageId, senderId: $senderId, reciverId: $reciverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, message: $message)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is DecodedMessageModel &&
+    return other is FiTextMessage &&
         other.messageId == messageId &&
         other.senderId == senderId &&
         other.reciverId == reciverId &&

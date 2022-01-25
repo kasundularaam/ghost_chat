@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/data/models/encoded_message_model.dart';
 import 'package:firebase_storage/firebase_storage.dart' as storage;
+import 'package:ghost_chat/data/models/fi_voice_message.dart';
 
 import 'auth_repo.dart';
 
@@ -50,7 +53,7 @@ class MessageRepo {
     }
   }
 
-  static Future<void> sendMessage(
+  static Future<void> sendTextMessage(
       {required EncodedMessageModel message,
       required String conversationId}) async {
     try {
@@ -66,8 +69,39 @@ class MessageRepo {
         reciverId: message.reciverId,
         sentTimestamp: message.sentTimestamp,
         messageStatus: message.messageStatus,
-        stImageStoragePath: stImageStoragePath,
+        msgFilePath: stImageStoragePath,
         messageLen: message.messageLen,
+        isTextMsg: true,
+      );
+
+      await conversationRef
+          .doc(conversationId)
+          .collection("message")
+          .doc(downloadMessage.messageId)
+          .set(downloadMessage.toMap());
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  static Future<void> sendVoiceMessage(
+      {required FiVoiceMessage message, required String conversationId}) async {
+    try {
+      String audioFilePath =
+          "conversation/$conversationId/${message.messageId}.aac";
+      storage.Reference audioFileRef =
+          storage.FirebaseStorage.instance.ref(audioFilePath);
+      await audioFileRef.putFile(File(message.audioFilePath));
+
+      DownloadMessage downloadMessage = DownloadMessage(
+        messageId: message.messageId,
+        senderId: message.senderId,
+        reciverId: message.reciverId,
+        sentTimestamp: message.sentTimestamp,
+        messageStatus: message.messageStatus,
+        msgFilePath: audioFilePath,
+        messageLen: 0,
+        isTextMsg: false,
       );
 
       await conversationRef
