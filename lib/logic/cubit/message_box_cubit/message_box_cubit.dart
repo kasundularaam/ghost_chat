@@ -8,4 +8,6 @@ class MessageBoxCubit extends Cubit<MessageBoxState> {
 
   void messageBoxText() => emit(MessageBoxText());
   void messageBoxVoice() => emit(MessageBoxVoice());
+  void messageBoxLoading({required String loadingMsg}) =>
+      emit(MessageBoxLoading(loadingMsg: loadingMsg));
 }

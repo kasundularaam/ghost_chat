@@ -2,7 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:ghost_chat/data/models/download_message.dart';
+import 'package:ghost_chat/data/models/fi_voice_message.dart';
+import 'package:ghost_chat/data/repositories/conversation_repo.dart';
+import 'package:ghost_chat/data/repositories/message_repo.dart';
 import 'package:ghost_chat/data/repositories/sound_recorder.dart';
+import 'package:ghost_chat/data/sqlite/message_helper.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
@@ -41,9 +46,10 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
         timeString = "$hoursStr" ":" "$minutesStr" ":" "$secondsStr";
         emit(
           VoiceMessageRecording(
-              recordTime: timeString,
-              filePath: pathToSave,
-              messageId: messageId),
+            recordTime: timeString,
+            filePath: pathToSave,
+            messageId: messageId,
+          ),
         );
       });
     } catch (e) {
@@ -61,18 +67,59 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
         _myTimer = null;
       }
       soundRecorder.delete(filePath: filePath);
+      emit(VoiceMessageCanceled());
+      emit(VoiceMessageInitial());
     } catch (e) {
       print(e);
     }
   }
 
-  Future<void> sendVoiceMsg() async {
+  Future<void> sendVoiceMsg({
+    required FiVoiceMessage voiceMessage,
+    required String conversationId,
+    required String friendNumber,
+  }) async {
     if (_myTimer != null) {
       _myTimer!.cancel();
       _myTimer = null;
     }
-    try {} catch (e) {
-      print(e);
+    try {
+      emit(VoiceMessageAddingToDB());
+      await MessageHelper.addVoiceMessage(fiVoiceMessage: voiceMessage);
+      FiVoiceMessage messageToUpload = await MessageHelper.getVoiceMsg(
+        messageId: voiceMessage.messageId,
+      );
+      emit(
+        VoiceMessageUploading(
+          uploadingMsg: DownloadMessage(
+              messageId: messageToUpload.messageId,
+              senderId: messageToUpload.senderId,
+              reciverId: messageToUpload.reciverId,
+              sentTimestamp: messageToUpload.sentTimestamp,
+              messageStatus: messageToUpload.messageStatus,
+              msgFilePath: messageToUpload.audioFilePath,
+              messageLen: 0,
+              isTextMsg: false),
+        ),
+      );
+      await MessageRepo.sendVoiceMessage(
+        message: messageToUpload,
+        conversationId: conversationId,
+      );
+      await ConversationRepo.updateConversation(
+        friendId: messageToUpload.reciverId,
+        lastUpdate: messageToUpload.sentTimestamp,
+        conversationId: conversationId,
+        friendNumber: friendNumber,
+        active: true,
+      );
+      await MessageRepo.updateMessageStatus(
+          conversationId: conversationId,
+          messageId: messageToUpload.messageId,
+          messageStatus: "Sent");
+      emit(VoiceMessageSent());
+    } catch (e) {
+      emit(VoiceMessageFailed(errorMsg: e.toString()));
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/data/models/fi_text_message.dart';
+import 'package:ghost_chat/data/models/fi_voice_message.dart';
 import 'package:ghost_chat/data/repositories/auth_repo.dart';
 import 'package:ghost_chat/logic/cubit/message_box_cubit/message_box_cubit.dart';
 import 'package:ghost_chat/logic/cubit/message_button_cubit/message_button_cubit.dart';
@@ -43,7 +44,9 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+
     controller.addListener(() {
+      BlocProvider.of<VoiceMessageCubit>(context).init();
       String message = controller.text;
 
       if (message.isNotEmpty) {
@@ -54,7 +57,24 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-  void sendVoiceMessage() {}
+  void sendVoiceMessage() {
+    if (audioFilePath.isNotEmpty && voiceMesgId.isNotEmpty) {
+      String sentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
+      BlocProvider.of<VoiceMessageCubit>(context).sendVoiceMsg(
+        voiceMessage: FiVoiceMessage(
+            messageId: voiceMesgId,
+            senderId: AuthRepo.currentUid,
+            reciverId: widget.args.friendId,
+            sentTimestamp: sentTimestamp,
+            messageStatus: "Sending",
+            audioFilePath: audioFilePath),
+        conversationId: widget.args.conversationId,
+        friendNumber: widget.args.friendNumber,
+      );
+      audioFilePath = "";
+      voiceMesgId = "";
+    }
+  }
 
   void sendTextMessage({required message}) {
     if (message.isNotEmpty) {
@@ -80,7 +100,9 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
+    controller.clear();
     controller.dispose();
+    BlocProvider.of<VoiceMessageCubit>(context).dispose();
     super.dispose();
   }
 
@@ -163,6 +185,39 @@ class _ChatPageState extends State<ChatPage> {
                 },
               ),
             ),
+            BlocListener<SendMessageCubit, SendMessageState>(
+              listener: (context, state) {
+                if (state is SendMessageAddingToDB) {
+                  BlocProvider.of<MessageButtonCubit>(context)
+                      .messageBtnLoading();
+                  BlocProvider.of<MessageBoxCubit>(context)
+                      .messageBoxLoading(loadingMsg: "getting ready...");
+                } else if (state is SendMessageUploading) {
+                  BlocProvider.of<ChatPageCubit>(context).addSendMessage(
+                    downloadedMsg: state.sendingMsg,
+                  );
+                }
+              },
+              child: const SizedBox(),
+            ),
+            BlocListener<VoiceMessageCubit, VoiceMessageState>(
+              listener: (context, state) {
+                if (state is VoiceMessageCanceled) {
+                  BlocProvider.of<MessageButtonCubit>(context)
+                      .messageBtnVoice();
+                  BlocProvider.of<MessageBoxCubit>(context).messageBoxText();
+                } else if (state is VoiceMessageAddingToDB) {
+                  BlocProvider.of<MessageButtonCubit>(context)
+                      .messageBtnLoading();
+                  BlocProvider.of<MessageBoxCubit>(context)
+                      .messageBoxLoading(loadingMsg: "getting ready...");
+                } else if (state is VoiceMessageUploading) {
+                  BlocProvider.of<ChatPageCubit>(context)
+                      .addSendMessage(downloadedMsg: state.uploadingMsg);
+                }
+              },
+              child: const SizedBox(),
+            ),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
               decoration: const BoxDecoration(
@@ -175,19 +230,29 @@ class _ChatPageState extends State<ChatPage> {
                     builder: (context, state) {
                       if (state is MessageBoxText) {
                         return MessageBox(controller: controller);
-                      } else {
-                        return BlocProvider(
-                          create: (context) => VoiceMessageCubit(),
-                          child: VoiceBox(
-                            onCancel: () {
-                              BlocProvider.of<MessageButtonCubit>(context)
-                                  .messageBtnVoice();
-                              BlocProvider.of<MessageBoxCubit>(context)
-                                  .messageBoxText();
-                            },
-                            getAudioFilePath: (String) {},
-                            getMessageId: (String) {},
+                      } else if (state is MessageBoxLoading) {
+                        return Expanded(
+                          child: Center(
+                            child: Text(
+                              state.loadingMsg,
+                              style: TextStyle(
+                                color: AppColors.lightColor.withOpacity(0.7),
+                                fontSize: 10.sp,
+                              ),
+                            ),
                           ),
+                        );
+                      } else {
+                        return VoiceBox(
+                          onCancel: () {
+                            BlocProvider.of<VoiceMessageCubit>(context)
+                                .cancelRecording(
+                              filePath: audioFilePath,
+                            );
+                          },
+                          getAudioFilePath: (pathStr) =>
+                              audioFilePath = pathStr,
+                          getMessageId: (idStr) => voiceMesgId = idStr,
                         );
                       }
                     },
@@ -206,6 +271,14 @@ class _ChatPageState extends State<ChatPage> {
                         return SendButton(
                           onTap: () => sendVoiceMessage(),
                         );
+                      } else if (state is MessageButtonLoading) {
+                        return SizedBox(
+                          width: 10.w,
+                          height: 10.w,
+                          child: const CircularProgressIndicator(
+                            color: AppColors.primaryColor,
+                          ),
+                        );
                       } else {
                         return VoiceButton(
                           onTap: () {
@@ -214,6 +287,10 @@ class _ChatPageState extends State<ChatPage> {
 
                             BlocProvider.of<MessageButtonCubit>(context)
                                 .messageBtnSendVoice();
+                            BlocProvider.of<VoiceMessageCubit>(context)
+                                .startRecording(
+                              conversationId: widget.args.conversationId,
+                            );
                           },
                         );
                       }

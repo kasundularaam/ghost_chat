@@ -9,4 +9,5 @@ class MessageButtonCubit extends Cubit<MessageButtonState> {
   void messageBtnVoice() => emit(MessageButtonVoice());
   void messageBtnSendText() => emit(MessageButtonSendText());
   void messageBtnSendVoice() => emit(MessageButtonSendVoice());
+  void messageBtnLoading() => emit(MessageButtonLoading());
 }

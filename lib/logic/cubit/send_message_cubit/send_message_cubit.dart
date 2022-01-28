@@ -79,7 +79,7 @@ class SendMessageCubit extends Cubit<SendMessageState> {
       await MessageRepo.updateMessageStatus(
           conversationId: conversationId,
           messageId: encodedMessage.messageId,
-          messageStatus: "sent");
+          messageStatus: "Sent");
       emit(SendMessageSent());
     } catch (e) {
       emit(SendMessageFailed(errorMsg: e.toString()));

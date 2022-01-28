@@ -36,4 +36,46 @@ class VoiceMessageRecording extends VoiceMessageState {
 
 class VoiceMessageCanceled extends VoiceMessageState {}
 
+class VoiceMessageAddingToDB extends VoiceMessageState {}
+
+class VoiceMessageUploading extends VoiceMessageState {
+  final DownloadMessage uploadingMsg;
+  VoiceMessageUploading({
+    required this.uploadingMsg,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is VoiceMessageUploading && other.uploadingMsg == uploadingMsg;
+  }
+
+  @override
+  int get hashCode => uploadingMsg.hashCode;
+
+  @override
+  String toString() => 'VoiceMessageUploading(uploadingMsg: $uploadingMsg)';
+}
+
 class VoiceMessageSent extends VoiceMessageState {}
+
+class VoiceMessageFailed extends VoiceMessageState {
+  final String errorMsg;
+  VoiceMessageFailed({
+    required this.errorMsg,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is VoiceMessageFailed && other.errorMsg == errorMsg;
+  }
+
+  @override
+  int get hashCode => errorMsg.hashCode;
+
+  @override
+  String toString() => 'VoiceMessageFailed(errorMsg: $errorMsg)';
+}

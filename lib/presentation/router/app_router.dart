@@ -19,6 +19,7 @@ import 'package:ghost_chat/logic/cubit/profile_page_cubit/profile_page_cubit.dar
 import 'package:ghost_chat/logic/cubit/send_message_cubit/send_message_cubit.dart';
 import 'package:ghost_chat/logic/cubit/update_acc_cubit/update_acc_cubit.dart';
 import 'package:ghost_chat/logic/cubit/user_stats_cubit/user_stats_cubit.dart';
+import 'package:ghost_chat/logic/cubit/voice_message_cubit/voice_message_cubit.dart';
 import 'package:ghost_chat/presentation/screens/auth_screen/auth_page.dart';
 import 'package:ghost_chat/presentation/screens/auth_screen/create_profile_page.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/chat_page.dart';
@@ -148,6 +149,9 @@ class AppRouter {
               ),
               BlocProvider(
                 create: (context) => MessageBoxCubit(),
+              ),
+              BlocProvider(
+                create: (context) => VoiceMessageCubit(),
               ),
             ],
             child: ChatPage(

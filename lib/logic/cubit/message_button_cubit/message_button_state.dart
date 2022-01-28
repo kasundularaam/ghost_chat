@@ -8,3 +8,5 @@ class MessageButtonSendText extends MessageButtonState {}
 class MessageButtonSendVoice extends MessageButtonState {}
 
 class MessageButtonVoice extends MessageButtonState {}
+
+class MessageButtonLoading extends MessageButtonState {}

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghost_chat/logic/cubit/voice_message_cubit/voice_message_cubit.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
@@ -40,12 +42,32 @@ class VoiceBox extends StatelessWidget {
             SizedBox(
               width: 5.w,
             ),
-            Text(
-              "00:00",
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: AppColors.lightColor,
-              ),
+            BlocConsumer<VoiceMessageCubit, VoiceMessageState>(
+              listener: (context, state) {
+                if (state is VoiceMessageRecording) {
+                  getAudioFilePath(state.filePath);
+                  getMessageId(state.messageId);
+                }
+              },
+              builder: (context, state) {
+                if (state is VoiceMessageRecording) {
+                  return Text(
+                    state.recordTime,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: AppColors.lightColor,
+                    ),
+                  );
+                } else {
+                  return Text(
+                    "00:00",
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: AppColors.lightColor,
+                    ),
+                  );
+                }
+              },
             ),
             SizedBox(
               width: 5.w,
