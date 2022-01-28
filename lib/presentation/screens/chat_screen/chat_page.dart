@@ -193,9 +193,16 @@ class _ChatPageState extends State<ChatPage> {
                   BlocProvider.of<MessageBoxCubit>(context)
                       .messageBoxLoading(loadingMsg: "getting ready...");
                 } else if (state is SendMessageUploading) {
+                  BlocProvider.of<MessageButtonCubit>(context)
+                      .messageBtnVoice();
+                  BlocProvider.of<MessageBoxCubit>(context).messageBoxText();
                   BlocProvider.of<ChatPageCubit>(context).addSendMessage(
                     downloadedMsg: state.sendingMsg,
                   );
+                } else {
+                  BlocProvider.of<MessageButtonCubit>(context)
+                      .messageBtnVoice();
+                  BlocProvider.of<MessageBoxCubit>(context).messageBoxText();
                 }
               },
               child: const SizedBox(),
@@ -212,8 +219,15 @@ class _ChatPageState extends State<ChatPage> {
                   BlocProvider.of<MessageBoxCubit>(context)
                       .messageBoxLoading(loadingMsg: "getting ready...");
                 } else if (state is VoiceMessageUploading) {
+                  BlocProvider.of<MessageButtonCubit>(context)
+                      .messageBtnVoice();
+                  BlocProvider.of<MessageBoxCubit>(context).messageBoxText();
                   BlocProvider.of<ChatPageCubit>(context)
                       .addSendMessage(downloadedMsg: state.uploadingMsg);
+                } else {
+                  BlocProvider.of<MessageButtonCubit>(context)
+                      .messageBtnVoice();
+                  BlocProvider.of<MessageBoxCubit>(context).messageBoxText();
                 }
               },
               child: const SizedBox(),
@@ -273,8 +287,8 @@ class _ChatPageState extends State<ChatPage> {
                         );
                       } else if (state is MessageButtonLoading) {
                         return SizedBox(
-                          width: 10.w,
-                          height: 10.w,
+                          width: 10.sp,
+                          height: 10.sp,
                           child: const CircularProgressIndicator(
                             color: AppColors.primaryColor,
                           ),
