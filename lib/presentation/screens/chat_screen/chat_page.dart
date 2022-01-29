@@ -224,6 +224,10 @@ class _ChatPageState extends State<ChatPage> {
                   BlocProvider.of<MessageBoxCubit>(context).messageBoxText();
                   BlocProvider.of<ChatPageCubit>(context)
                       .addSendMessage(downloadedMsg: state.uploadingMsg);
+                } else if (state is VoiceMessageRecording) {
+                  BlocProvider.of<MessageButtonCubit>(context)
+                      .messageBtnSendVoice();
+                  BlocProvider.of<MessageBoxCubit>(context).messageBoxVoice();
                 } else {
                   BlocProvider.of<MessageButtonCubit>(context)
                       .messageBtnVoice();
