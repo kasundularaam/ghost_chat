@@ -35,7 +35,7 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
       String messageId = uuid.v1();
       messageId = messageId.replaceAll(RegExp(r'[^\w\s]+'), '');
       Directory dir = await getApplicationSupportDirectory();
-      String pathToSave = "${dir.path}/send/$conversationId/$messageId.aac";
+      String pathToSave = "${dir.path}/send/$conversationId/$messageId.m4a";
       soundRecorder.record(pathToSave: pathToSave);
       _myTimer = Timer.periodic(timerInterval, (timer) {
         counter++;

@@ -7,14 +7,15 @@ import 'package:meta/meta.dart';
 part 'voice_msg_player_state.dart';
 
 class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
-  VoiceMsgPlayerCubit() : super(VoiceMsgPlayerInitial());
+  AudioPlayer player;
+  VoiceMsgPlayerCubit({required this.player}) : super(VoiceMsgPlayerInitial());
 
-  AudioPlayer player = AudioPlayer();
   Timer? timer;
   int counter = 0;
   Duration timerInterval = const Duration(milliseconds: 200);
 
   Future<void> loadPlayer({required audioFilePath}) async {
+    print("AUDIOOOO>>>>> $audioFilePath");
     try {
       emit(VoiceMsgPlayerLoading());
       Duration? duration = await player.setFilePath(audioFilePath);
@@ -23,8 +24,11 @@ class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
         int audioLength = duration.inMilliseconds;
         await player.setPitch(0);
         emit(VoiceMsgPlayerLoaded(audioLength: audioLength));
+      }else{
+        emit(VoiceMsgPlayerFailed(errorMsg: "An error occurred"));
       }
     } catch (e) {
+      print("ERROR>>>>> $e");
       emit(VoiceMsgPlayerFailed(errorMsg: e.toString()));
     }
   }
@@ -49,5 +53,4 @@ class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
     }
   }
 
-  void disposePlayer() => player.dispose();
 }

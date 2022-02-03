@@ -41,7 +41,7 @@ class LocalRepo {
       required String messageFilePath}) async {
     Directory directory = await getApplicationDocumentsDirectory();
     String filePath =
-        "${directory.path}/recived/$conversationId/$messageId.png";
+        "${directory.path}/received/$conversationId/$messageId.png";
     File file = await File(filePath).create(recursive: true);
     try {
       await storage.FirebaseStorage.instance
@@ -60,7 +60,7 @@ class LocalRepo {
       required String messageFilePath}) async {
     Directory directory = await getApplicationDocumentsDirectory();
     String filePath =
-        "${directory.path}/recived/$conversationId/$messageId.aac";
+        "${directory.path}/received/$conversationId/$messageId.m4a";
     File file = await File(filePath).create(recursive: true);
     try {
       await storage.FirebaseStorage.instance

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/logic/cubit/voice_msg_player_cubit/voice_msg_player_cubit.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/voice_msg_player.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -23,12 +24,27 @@ class FriendVoiceMsgLayout extends StatefulWidget {
 }
 
 class _FriendVoiceMsgLayoutState extends State<FriendVoiceMsgLayout> {
+
+  AudioPlayer? audioPlayer;
+
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    audioPlayer = AudioPlayer();
     BlocProvider.of<MessageCubit>(context).loadVoiceMessage(
       conversationId: widget.conversationId,
       downloadMessage: widget.downloadMessage,
     );
+    super.initState();
+  }
+  @override
+  void dispose() {
+    audioPlayer!.dispose();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+
     return Column(
       children: [
         Row(
@@ -63,7 +79,7 @@ class _FriendVoiceMsgLayoutState extends State<FriendVoiceMsgLayout> {
                             borderRadius: BorderRadius.circular(2.w),
                           ),
                           child: BlocProvider(
-                            create: (context) => VoiceMsgPlayerCubit(),
+                            create: (context) => VoiceMsgPlayerCubit(player: audioPlayer!),
                             child: VoiceMsgPlayer(
                               audioFilePath: state.message.audioFilePath,
                             ),

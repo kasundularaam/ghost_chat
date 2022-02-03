@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ghost_chat/logic/cubit/message_status_cubit/message_status_cubit.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/friend_voice_msg_layout.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/my_voice_msg_layout.dart';
-import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/data/repositories/auth_repo.dart';
-import 'package:ghost_chat/logic/cubit/message_cubit/message_cubit.dart';
 
 import 'friend_text_msg_layout.dart';
 import 'my_text_msg_layout.dart';

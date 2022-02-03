@@ -26,12 +26,6 @@ class _VoiceMsgPlayerState extends State<VoiceMsgPlayer> {
   }
 
   @override
-  void dispose() {
-    BlocProvider.of<VoiceMsgPlayerCubit>(context).disposePlayer();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return BlocBuilder<VoiceMsgPlayerCubit, VoiceMsgPlayerState>(
       builder: (context, state) {

@@ -39,30 +39,29 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   TextEditingController controller = TextEditingController();
   String audioFilePath = "";
-  String voiceMesgId = "";
+  String voiceMsgId = "";
 
   @override
   void initState() {
-    super.initState();
 
+    BlocProvider.of<VoiceMessageCubit>(context).init();
     controller.addListener(() {
-      BlocProvider.of<VoiceMessageCubit>(context).init();
       String message = controller.text;
-
       if (message.isNotEmpty) {
         BlocProvider.of<MessageButtonCubit>(context).messageBtnSendText();
       } else {
         BlocProvider.of<MessageButtonCubit>(context).messageBtnVoice();
       }
     });
+    super.initState();
   }
 
   void sendVoiceMessage() {
-    if (audioFilePath.isNotEmpty && voiceMesgId.isNotEmpty) {
+    if (audioFilePath.isNotEmpty && voiceMsgId.isNotEmpty) {
       String sentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
       BlocProvider.of<VoiceMessageCubit>(context).sendVoiceMsg(
         voiceMessage: FiVoiceMessage(
-            messageId: voiceMesgId,
+            messageId: voiceMsgId,
             senderId: AuthRepo.currentUid,
             reciverId: widget.args.friendId,
             sentTimestamp: sentTimestamp,
@@ -72,7 +71,7 @@ class _ChatPageState extends State<ChatPage> {
         friendNumber: widget.args.friendNumber,
       );
       audioFilePath = "";
-      voiceMesgId = "";
+      voiceMsgId = "";
     }
   }
 
@@ -271,7 +270,7 @@ class _ChatPageState extends State<ChatPage> {
                           },
                           getAudioFilePath: (pathStr) =>
                               audioFilePath = pathStr,
-                          getMessageId: (idStr) => voiceMesgId = idStr,
+                          getMessageId: (idStr) => voiceMsgId = idStr,
                         );
                       }
                     },

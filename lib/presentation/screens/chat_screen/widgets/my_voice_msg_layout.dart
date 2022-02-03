@@ -26,29 +26,10 @@ class MyVoiceMsgLayout extends StatefulWidget {
 }
 
 class _MyVoiceMsgLayoutState extends State<MyVoiceMsgLayout> {
-  AudioPlayer? player;
+  AudioPlayer? audioPlayer;
   @override
   void initState() {
-    player = AudioPlayer();
-    super.initState();
-  }
-
-  Future<void> readyPlayer({required String filePath}) async {
-    try {
-      await player!.setFilePath(filePath);
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  @override
-  void dispose() {
-    player!.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+    audioPlayer = AudioPlayer();
     BlocProvider.of<MessageCubit>(context).loadVoiceMessage(
       downloadMessage: widget.downloadMessage,
       conversationId: widget.conversationId,
@@ -57,6 +38,18 @@ class _MyVoiceMsgLayoutState extends State<MyVoiceMsgLayout> {
       conversationId: widget.conversationId,
       messageId: widget.downloadMessage.messageId,
     );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    audioPlayer!.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
     return Column(
       children: [
         Row(
@@ -84,7 +77,6 @@ class _MyVoiceMsgLayoutState extends State<MyVoiceMsgLayout> {
                       ),
                     );
                   } else if (state is MessageLoadedVoice) {
-                    readyPlayer(filePath: state.message.audioFilePath);
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -95,7 +87,7 @@ class _MyVoiceMsgLayoutState extends State<MyVoiceMsgLayout> {
                             borderRadius: BorderRadius.circular(2.w),
                           ),
                           child: BlocProvider(
-                            create: (context) => VoiceMsgPlayerCubit(),
+                            create: (context) => VoiceMsgPlayerCubit(player: audioPlayer!),
                             child: VoiceMsgPlayer(
                               audioFilePath: state.message.audioFilePath,
                             ),
