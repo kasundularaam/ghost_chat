@@ -102,7 +102,7 @@ class MessageCubit extends Cubit<MessageState> {
           );
         } else {
           emit(MessageLoading(loadingMsg: "downloading voice message..."));
-          String downloadedAudioPath = await LocalRepo.getStImagePath(
+          String downloadedAudioPath = await LocalRepo.getAudioFilePath(
             conversationId: conversationId,
             messageId: downloadMessage.messageId,
             messageFilePath: downloadMessage.msgFilePath,

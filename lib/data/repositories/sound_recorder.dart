@@ -5,7 +5,8 @@ class SoundRecorder {
   FlutterSoundRecorder? soundRecorder;
   bool isInitialized = false;
 
-  bool get isRecording => soundRecorder!.isRecording;
+  bool get isRecording =>
+      soundRecorder != null ? soundRecorder!.isRecording : false;
 
   Future init() async {
     soundRecorder = FlutterSoundRecorder();

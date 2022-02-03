@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghost_chat/logic/cubit/voice_msg_player_cubit/voice_msg_player_cubit.dart';
+import 'package:ghost_chat/presentation/screens/chat_screen/widgets/voice_msg_player.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -7,20 +9,25 @@ import 'package:ghost_chat/core/constants/app_colors.dart';
 import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/logic/cubit/message_cubit/message_cubit.dart';
 
-class FriendTextMsgLayout extends StatelessWidget {
+class FriendVoiceMsgLayout extends StatefulWidget {
   final String conversationId;
   final DownloadMessage downloadMessage;
-  const FriendTextMsgLayout({
+  const FriendVoiceMsgLayout({
     Key? key,
     required this.conversationId,
     required this.downloadMessage,
   }) : super(key: key);
 
   @override
+  State<FriendVoiceMsgLayout> createState() => _FriendVoiceMsgLayoutState();
+}
+
+class _FriendVoiceMsgLayoutState extends State<FriendVoiceMsgLayout> {
+  @override
   Widget build(BuildContext context) {
-    BlocProvider.of<MessageCubit>(context).loadTextMessage(
-      downloadMessage: downloadMessage,
-      conversationId: conversationId,
+    BlocProvider.of<MessageCubit>(context).loadVoiceMessage(
+      conversationId: widget.conversationId,
+      downloadMessage: widget.downloadMessage,
     );
     return Column(
       children: [
@@ -45,23 +52,20 @@ class FriendTextMsgLayout extends StatelessWidget {
                         ),
                       ),
                     );
-                  } else if (state is MessageLoadedText) {
+                  } else if (state is MessageLoadedVoice) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          padding: EdgeInsets.all(
-                            2.w,
-                          ),
+                          padding: EdgeInsets.all(2.w),
                           decoration: BoxDecoration(
                             color: AppColors.primaryColor,
                             borderRadius: BorderRadius.circular(2.w),
                           ),
-                          child: Text(
-                            state.message.message,
-                            style: TextStyle(
-                              color: AppColors.lightColor,
-                              fontSize: 12.sp,
+                          child: BlocProvider(
+                            create: (context) => VoiceMsgPlayerCubit(),
+                            child: VoiceMsgPlayer(
+                              audioFilePath: state.message.audioFilePath,
                             ),
                           ),
                         ),

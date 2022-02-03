@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghost_chat/logic/cubit/voice_msg_player_cubit/voice_msg_player_cubit.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -8,24 +10,52 @@ import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/logic/cubit/message_cubit/message_cubit.dart';
 import 'package:ghost_chat/logic/cubit/message_status_cubit/message_status_cubit.dart';
 
-class MyTextMsgLayout extends StatelessWidget {
+import 'voice_msg_player.dart';
+
+class MyVoiceMsgLayout extends StatefulWidget {
   final String conversationId;
   final DownloadMessage downloadMessage;
-  const MyTextMsgLayout({
+  const MyVoiceMsgLayout({
     Key? key,
     required this.conversationId,
     required this.downloadMessage,
   }) : super(key: key);
 
   @override
+  State<MyVoiceMsgLayout> createState() => _MyVoiceMsgLayoutState();
+}
+
+class _MyVoiceMsgLayoutState extends State<MyVoiceMsgLayout> {
+  AudioPlayer? player;
+  @override
+  void initState() {
+    player = AudioPlayer();
+    super.initState();
+  }
+
+  Future<void> readyPlayer({required String filePath}) async {
+    try {
+      await player!.setFilePath(filePath);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  void dispose() {
+    player!.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    BlocProvider.of<MessageCubit>(context).loadTextMessage(
-      downloadMessage: downloadMessage,
-      conversationId: conversationId,
+    BlocProvider.of<MessageCubit>(context).loadVoiceMessage(
+      downloadMessage: widget.downloadMessage,
+      conversationId: widget.conversationId,
     );
     BlocProvider.of<MessageStatusCubit>(context).getMessageStatus(
-      conversationId: conversationId,
-      messageId: downloadMessage.messageId,
+      conversationId: widget.conversationId,
+      messageId: widget.downloadMessage.messageId,
     );
     return Column(
       children: [
@@ -53,7 +83,8 @@ class MyTextMsgLayout extends StatelessWidget {
                         ),
                       ),
                     );
-                  } else if (state is MessageLoadedText) {
+                  } else if (state is MessageLoadedVoice) {
+                    readyPlayer(filePath: state.message.audioFilePath);
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -63,11 +94,10 @@ class MyTextMsgLayout extends StatelessWidget {
                             color: Colors.black,
                             borderRadius: BorderRadius.circular(2.w),
                           ),
-                          child: Text(
-                            state.message.message,
-                            style: TextStyle(
-                              color: AppColors.lightColor,
-                              fontSize: 13.sp,
+                          child: BlocProvider(
+                            create: (context) => VoiceMsgPlayerCubit(),
+                            child: VoiceMsgPlayer(
+                              audioFilePath: state.message.audioFilePath,
                             ),
                           ),
                         ),

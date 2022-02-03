@@ -62,13 +62,16 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
       if (soundRecorder.isRecording) {
         soundRecorder.stop();
       }
-      if (_myTimer != null) {
-        _myTimer!.cancel();
-        _myTimer = null;
+
+      if (!soundRecorder.isRecording) {
+        if (_myTimer != null) {
+          counter = 0;
+          _myTimer!.cancel();
+          _myTimer = null;
+          soundRecorder.delete(filePath: filePath);
+          emit(VoiceMessageCanceled());
+        }
       }
-      soundRecorder.delete(filePath: filePath);
-      emit(VoiceMessageCanceled());
-      emit(VoiceMessageInitial());
     } catch (e) {
       print(e);
     }
@@ -79,47 +82,55 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
     required String conversationId,
     required String friendNumber,
   }) async {
-    if (_myTimer != null) {
-      _myTimer!.cancel();
-      _myTimer = null;
+    if (soundRecorder.isRecording) {
+      soundRecorder.stop();
     }
-    try {
-      emit(VoiceMessageAddingToDB());
-      await MessageHelper.addVoiceMessage(fiVoiceMessage: voiceMessage);
-      FiVoiceMessage messageToUpload = await MessageHelper.getVoiceMsg(
-        messageId: voiceMessage.messageId,
-      );
-      emit(
-        VoiceMessageUploading(
-          uploadingMsg: DownloadMessage(
+
+    if (!soundRecorder.isRecording) {
+      if (_myTimer != null) {
+        counter = 0;
+        _myTimer!.cancel();
+        _myTimer = null;
+
+        try {
+          emit(VoiceMessageAddingToDB());
+          await MessageHelper.addVoiceMessage(fiVoiceMessage: voiceMessage);
+          FiVoiceMessage messageToUpload = await MessageHelper.getVoiceMsg(
+            messageId: voiceMessage.messageId,
+          );
+          emit(
+            VoiceMessageUploading(
+              uploadingMsg: DownloadMessage(
+                  messageId: messageToUpload.messageId,
+                  senderId: messageToUpload.senderId,
+                  reciverId: messageToUpload.reciverId,
+                  sentTimestamp: messageToUpload.sentTimestamp,
+                  messageStatus: messageToUpload.messageStatus,
+                  msgFilePath: messageToUpload.audioFilePath,
+                  messageLen: 0,
+                  isTextMsg: false),
+            ),
+          );
+          await MessageRepo.sendVoiceMessage(
+            message: messageToUpload,
+            conversationId: conversationId,
+          );
+          await ConversationRepo.updateConversation(
+            friendId: messageToUpload.reciverId,
+            lastUpdate: messageToUpload.sentTimestamp,
+            conversationId: conversationId,
+            friendNumber: friendNumber,
+            active: true,
+          );
+          await MessageRepo.updateMessageStatus(
+              conversationId: conversationId,
               messageId: messageToUpload.messageId,
-              senderId: messageToUpload.senderId,
-              reciverId: messageToUpload.reciverId,
-              sentTimestamp: messageToUpload.sentTimestamp,
-              messageStatus: messageToUpload.messageStatus,
-              msgFilePath: messageToUpload.audioFilePath,
-              messageLen: 0,
-              isTextMsg: false),
-        ),
-      );
-      await MessageRepo.sendVoiceMessage(
-        message: messageToUpload,
-        conversationId: conversationId,
-      );
-      await ConversationRepo.updateConversation(
-        friendId: messageToUpload.reciverId,
-        lastUpdate: messageToUpload.sentTimestamp,
-        conversationId: conversationId,
-        friendNumber: friendNumber,
-        active: true,
-      );
-      await MessageRepo.updateMessageStatus(
-          conversationId: conversationId,
-          messageId: messageToUpload.messageId,
-          messageStatus: "Sent");
-      emit(VoiceMessageSent());
-    } catch (e) {
-      emit(VoiceMessageFailed(errorMsg: e.toString()));
+              messageStatus: "Sent");
+          emit(VoiceMessageSent());
+        } catch (e) {
+          emit(VoiceMessageFailed(errorMsg: e.toString()));
+        }
+      }
     }
   }
 

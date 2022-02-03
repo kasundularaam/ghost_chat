@@ -263,6 +263,7 @@ class _ChatPageState extends State<ChatPage> {
                       } else {
                         return VoiceBox(
                           onCancel: () {
+                            print("ON CANCEL>>>>>>>>> $audioFilePath");
                             BlocProvider.of<VoiceMessageCubit>(context)
                                 .cancelRecording(
                               filePath: audioFilePath,

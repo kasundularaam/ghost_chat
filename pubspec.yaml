@@ -23,6 +23,7 @@ dependencies:
   image: ^3.1.1
   image_picker: ^0.8.4+4
   intl: ^0.17.0
+  just_audio: ^0.9.18
   ml_linalg: ^13.0.2
   path: ^1.8.0
   path_provider: ^2.0.8

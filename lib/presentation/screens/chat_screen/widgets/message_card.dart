@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/logic/cubit/message_status_cubit/message_status_cubit.dart';
+import 'package:ghost_chat/presentation/screens/chat_screen/widgets/friend_voice_msg_layout.dart';
+import 'package:ghost_chat/presentation/screens/chat_screen/widgets/my_voice_msg_layout.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/data/models/download_message.dart';
@@ -21,22 +23,30 @@ class MessageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<MessageCubit>(context).loadTextMessage(
-        downloadMessage: message, conversationId: conversationId);
-    BlocProvider.of<MessageStatusCubit>(context).getMessageStatus(
-        conversationId: conversationId, messageId: message.messageId);
     bool myMsg = message.senderId == AuthRepo.currentUid;
     if (myMsg) {
       if (message.isTextMsg) {
-        return const MyTextMsgLayout();
+        return MyTextMsgLayout(
+          conversationId: conversationId,
+          downloadMessage: message,
+        );
       } else {
-        return Text("VOICE MESSAGE");
+        return MyVoiceMsgLayout(
+          conversationId: conversationId,
+          downloadMessage: message,
+        );
       }
     } else {
       if (message.isTextMsg) {
-        return const FriendTextMsgLayout();
+        return FriendTextMsgLayout(
+          conversationId: conversationId,
+          downloadMessage: message,
+        );
       } else {
-        return Text("VOICE MESSAGE");
+        return FriendVoiceMsgLayout(
+          conversationId: conversationId,
+          downloadMessage: message,
+        );
       }
     }
   }
