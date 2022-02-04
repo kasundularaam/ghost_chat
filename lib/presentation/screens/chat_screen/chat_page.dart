@@ -43,8 +43,6 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void initState() {
-
-    BlocProvider.of<VoiceMessageCubit>(context).init();
     controller.addListener(() {
       String message = controller.text;
       if (message.isNotEmpty) {
@@ -101,7 +99,6 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     controller.clear();
     controller.dispose();
-    BlocProvider.of<VoiceMessageCubit>(context).dispose();
     super.dispose();
   }
 
@@ -262,7 +259,6 @@ class _ChatPageState extends State<ChatPage> {
                       } else {
                         return VoiceBox(
                           onCancel: () {
-                            print("ON CANCEL>>>>>>>>> $audioFilePath");
                             BlocProvider.of<VoiceMessageCubit>(context)
                                 .cancelRecording(
                               filePath: audioFilePath,
@@ -300,11 +296,6 @@ class _ChatPageState extends State<ChatPage> {
                       } else {
                         return VoiceButton(
                           onTap: () {
-                            BlocProvider.of<MessageBoxCubit>(context)
-                                .messageBoxVoice();
-
-                            BlocProvider.of<MessageButtonCubit>(context)
-                                .messageBtnSendVoice();
                             BlocProvider.of<VoiceMessageCubit>(context)
                                 .startRecording(
                               conversationId: widget.args.conversationId,

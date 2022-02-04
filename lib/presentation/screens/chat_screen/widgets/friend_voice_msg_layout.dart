@@ -24,9 +24,7 @@ class FriendVoiceMsgLayout extends StatefulWidget {
 }
 
 class _FriendVoiceMsgLayoutState extends State<FriendVoiceMsgLayout> {
-
   AudioPlayer? audioPlayer;
-
 
   @override
   void initState() {
@@ -37,14 +35,15 @@ class _FriendVoiceMsgLayoutState extends State<FriendVoiceMsgLayout> {
     );
     super.initState();
   }
+
   @override
   void dispose() {
     audioPlayer!.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
-
     return Column(
       children: [
         Row(
@@ -79,7 +78,7 @@ class _FriendVoiceMsgLayoutState extends State<FriendVoiceMsgLayout> {
                             borderRadius: BorderRadius.circular(2.w),
                           ),
                           child: BlocProvider(
-                            create: (context) => VoiceMsgPlayerCubit(player: audioPlayer!),
+                            create: (context) => VoiceMsgPlayerCubit(),
                             child: VoiceMsgPlayer(
                               audioFilePath: state.message.audioFilePath,
                             ),

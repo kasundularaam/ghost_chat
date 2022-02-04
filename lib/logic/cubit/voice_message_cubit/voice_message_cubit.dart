@@ -6,10 +6,11 @@ import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/data/models/fi_voice_message.dart';
 import 'package:ghost_chat/data/repositories/conversation_repo.dart';
 import 'package:ghost_chat/data/repositories/message_repo.dart';
-import 'package:ghost_chat/data/repositories/sound_recorder.dart';
 import 'package:ghost_chat/data/sqlite/message_helper.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:record/record.dart';
 import 'package:uuid/uuid.dart';
 
 part 'voice_message_state.dart';
@@ -17,7 +18,7 @@ part 'voice_message_state.dart';
 class VoiceMessageCubit extends Cubit<VoiceMessageState> {
   VoiceMessageCubit() : super(VoiceMessageInitial());
 
-  SoundRecorder soundRecorder = SoundRecorder();
+  Record audioRecorder = Record();
 
   int counter = 0;
   String timeString = "00:00:00";
@@ -30,45 +31,50 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
   Duration timerInterval = const Duration(seconds: 1);
 
   Future<void> startRecording({required String conversationId}) async {
-    try {
-      Uuid uuid = const Uuid();
-      String messageId = uuid.v1();
-      messageId = messageId.replaceAll(RegExp(r'[^\w\s]+'), '');
-      Directory dir = await getApplicationSupportDirectory();
-      String pathToSave = "${dir.path}/send/$conversationId/$messageId.m4a";
-      soundRecorder.record(pathToSave: pathToSave);
-      _myTimer = Timer.periodic(timerInterval, (timer) {
-        counter++;
-        hoursStr =
-            ((counter / (60 * 60)) % 60).floor().toString().padLeft(2, '0');
-        minutesStr = ((counter / 60) % 60).floor().toString().padLeft(2, '0');
-        secondsStr = (counter % 60).floor().toString().padLeft(2, '0');
-        timeString = "$hoursStr" ":" "$minutesStr" ":" "$secondsStr";
-        emit(
-          VoiceMessageRecording(
-            recordTime: timeString,
-            filePath: pathToSave,
-            messageId: messageId,
-          ),
-        );
-      });
-    } catch (e) {
-      print(e);
+    PermissionStatus permission = await Permission.microphone.request();
+    bool permissionsGranted = await Permission.microphone.isGranted;
+    if (permissionsGranted) {
+      try {
+        Uuid uuid = const Uuid();
+        String messageId = uuid.v1();
+        messageId = messageId.replaceAll(RegExp(r'[^\w\s]+'), '');
+        Directory dir = await getApplicationDocumentsDirectory();
+        String pathToSave = "${dir.path}/send/$conversationId/$messageId.acc";
+        await audioRecorder.start(path: pathToSave);
+        bool isRec = await audioRecorder.isRecording();
+        if (isRec) {
+          _myTimer = Timer.periodic(timerInterval, (timer) {
+            counter++;
+            hoursStr =
+                ((counter / (60 * 60)) % 60).floor().toString().padLeft(2, '0');
+            minutesStr =
+                ((counter / 60) % 60).floor().toString().padLeft(2, '0');
+            secondsStr = (counter % 60).floor().toString().padLeft(2, '0');
+            timeString = "$hoursStr" ":" "$minutesStr" ":" "$secondsStr";
+            emit(
+              VoiceMessageRecording(
+                recordTime: timeString,
+                filePath: pathToSave,
+                messageId: messageId,
+              ),
+            );
+          });
+        }
+      } catch (e) {
+        print(e);
+      }
     }
   }
 
   Future<void> cancelRecording({required String filePath}) async {
     try {
-      if (soundRecorder.isRecording) {
-        soundRecorder.stop();
-      }
-
-      if (!soundRecorder.isRecording) {
+      bool isRec = await audioRecorder.isRecording();
+      if (isRec) {
+        await audioRecorder.stop();
         if (_myTimer != null) {
           counter = 0;
           _myTimer!.cancel();
           _myTimer = null;
-          soundRecorder.delete(filePath: filePath);
           emit(VoiceMessageCanceled());
         }
       }
@@ -82,11 +88,9 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
     required String conversationId,
     required String friendNumber,
   }) async {
-    if (soundRecorder.isRecording) {
-      soundRecorder.stop();
-    }
-
-    if (!soundRecorder.isRecording) {
+    bool isRec = await audioRecorder.isRecording();
+    if (isRec) {
+      audioRecorder.stop();
       if (_myTimer != null) {
         counter = 0;
         _myTimer!.cancel();
@@ -132,13 +136,5 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
         }
       }
     }
-  }
-
-  Future<void> init() async {
-    soundRecorder.init();
-  }
-
-  Future<void> dispose() async {
-    soundRecorder.dispose();
   }
 }

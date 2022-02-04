@@ -26,10 +26,8 @@ class MyVoiceMsgLayout extends StatefulWidget {
 }
 
 class _MyVoiceMsgLayoutState extends State<MyVoiceMsgLayout> {
-  AudioPlayer? audioPlayer;
   @override
   void initState() {
-    audioPlayer = AudioPlayer();
     BlocProvider.of<MessageCubit>(context).loadVoiceMessage(
       downloadMessage: widget.downloadMessage,
       conversationId: widget.conversationId,
@@ -42,14 +40,7 @@ class _MyVoiceMsgLayoutState extends State<MyVoiceMsgLayout> {
   }
 
   @override
-  void dispose() {
-    audioPlayer!.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-
     return Column(
       children: [
         Row(
@@ -87,7 +78,7 @@ class _MyVoiceMsgLayoutState extends State<MyVoiceMsgLayout> {
                             borderRadius: BorderRadius.circular(2.w),
                           ),
                           child: BlocProvider(
-                            create: (context) => VoiceMsgPlayerCubit(player: audioPlayer!),
+                            create: (context) => VoiceMsgPlayerCubit(),
                             child: VoiceMsgPlayer(
                               audioFilePath: state.message.audioFilePath,
                             ),
