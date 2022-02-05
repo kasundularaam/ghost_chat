@@ -18,11 +18,10 @@ class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
   Future<void> loadPlayer({required audioFilePath}) async {
     try {
       emit(VoiceMsgPlayerLoading());
-      await audioPlayer.setPitch(0);
+      await audioPlayer.setPitch(0.8);
       Duration? duration = await audioPlayer.setFilePath(audioFilePath);
       if (duration != null) {
         int audioLength = duration.inMilliseconds;
-
         emit(VoiceMsgPlayerLoaded(audioLength: audioLength));
       } else {
         emit(VoiceMsgPlayerFailed(errorMsg: "An error occurred"));

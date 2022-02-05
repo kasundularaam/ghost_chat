@@ -39,7 +39,8 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
         messageId = messageId.replaceAll(RegExp(r'[^\w\s]+'), '');
         Directory dir = await getApplicationDocumentsDirectory();
         String pathToSave = "${dir.path}/send/$conversationId/$messageId.acc";
-        await audioRecorder.start(path: pathToSave);
+        File file = await File(pathToSave).create(recursive: true);
+        await audioRecorder.start(path: file.path);
         bool isRec = await audioRecorder.isRecording();
         if (isRec) {
           _myTimer = Timer.periodic(timerInterval, (timer) {
