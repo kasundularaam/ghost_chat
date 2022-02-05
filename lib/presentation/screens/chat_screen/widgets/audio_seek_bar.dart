@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:ghost_chat/core/constants/app_colors.dart';
 import 'package:sizer/sizer.dart';
 
+import 'package:ghost_chat/core/constants/app_colors.dart';
+
 class AudioSeekBar extends StatelessWidget {
-  const AudioSeekBar({Key? key}) : super(key: key);
+  final double playPoint;
+  const AudioSeekBar({
+    Key? key,
+    required this.playPoint,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +28,7 @@ class AudioSeekBar extends StatelessWidget {
             decoration: BoxDecoration(
                 color: AppColors.lightColor,
                 borderRadius: BorderRadius.circular(0.25.h)),
-            width: 20.w,
+            width: playPoint,
             height: 0.5.h,
           ),
         ],

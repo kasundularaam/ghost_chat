@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:image/image.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:meta/meta.dart';
 
@@ -19,10 +18,11 @@ class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
   Future<void> loadPlayer({required audioFilePath}) async {
     try {
       emit(VoiceMsgPlayerLoading());
+      await audioPlayer.setPitch(0);
       Duration? duration = await audioPlayer.setFilePath(audioFilePath);
       if (duration != null) {
         int audioLength = duration.inMilliseconds;
-        // await audioPlayer.setPitch(0);
+
         emit(VoiceMsgPlayerLoaded(audioLength: audioLength));
       } else {
         emit(VoiceMsgPlayerFailed(errorMsg: "An error occurred"));
@@ -38,7 +38,8 @@ class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
       timer = Timer.periodic(timerInterval, (timerVal) async {
         counter = counter + 200;
         if (counter < audioLength) {
-          emit(VoiceMsgPlayerPlaying(seekBarValue: counter));
+          emit(VoiceMsgPlayerPlaying(
+              seekBarValue: counter, audioLength: audioLength));
         } else {
           timer!.cancel();
           timer = null;

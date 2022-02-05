@@ -50,7 +50,9 @@ class _VoiceMsgPlayerState extends State<VoiceMsgPlayer> {
                   size: 26.sp,
                 ),
               ),
-              AudioSeekBar(),
+              const AudioSeekBar(
+                playPoint: 0,
+              ),
               SizedBox(
                 width: 2.w,
               ),
@@ -68,7 +70,9 @@ class _VoiceMsgPlayerState extends State<VoiceMsgPlayer> {
                   size: 26.sp,
                 ),
               ),
-              AudioSeekBar(),
+              AudioSeekBar(
+                playPoint: (50.w / state.audioLength) * state.seekBarValue,
+              ),
               SizedBox(
                 width: 2.w,
               ),

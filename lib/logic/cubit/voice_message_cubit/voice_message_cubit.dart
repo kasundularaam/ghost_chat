@@ -31,8 +31,7 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
   Duration timerInterval = const Duration(seconds: 1);
 
   Future<void> startRecording({required String conversationId}) async {
-    PermissionStatus permission = await Permission.microphone.request();
-    bool permissionsGranted = await Permission.microphone.isGranted;
+    bool permissionsGranted = await Permission.microphone.request().isGranted;
     if (permissionsGranted) {
       try {
         Uuid uuid = const Uuid();

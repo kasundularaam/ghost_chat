@@ -24,22 +24,13 @@ class FriendVoiceMsgLayout extends StatefulWidget {
 }
 
 class _FriendVoiceMsgLayoutState extends State<FriendVoiceMsgLayout> {
-  AudioPlayer? audioPlayer;
-
   @override
   void initState() {
-    audioPlayer = AudioPlayer();
     BlocProvider.of<MessageCubit>(context).loadVoiceMessage(
       conversationId: widget.conversationId,
       downloadMessage: widget.downloadMessage,
     );
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    audioPlayer!.dispose();
-    super.dispose();
   }
 
   @override
