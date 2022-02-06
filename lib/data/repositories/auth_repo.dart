@@ -97,6 +97,14 @@ class AuthRepo {
     }
   }
 
+  static Future<void> signoutUser() async {
+    try {
+      await auth.signOut();
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
   static Future<AppUser> getUserDetails() async {
     try {
       DocumentSnapshot snapshot = await reference.get();

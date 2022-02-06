@@ -8,7 +8,9 @@ import 'package:ghost_chat/core/constants/app_colors.dart';
 import 'package:ghost_chat/core/constants/strings.dart';
 import 'package:ghost_chat/presentation/router/app_router.dart';
 
-class ChatActionBar extends StatelessWidget {
+import '../../../../data/models/friend_model.dart';
+
+class ChatActionBar extends StatefulWidget {
   final String friendId;
   final String friendNumber;
   const ChatActionBar({
@@ -18,11 +20,17 @@ class ChatActionBar extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<ChatActionBar> createState() => _ChatActionBarState();
+}
+
+class _ChatActionBarState extends State<ChatActionBar> {
+  Friend? friend;
+  @override
   Widget build(BuildContext context) {
     BlocProvider.of<ChatActionBarCubit>(context)
-        .loadActionBar(friendId: friendId);
+        .loadActionBar(friendId: widget.friendId);
     BlocProvider.of<TypingStatusCubit>(context)
-        .getTypingStatus(friendId: friendId);
+        .getTypingStatus(friendId: widget.friendId);
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: 3.w,
@@ -44,19 +52,26 @@ class ChatActionBar extends StatelessWidget {
           ),
           Expanded(
             child: GestureDetector(
-              onTap: () => Navigator.pushNamed(
-                  context, AppRouter.friendProfilePage,
-                  arguments: friendId),
+              onTap: () {
+                if (friend != null) {
+                  Navigator.pushNamed(
+                    context,
+                    AppRouter.friendProfilePage,
+                    arguments: friend,
+                  );
+                }
+              },
               child: Row(
                 children: [
                   BlocBuilder<ChatActionBarCubit, ChatActionBarState>(
                     builder: (context, state) {
                       if (state is ChatActionBarLoaded) {
+                        friend = state.friend;
                         return ClipOval(
-                          child: state.friendImg != "null"
+                          child: state.friend.userImg != "null"
                               ? FadeInImage.assetNetwork(
                                   placeholder: Strings.ghostPlaceHolder,
-                                  image: state.friendImg,
+                                  image: state.friend.userImg,
                                   width: 10.w,
                                   height: 10.w,
                                   fit: BoxFit.cover,
@@ -91,7 +106,7 @@ class ChatActionBar extends StatelessWidget {
                           builder: (context, state) {
                             if (state is ChatActionBarLoaded) {
                               return Text(
-                                state.friendName,
+                                state.friend.contactName,
                                 style: TextStyle(
                                   color: AppColors.lightColor,
                                   fontSize: 14.sp,
@@ -100,7 +115,7 @@ class ChatActionBar extends StatelessWidget {
                               );
                             } else {
                               return Text(
-                                friendNumber,
+                                widget.friendNumber,
                                 style: TextStyle(
                                   color: AppColors.lightColor,
                                   fontSize: 14.sp,

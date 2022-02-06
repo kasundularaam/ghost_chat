@@ -47,8 +47,10 @@ class _ChatPageState extends State<ChatPage> {
       String message = controller.text;
       if (message.isNotEmpty) {
         BlocProvider.of<MessageButtonCubit>(context).messageBtnSendText();
+        AuthRepo.updateTypeStatus(friendId: widget.args.friendId);
       } else {
         BlocProvider.of<MessageButtonCubit>(context).messageBtnVoice();
+        AuthRepo.updateTypeStatus(friendId: "null");
       }
     });
     super.initState();

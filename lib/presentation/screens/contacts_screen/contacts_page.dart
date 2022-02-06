@@ -7,13 +7,14 @@ import 'package:ghost_chat/presentation/router/app_router.dart';
 import 'package:ghost_chat/presentation/screens/contacts_screen/widgets/contact_card.dart';
 import 'package:ghost_chat/presentation/screens/contacts_screen/widgets/contacts_action_bar.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sizer/sizer.dart';
 
 class ContactsPage extends StatelessWidget {
   const ContactsPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<ContactsCubit>(context).getFriends();
+    BlocProvider.of<ContactsCubit>(context).getFriends(term: 1);
     return Scaffold(
       backgroundColor: AppColors.darkColor,
       body: SafeArea(
@@ -63,13 +64,26 @@ class ContactsPage extends StatelessWidget {
                           child: const Text("Grant Permissions")),
                     ),
                   );
+                } else if (state is ContactsNoFriends) {
+                  return Expanded(
+                    child: Center(
+                      child: Text(
+                        "Non of your friends using\nGhost Chat!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors.lightColor.withOpacity(0.7),
+                          fontSize: 11.sp,
+                        ),
+                      ),
+                    ),
+                  );
                 } else {
                   return Expanded(
                     child: Center(
                       child: TextButton(
                           onPressed: () =>
                               BlocProvider.of<ContactsCubit>(context)
-                                  .getFriends(),
+                                  .getFriends(term: 1),
                           child: const Text("Retry")),
                     ),
                   );

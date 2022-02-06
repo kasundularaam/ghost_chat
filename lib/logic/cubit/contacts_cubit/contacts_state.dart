@@ -66,3 +66,5 @@ class ContactsNoPermission extends ContactsState {
   @override
   String toString() => 'ContactsNoPermission(errorMsg: $errorMsg)';
 }
+
+class ContactsNoFriends extends ContactsState {}

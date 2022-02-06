@@ -13,10 +13,7 @@ class ChatActionBarCubit extends Cubit<ChatActionBarState> {
       emit(ChatActionBarLoading());
       Friend friend = await UsersRepo.getFriendDetails(userId: friendId);
       emit(
-        ChatActionBarLoaded(
-          friendName: friend.contactName,
-          friendImg: friend.userImg,
-        ),
+        ChatActionBarLoaded(friend: friend),
       );
     } catch (e) {
       emit(ChatActionBarFaild(errorMsg: e.toString()));

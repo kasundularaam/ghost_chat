@@ -8,28 +8,23 @@ class ChatActionBarInitial extends ChatActionBarState {}
 class ChatActionBarLoading extends ChatActionBarState {}
 
 class ChatActionBarLoaded extends ChatActionBarState {
-  final String friendName;
-  final String friendImg;
+  final Friend friend;
   ChatActionBarLoaded({
-    required this.friendName,
-    required this.friendImg,
+    required this.friend,
   });
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is ChatActionBarLoaded &&
-        other.friendName == friendName &&
-        other.friendImg == friendImg;
+    return other is ChatActionBarLoaded && other.friend == friend;
   }
 
   @override
-  int get hashCode => friendName.hashCode ^ friendImg.hashCode;
+  int get hashCode => friend.hashCode;
 
   @override
-  String toString() =>
-      'ChatActionBarLoaded(friendName: $friendName, friendImg: $friendImg)';
+  String toString() => 'ChatActionBarLoaded(friend: $friend)';
 }
 
 class ChatActionBarFaild extends ChatActionBarState {

@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:ghost_chat/core/permissions_service.dart';
 import 'package:ghost_chat/data/models/friend_model.dart';
 import 'package:ghost_chat/data/repositories/users_repo.dart';
-import 'package:meta/meta.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 part 'contacts_state.dart';
@@ -30,13 +29,17 @@ class ContactsCubit extends Cubit<ContactsState> {
     }
   }
 
-  Future<void> getFriends() async {
+  Future<void> getFriends({required int term}) async {
     try {
       if (friends.isNotEmpty) {
         emit(ContactsLoaded(friends: friends));
       } else {
-        await loadContacts();
-        getFriends();
+        if (term < 2) {
+          await loadContacts();
+          getFriends(term: term + 1);
+        } else {
+          emit(ContactsNoFriends());
+        }
       }
     } catch (e) {
       emit(ContactsFailed(errorMsg: e.toString()));
