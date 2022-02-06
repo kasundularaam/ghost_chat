@@ -42,8 +42,8 @@ class _VoiceMsgPlayerState extends State<VoiceMsgPlayer> {
             mainAxisSize: MainAxisSize.min,
             children: [
               GestureDetector(
-                onTap: () => BlocProvider.of<VoiceMsgPlayerCubit>(context)
-                    .playPlayer(audioLength: state.audioLength),
+                onTap: () =>
+                    BlocProvider.of<VoiceMsgPlayerCubit>(context).playPlayer(),
                 child: Icon(
                   Icons.play_arrow_rounded,
                   color: AppColors.lightColor,
@@ -63,7 +63,8 @@ class _VoiceMsgPlayerState extends State<VoiceMsgPlayer> {
             mainAxisSize: MainAxisSize.min,
             children: [
               GestureDetector(
-                onTap: () {},
+                onTap: () =>
+                    BlocProvider.of<VoiceMsgPlayerCubit>(context).pausePlayer(),
                 child: Icon(
                   Icons.pause_rounded,
                   color: AppColors.lightColor,
@@ -72,6 +73,27 @@ class _VoiceMsgPlayerState extends State<VoiceMsgPlayer> {
               ),
               AudioSeekBar(
                 playPoint: (50.w / state.audioLength) * state.seekBarValue,
+              ),
+              SizedBox(
+                width: 2.w,
+              ),
+            ],
+          );
+        } else if (state is VoiceMsgPlayerPause) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: () => BlocProvider.of<VoiceMsgPlayerCubit>(context)
+                    .resumePlayer(),
+                child: Icon(
+                  Icons.play_arrow_rounded,
+                  color: AppColors.lightColor,
+                  size: 26.sp,
+                ),
+              ),
+              AudioSeekBar(
+                playPoint: (50.w / state.audioLength) * state.seekbarProgress,
               ),
               SizedBox(
                 width: 2.w,

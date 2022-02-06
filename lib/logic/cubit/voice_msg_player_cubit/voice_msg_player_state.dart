@@ -52,7 +52,30 @@ class VoiceMsgPlayerPlaying extends VoiceMsgPlayerState {
       'VoiceMsgPlayerPlaying(seekBarValue: $seekBarValue, audioLength: $audioLength)';
 }
 
-class VoiceMsgPlayerPause extends VoiceMsgPlayerState {}
+class VoiceMsgPlayerPause extends VoiceMsgPlayerState {
+  final int seekbarProgress;
+  final int audioLength;
+  VoiceMsgPlayerPause({
+    required this.seekbarProgress,
+    required this.audioLength,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is VoiceMsgPlayerPause &&
+        other.seekbarProgress == seekbarProgress &&
+        other.audioLength == audioLength;
+  }
+
+  @override
+  int get hashCode => seekbarProgress.hashCode ^ audioLength.hashCode;
+
+  @override
+  String toString() =>
+      'VoiceMsgPlayerPause(seekbarProgress: $seekbarProgress, audioLength: $audioLength)';
+}
 
 class VoiceMsgPlayerEnd extends VoiceMsgPlayerState {}
 

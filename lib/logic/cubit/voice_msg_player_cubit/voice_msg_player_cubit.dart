@@ -14,14 +14,17 @@ class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
   Timer? timer;
   int counter = 0;
   Duration timerInterval = const Duration(milliseconds: 200);
+  int audioLength = 0;
 
   Future<void> loadPlayer({required audioFilePath}) async {
     try {
-      emit(VoiceMsgPlayerLoading());
+      emit(
+        VoiceMsgPlayerLoading(),
+      );
       await audioPlayer.setPitch(0.8);
       Duration? duration = await audioPlayer.setFilePath(audioFilePath);
       if (duration != null) {
-        int audioLength = duration.inMilliseconds;
+        audioLength = duration.inMilliseconds;
         emit(VoiceMsgPlayerLoaded(audioLength: audioLength));
       } else {
         emit(VoiceMsgPlayerFailed(errorMsg: "An error occurred"));
@@ -31,7 +34,56 @@ class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
     }
   }
 
-  Future<void> playPlayer({required int audioLength}) async {
+  Future<void> pausePlayer() async {
+    try {
+      if (timer != null) {
+        await audioPlayer.pause();
+        timer!.cancel();
+        timer = null;
+        emit(VoiceMsgPlayerPause(
+            seekbarProgress: counter, audioLength: audioLength));
+      }
+    } catch (e) {
+      emit(VoiceMsgPlayerFailed(errorMsg: e.toString()));
+    }
+  }
+
+  Future<void> resumePlayer() async {
+    try {
+      await audioPlayer.seek(Duration(milliseconds: counter));
+      audioPlayer.play();
+      timer = Timer.periodic(timerInterval, (timerVal) async {
+        counter = counter + 200;
+        if (counter < audioLength) {
+          emit(
+            VoiceMsgPlayerPlaying(
+              seekBarValue: counter,
+              audioLength: audioLength,
+            ),
+          );
+        } else {
+          timer!.cancel();
+          timer = null;
+          counter = 0;
+          await audioPlayer.stop();
+          await audioPlayer.dispose();
+          emit(
+            VoiceMsgPlayerLoaded(
+              audioLength: audioLength,
+            ),
+          );
+        }
+      });
+    } catch (e) {
+      emit(
+        VoiceMsgPlayerFailed(
+          errorMsg: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> playPlayer() async {
     try {
       audioPlayer.play();
       timer = Timer.periodic(timerInterval, (timerVal) async {
@@ -44,7 +96,12 @@ class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
           timer = null;
           counter = 0;
           await audioPlayer.stop();
-          emit(VoiceMsgPlayerLoaded(audioLength: audioLength));
+          await audioPlayer.dispose();
+          emit(
+            VoiceMsgPlayerLoaded(
+              audioLength: audioLength,
+            ),
+          );
         }
       });
     } catch (e) {
