@@ -2,7 +2,6 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ghost_chat/data/models/conversation_model.dart';
 import 'package:ghost_chat/data/repositories/conversation_repo.dart';
-import 'package:meta/meta.dart';
 
 part 'chat_list_state.dart';
 

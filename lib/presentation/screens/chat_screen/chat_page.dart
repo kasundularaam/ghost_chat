@@ -235,7 +235,9 @@ class _ChatPageState extends State<ChatPage> {
               child: const SizedBox(),
             ),
             Container(
-              margin: EdgeInsets.only(bottom: 1.2.w, left: 1.2.w, right: 1.2.w),
+              margin: EdgeInsets.all(
+                1.2.w,
+              ),
               padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.h),
               decoration: BoxDecoration(
                 color: AppColors.lightColor.withOpacity(0.1),
