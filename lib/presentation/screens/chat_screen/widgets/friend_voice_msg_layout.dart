@@ -69,10 +69,9 @@ class _FriendVoiceMsgLayoutState extends State<FriendVoiceMsgLayout> {
                             borderRadius: BorderRadius.circular(2.w),
                           ),
                           child: BlocProvider(
-                            create: (context) => VoiceMsgPlayerCubit(),
-                            child: VoiceMsgPlayer(
-                              audioFilePath: state.message.audioFilePath,
-                            ),
+                            create: (context) => VoiceMsgPlayerCubit(
+                                audioFilePath: state.message.audioFilePath),
+                            child: VoiceMsgPlayer(),
                           ),
                         ),
                         SizedBox(

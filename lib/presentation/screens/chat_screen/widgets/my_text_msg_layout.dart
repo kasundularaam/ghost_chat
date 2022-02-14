@@ -42,8 +42,12 @@ class MyTextMsgLayout extends StatelessWidget {
                     return Container(
                       padding: EdgeInsets.all(2.w),
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: AppColors.lightColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(2.w),
+                        border: Border.all(
+                          width: 0.05.w,
+                          color: AppColors.lightColor.withOpacity(0.4),
+                        ),
                       ),
                       child: Text(
                         "Loading...",
@@ -60,8 +64,12 @@ class MyTextMsgLayout extends StatelessWidget {
                         Container(
                           padding: EdgeInsets.all(2.w),
                           decoration: BoxDecoration(
-                            color: Colors.black,
+                            color: AppColors.lightColor.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(2.w),
+                            border: Border.all(
+                              width: 0.05.w,
+                              color: AppColors.lightColor.withOpacity(0.4),
+                            ),
                           ),
                           child: Text(
                             state.message.message,
@@ -140,8 +148,12 @@ class MyTextMsgLayout extends StatelessWidget {
                     return Container(
                       padding: EdgeInsets.all(2.w),
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: AppColors.lightColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(2.w),
+                        border: Border.all(
+                          width: 0.05.w,
+                          color: AppColors.lightColor.withOpacity(0.4),
+                        ),
                       ),
                       child: Text(
                         "Cant load message at the moment!",

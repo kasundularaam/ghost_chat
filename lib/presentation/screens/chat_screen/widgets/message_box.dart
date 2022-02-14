@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
-import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
 
 class MessageBox extends StatelessWidget {
   final TextEditingController controller;
@@ -13,17 +13,28 @@ class MessageBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: AppTextInput(
-        onChanged: (messageText) {},
-        textInputAction: TextInputAction.newline,
+      child: TextField(
         controller: controller,
-        isPassword: false,
-        minLines: 1,
+        autofocus: false,
         maxLines: 6,
-        textInputType: TextInputType.multiline,
-        hintText: "Text Message",
-        bgColor: AppColors.darkGrey.withOpacity(0.2),
-        textColor: AppColors.lightColor,
+        minLines: 1,
+        keyboardType: TextInputType.multiline,
+        textAlign: TextAlign.start,
+        style: TextStyle(
+          fontSize: 14.sp,
+          color: AppColors.lightColor,
+        ),
+        decoration: InputDecoration(
+          isDense: true,
+          hintText: "Text Message",
+          hintStyle: TextStyle(
+            fontSize: 14.sp,
+            color: AppColors.lightColor.withOpacity(0.5),
+          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
+          border: InputBorder.none,
+        ),
+        textInputAction: TextInputAction.newline,
       ),
     );
   }

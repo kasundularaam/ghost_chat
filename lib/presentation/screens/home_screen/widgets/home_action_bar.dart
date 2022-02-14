@@ -21,7 +21,7 @@ class _HomeActionBarState extends State<HomeActionBar> {
   Widget build(BuildContext context) {
     BlocProvider.of<HomeActionBarCubit>(context).getUserImg();
     return Container(
-      color: AppColors.darkGrey,
+      color: AppColors.lightColor.withOpacity(0.15),
       child: Column(
         children: [
           Container(
@@ -106,7 +106,7 @@ class _HomeActionBarState extends State<HomeActionBar> {
                                 textInputAction: TextInputAction.search,
                                 isPassword: false,
                                 hintText: "Search...",
-                                bgColor: AppColors.darkColor.withOpacity(0.4),
+                                bgColor: AppColors.lightColor.withOpacity(0.2),
                                 textColor: AppColors.lightColor),
                           ),
                           SizedBox(

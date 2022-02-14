@@ -21,8 +21,11 @@ class ContactCard extends StatelessWidget {
           onTap: () => Navigator.pushNamed(context, AppRouter.friendProfilePage,
               arguments: friend),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
-            color: Colors.black,
+            padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.5.h),
+            decoration: BoxDecoration(
+              color: AppColors.lightColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(2.w),
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -76,11 +79,9 @@ class ContactCard extends StatelessWidget {
             ),
           ),
         ),
-        Container(
-          color: AppColors.primaryColor.withOpacity(0.3),
-          height: 0.1.h,
-          width: 100.w,
-        ),
+        SizedBox(
+          height: 1.h,
+        )
       ],
     );
   }

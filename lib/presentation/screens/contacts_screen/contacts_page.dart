@@ -38,15 +38,25 @@ class ContactsPage extends StatelessWidget {
                 if (state is ContactsLoaded) {
                   List<Friend> friends = state.friends;
                   return Expanded(
-                    child: ListView.builder(
-                        itemCount: friends.length,
-                        physics: const BouncingScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          Friend friend = friends[index];
-                          return ContactCard(
-                            friend: friend,
-                          );
-                        }),
+                    child: ListView(
+                      physics: const BouncingScrollPhysics(),
+                      children: [
+                        SizedBox(
+                          height: 1.h,
+                        ),
+                        ListView.builder(
+                            padding: EdgeInsets.symmetric(horizontal: 1.w),
+                            itemCount: friends.length,
+                            physics: const BouncingScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              Friend friend = friends[index];
+                              return ContactCard(
+                                friend: friend,
+                              );
+                            }),
+                      ],
+                    ),
                   );
                 } else if (state is ContactsLoading) {
                   return const Expanded(

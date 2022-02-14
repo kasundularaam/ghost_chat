@@ -20,27 +20,16 @@ class VoiceBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 1.3.h, horizontal: 1.h),
-        decoration: BoxDecoration(
-          color: AppColors.darkGrey.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(10.w),
-        ),
+        padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 2.w),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            SizedBox(
-              width: 5.w,
-            ),
-            Expanded(
-              child: Text(
-                "Recording...",
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: AppColors.primaryColor,
-                ),
+            Text(
+              "Recording...",
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: AppColors.primaryColor,
               ),
-            ),
-            SizedBox(
-              width: 5.w,
             ),
             BlocConsumer<VoiceMessageCubit, VoiceMessageState>(
               listener: (context, state) {
@@ -69,9 +58,6 @@ class VoiceBox extends StatelessWidget {
                 }
               },
             ),
-            SizedBox(
-              width: 5.w,
-            ),
             GestureDetector(
               onTap: () => onCancel(),
               child: Container(
@@ -86,7 +72,7 @@ class VoiceBox extends StatelessWidget {
                   size: 14.sp,
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

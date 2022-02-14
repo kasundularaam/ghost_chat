@@ -18,7 +18,7 @@ class _ContactsActionBarState extends State<ContactsActionBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.darkGrey,
+      color: AppColors.lightColor.withOpacity(0.15),
       padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 2.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -43,7 +43,7 @@ class _ContactsActionBarState extends State<ContactsActionBar> {
                     textInputAction: TextInputAction.search,
                     isPassword: false,
                     hintText: "Search...",
-                    bgColor: AppColors.darkColor.withOpacity(0.4),
+                    bgColor: AppColors.lightColor.withOpacity(0.2),
                     textColor: AppColors.lightColor)
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -56,7 +56,11 @@ class _MyVoiceMsgLayoutState extends State<MyVoiceMsgLayout> {
                     return Container(
                       padding: EdgeInsets.all(2.w),
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: AppColors.lightColor.withOpacity(0.1),
+                        border: Border.all(
+                          width: 0.05.w,
+                          color: AppColors.lightColor.withOpacity(0.4),
+                        ),
                         borderRadius: BorderRadius.circular(2.w),
                       ),
                       child: Text(
@@ -74,14 +78,17 @@ class _MyVoiceMsgLayoutState extends State<MyVoiceMsgLayout> {
                         Container(
                           padding: EdgeInsets.all(2.w),
                           decoration: BoxDecoration(
-                            color: Colors.black,
+                            color: AppColors.lightColor.withOpacity(0.1),
+                            border: Border.all(
+                              width: 0.05.w,
+                              color: AppColors.lightColor.withOpacity(0.4),
+                            ),
                             borderRadius: BorderRadius.circular(2.w),
                           ),
                           child: BlocProvider(
-                            create: (context) => VoiceMsgPlayerCubit(),
-                            child: VoiceMsgPlayer(
-                              audioFilePath: state.message.audioFilePath,
-                            ),
+                            create: (context) => VoiceMsgPlayerCubit(
+                                audioFilePath: state.message.audioFilePath),
+                            child: const VoiceMsgPlayer(),
                           ),
                         ),
                         SizedBox(

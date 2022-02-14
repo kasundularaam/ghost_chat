@@ -36,7 +36,7 @@ class _ChatActionBarState extends State<ChatActionBar> {
         horizontal: 3.w,
         vertical: 2.h,
       ),
-      color: AppColors.darkGrey,
+      color: AppColors.lightColor.withOpacity(0.15),
       child: Row(
         children: [
           GestureDetector(

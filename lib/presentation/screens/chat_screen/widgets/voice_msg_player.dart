@@ -7,10 +7,8 @@ import 'package:sizer/sizer.dart';
 import 'package:ghost_chat/core/constants/app_colors.dart';
 
 class VoiceMsgPlayer extends StatefulWidget {
-  final String audioFilePath;
   const VoiceMsgPlayer({
     Key? key,
-    required this.audioFilePath,
   }) : super(key: key);
 
   @override
@@ -20,8 +18,7 @@ class VoiceMsgPlayer extends StatefulWidget {
 class _VoiceMsgPlayerState extends State<VoiceMsgPlayer> {
   @override
   void initState() {
-    BlocProvider.of<VoiceMsgPlayerCubit>(context)
-        .loadPlayer(audioFilePath: widget.audioFilePath);
+    BlocProvider.of<VoiceMsgPlayerCubit>(context).loadPlayer();
     super.initState();
   }
 
@@ -30,12 +27,21 @@ class _VoiceMsgPlayerState extends State<VoiceMsgPlayer> {
     return BlocBuilder<VoiceMsgPlayerCubit, VoiceMsgPlayerState>(
       builder: (context, state) {
         if (state is VoiceMsgPlayerLoading) {
-          return Text(
-            "Loading...",
-            style: TextStyle(
-              color: AppColors.lightColor,
-              fontSize: 12.sp,
-            ),
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.play_arrow_rounded,
+                color: AppColors.lightColor,
+                size: 26.sp,
+              ),
+              const AudioSeekBar(
+                playPoint: 0,
+              ),
+              SizedBox(
+                width: 2.w,
+              ),
+            ],
           );
         } else if (state is VoiceMsgPlayerLoaded) {
           return Row(

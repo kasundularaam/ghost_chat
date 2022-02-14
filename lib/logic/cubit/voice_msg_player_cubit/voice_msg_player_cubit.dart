@@ -7,22 +7,25 @@ import 'package:meta/meta.dart';
 part 'voice_msg_player_state.dart';
 
 class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
-  VoiceMsgPlayerCubit() : super(VoiceMsgPlayerInitial());
+  final String audioFilePath;
+  VoiceMsgPlayerCubit({required this.audioFilePath})
+      : super(VoiceMsgPlayerInitial());
 
-  AudioPlayer audioPlayer = AudioPlayer();
+  AudioPlayer? audioPlayer;
 
   Timer? timer;
   int counter = 0;
   Duration timerInterval = const Duration(milliseconds: 200);
   int audioLength = 0;
 
-  Future<void> loadPlayer({required audioFilePath}) async {
+  Future<void> loadPlayer() async {
     try {
       emit(
         VoiceMsgPlayerLoading(),
       );
-      await audioPlayer.setPitch(0.8);
-      Duration? duration = await audioPlayer.setFilePath(audioFilePath);
+      audioPlayer = AudioPlayer();
+      await audioPlayer!.setPitch(0.8);
+      Duration? duration = await audioPlayer!.setFilePath(audioFilePath);
       if (duration != null) {
         audioLength = duration.inMilliseconds;
         emit(VoiceMsgPlayerLoaded(audioLength: audioLength));
@@ -37,7 +40,7 @@ class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
   Future<void> pausePlayer() async {
     try {
       if (timer != null) {
-        await audioPlayer.pause();
+        await audioPlayer!.pause();
         timer!.cancel();
         timer = null;
         emit(VoiceMsgPlayerPause(
@@ -50,8 +53,8 @@ class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
 
   Future<void> resumePlayer() async {
     try {
-      await audioPlayer.seek(Duration(milliseconds: counter));
-      audioPlayer.play();
+      await audioPlayer!.seek(Duration(milliseconds: counter));
+      audioPlayer!.play();
       timer = Timer.periodic(timerInterval, (timerVal) async {
         counter = counter + 200;
         if (counter < audioLength) {
@@ -65,13 +68,9 @@ class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
           timer!.cancel();
           timer = null;
           counter = 0;
-          await audioPlayer.stop();
-          await audioPlayer.dispose();
-          emit(
-            VoiceMsgPlayerLoaded(
-              audioLength: audioLength,
-            ),
-          );
+          await audioPlayer!.stop();
+          await audioPlayer!.dispose();
+          loadPlayer();
         }
       });
     } catch (e) {
@@ -85,7 +84,7 @@ class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
 
   Future<void> playPlayer() async {
     try {
-      audioPlayer.play();
+      audioPlayer!.play();
       timer = Timer.periodic(timerInterval, (timerVal) async {
         counter = counter + 200;
         if (counter < audioLength) {
@@ -95,13 +94,9 @@ class VoiceMsgPlayerCubit extends Cubit<VoiceMsgPlayerState> {
           timer!.cancel();
           timer = null;
           counter = 0;
-          await audioPlayer.stop();
-          await audioPlayer.dispose();
-          emit(
-            VoiceMsgPlayerLoaded(
-              audioLength: audioLength,
-            ),
-          );
+          await audioPlayer!.stop();
+          await audioPlayer!.dispose();
+          loadPlayer();
         }
       });
     } catch (e) {
