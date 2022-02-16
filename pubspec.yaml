@@ -28,6 +28,7 @@ dependencies:
   path_provider: ^2.0.8
   permission_handler: ^8.3.0
   record: ^3.0.2
+  shared_preferences: ^2.0.13
   sizer: ^2.0.15
   sqflite: ^2.0.1
   timeago: ^3.1.0

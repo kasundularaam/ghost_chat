@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/core/constants/app_colors.dart';
 import 'package:ghost_chat/core/constants/strings.dart';
 import 'package:ghost_chat/logic/cubit/add_pro_pic_cubit/add_pro_pic_cubit.dart';
+import 'package:ghost_chat/logic/cubit/cubit/msg_disappearing_settings_cubit.dart';
 import 'package:ghost_chat/logic/cubit/edit_bio_cubit/edit_bio_cubit.dart';
 import 'package:ghost_chat/logic/cubit/edit_name_cubit/edit_name_cubit.dart';
 import 'package:ghost_chat/logic/cubit/home_action_bar_cubit/home_action_bar_cubit.dart';
@@ -14,14 +15,35 @@ import 'package:sizer/sizer.dart';
 
 import '../../router/app_router.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController bioController = TextEditingController();
+  TextEditingController timeController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    bioController.dispose();
+    timeController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    String newName = "";
-    String newBio = "";
     BlocProvider.of<ProfilePageCubit>(context).getMyDetails();
+    BlocProvider.of<MsgDisappearingSettingsCubit>(context).loadTime();
     return Scaffold(
       backgroundColor: AppColors.darkColor,
       body: SafeArea(
@@ -46,9 +68,10 @@ class ProfilePage extends StatelessWidget {
                   Text(
                     "Profile",
                     style: TextStyle(
-                        color: AppColors.lightColor,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600),
+                      color: AppColors.lightColor,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -281,9 +304,9 @@ class ProfilePage extends StatelessWidget {
                                                       ),
                                                       AppTextInput(
                                                           onChanged:
-                                                              (newNameText) =>
-                                                                  newName =
-                                                                      newNameText,
+                                                              (newNameText) {},
+                                                          controller:
+                                                              nameController,
                                                           textInputAction:
                                                               TextInputAction
                                                                   .done,
@@ -310,7 +333,10 @@ class ProfilePage extends StatelessWidget {
                                                                       context)
                                                                   .editName(
                                                                       newName:
-                                                                          newName);
+                                                                          nameController
+                                                                              .text);
+                                                              nameController
+                                                                  .clear();
                                                             },
                                                             bgColor: AppColors
                                                                 .primaryColor,
@@ -445,9 +471,9 @@ class ProfilePage extends StatelessWidget {
                                                       ),
                                                       AppTextInput(
                                                         onChanged:
-                                                            (newBioText) =>
-                                                                newBio =
-                                                                    newBioText,
+                                                            (newBioText) {},
+                                                        controller:
+                                                            bioController,
                                                         textInputAction:
                                                             TextInputAction
                                                                 .done,
@@ -474,8 +500,10 @@ class ProfilePage extends StatelessWidget {
                                                                           EditBioCubit>(
                                                                       context)
                                                                   .editBio(
-                                                                      newBio:
-                                                                          newBio);
+                                                                      newBio: bioController
+                                                                          .text);
+                                                              bioController
+                                                                  .clear();
                                                             },
                                                             bgColor: AppColors
                                                                 .primaryColor,
@@ -544,6 +572,212 @@ class ProfilePage extends StatelessWidget {
                                     ),
                                   ],
                                 ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            Container(
+                              color: AppColors.lightColor.withOpacity(0.3),
+                              height: 0.05.h,
+                              width: 100.w,
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.timer_rounded,
+                                      color:
+                                          AppColors.lightColor.withOpacity(0.7),
+                                    ),
+                                    SizedBox(
+                                      width: 5.w,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Message disappearing time",
+                                          style: TextStyle(
+                                            color: AppColors.lightColor
+                                                .withOpacity(0.7),
+                                            fontSize: 10.sp,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 1.h,
+                                        ),
+                                        BlocBuilder<
+                                            MsgDisappearingSettingsCubit,
+                                            MsgDisappearingSettingsState>(
+                                          builder:
+                                              (context, msgDisappearingState) {
+                                            if (msgDisappearingState
+                                                is MsgDisappearingSettingsLoaded) {
+                                              return Text(
+                                                "${msgDisappearingState.disappearingTime}mins",
+                                                style: TextStyle(
+                                                  color: AppColors.lightColor,
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              );
+                                            } else {
+                                              return Text(
+                                                "...",
+                                                style: TextStyle(
+                                                  color: AppColors.lightColor,
+                                                  fontSize: 14.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                BlocConsumer<MsgDisappearingSettingsCubit,
+                                    MsgDisappearingSettingsState>(
+                                  listener: (context, msgDisappearingState) {
+                                    if (msgDisappearingState
+                                        is MsgDisappearingSettingsFailed) {
+                                      SnackBar snackBar = SnackBar(
+                                          content: Text(
+                                              msgDisappearingState.errorMsg));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(snackBar);
+                                    } else if (msgDisappearingState
+                                        is MsgDisappearingSettingsUpdated) {
+                                      BlocProvider.of<
+                                                  MsgDisappearingSettingsCubit>(
+                                              context)
+                                          .loadTime();
+                                      SnackBar snackBar = const SnackBar(
+                                        content: Text(
+                                          "Message disappearing time updated!",
+                                        ),
+                                      );
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(snackBar);
+                                    }
+                                  },
+                                  builder: (context, msgDisappearingState) {
+                                    if (msgDisappearingState
+                                            is MsgDisappearingSettingsUpdating ||
+                                        msgDisappearingState
+                                            is MsgDisappearingSettingsLoading) {
+                                      return SizedBox(
+                                        width: 18.sp,
+                                        height: 18.sp,
+                                        child: const CircularProgressIndicator(
+                                          color: AppColors.primaryColor,
+                                        ),
+                                      );
+                                    } else {
+                                      return GestureDetector(
+                                        onTap: () => showModalBottomSheet(
+                                            isScrollControlled: true,
+                                            context: context,
+                                            builder: (bottomSheetContext) {
+                                              return Padding(
+                                                padding: MediaQuery.of(
+                                                        bottomSheetContext)
+                                                    .viewInsets,
+                                                child: Container(
+                                                  color: AppColors.darkColor,
+                                                  padding: EdgeInsets.all(5.w),
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Text(
+                                                        "Update message disappearing time",
+                                                        style: TextStyle(
+                                                          color: AppColors
+                                                              .lightColor
+                                                              .withOpacity(0.7),
+                                                          fontSize: 10.sp,
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 2.h,
+                                                      ),
+                                                      AppTextInput(
+                                                        onChanged:
+                                                            (newTimeText) {},
+                                                        controller:
+                                                            timeController,
+                                                        textInputAction:
+                                                            TextInputAction
+                                                                .done,
+                                                        textInputType:
+                                                            TextInputType
+                                                                .number,
+                                                        isPassword: false,
+                                                        hintText:
+                                                            "Enter new time in minutes...",
+                                                        bgColor:
+                                                            AppColors.darkGrey,
+                                                        textColor: AppColors
+                                                            .lightColor,
+                                                      ),
+                                                      SizedBox(
+                                                        height: 2.h,
+                                                      ),
+                                                      Align(
+                                                        alignment: Alignment
+                                                            .centerRight,
+                                                        child: AppButton(
+                                                            btnText: "Update",
+                                                            onPressed: () {
+                                                              Navigator.pop(
+                                                                  bottomSheetContext);
+                                                              BlocProvider.of<
+                                                                          MsgDisappearingSettingsCubit>(
+                                                                      context)
+                                                                  .editTime(
+                                                                newTime:
+                                                                    int.parse(
+                                                                  timeController
+                                                                      .text,
+                                                                ),
+                                                              );
+                                                              timeController
+                                                                  .clear();
+                                                            },
+                                                            bgColor: AppColors
+                                                                .primaryColor,
+                                                            txtColor: AppColors
+                                                                .lightColor),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 2.h,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            }),
+                                        child: Icon(
+                                          Icons.edit_rounded,
+                                          color: AppColors.primaryColor,
+                                          size: 18.sp,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                )
                               ],
                             ),
                           ],

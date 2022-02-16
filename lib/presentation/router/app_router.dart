@@ -8,6 +8,7 @@ import 'package:ghost_chat/logic/cubit/auth_cubit/auth_cubit.dart';
 import 'package:ghost_chat/logic/cubit/chat_list_cubit/chat_list_cubit.dart';
 import 'package:ghost_chat/logic/cubit/chat_page_cubit/chat_page_cubit.dart';
 import 'package:ghost_chat/logic/cubit/contacts_cubit/contacts_cubit.dart';
+import 'package:ghost_chat/logic/cubit/cubit/msg_disappearing_settings_cubit.dart';
 import 'package:ghost_chat/logic/cubit/edit_bio_cubit/edit_bio_cubit.dart';
 import 'package:ghost_chat/logic/cubit/edit_name_cubit/edit_name_cubit.dart';
 import 'package:ghost_chat/logic/cubit/go_chat_cubit/go_chat_cubit.dart';
@@ -115,6 +116,9 @@ class AppRouter {
               ),
               BlocProvider(
                 create: (context) => SignoutCubit(),
+              ),
+              BlocProvider(
+                create: (context) => MsgDisappearingSettingsCubit(),
               ),
             ],
             child: const ProfilePage(),
