@@ -3,34 +3,42 @@ import 'dart:convert';
 class FiTextMessage {
   final String messageId;
   final String senderId;
-  final String reciverId;
+  final String receiverId;
   final String sentTimestamp;
   final String messageStatus;
   final String message;
+  final int disappearingDuration;
+  final String msgSeenTime;
   FiTextMessage({
     required this.messageId,
     required this.senderId,
-    required this.reciverId,
+    required this.receiverId,
     required this.sentTimestamp,
     required this.messageStatus,
     required this.message,
+    required this.disappearingDuration,
+    required this.msgSeenTime,
   });
 
   FiTextMessage copyWith({
     String? messageId,
     String? senderId,
-    String? reciverId,
+    String? receiverId,
     String? sentTimestamp,
     String? messageStatus,
     String? message,
+    int? disappearingDuration,
+    String? msgSeenTime,
   }) {
     return FiTextMessage(
       messageId: messageId ?? this.messageId,
       senderId: senderId ?? this.senderId,
-      reciverId: reciverId ?? this.reciverId,
+      receiverId: receiverId ?? this.receiverId,
       sentTimestamp: sentTimestamp ?? this.sentTimestamp,
       messageStatus: messageStatus ?? this.messageStatus,
       message: message ?? this.message,
+      disappearingDuration: disappearingDuration ?? this.disappearingDuration,
+      msgSeenTime: msgSeenTime ?? this.msgSeenTime,
     );
   }
 
@@ -38,10 +46,12 @@ class FiTextMessage {
     return {
       'messageId': messageId,
       'senderId': senderId,
-      'reciverId': reciverId,
+      'receiverId': receiverId,
       'sentTimestamp': sentTimestamp,
       'messageStatus': messageStatus,
       'message': message,
+      'disappearingDuration': disappearingDuration,
+      'msgSeenTime': msgSeenTime,
     };
   }
 
@@ -49,10 +59,12 @@ class FiTextMessage {
     return FiTextMessage(
       messageId: map['messageId'] ?? '',
       senderId: map['senderId'] ?? '',
-      reciverId: map['reciverId'] ?? '',
+      receiverId: map['receiverId'] ?? '',
       sentTimestamp: map['sentTimestamp'] ?? '',
       messageStatus: map['messageStatus'] ?? '',
       message: map['message'] ?? '',
+      disappearingDuration: map['disappearingDuration']?.toInt() ?? 0,
+      msgSeenTime: map['msgSeenTime'] ?? '',
     );
   }
 
@@ -63,7 +75,7 @@ class FiTextMessage {
 
   @override
   String toString() {
-    return 'FiTextMessage(messageId: $messageId, senderId: $senderId, reciverId: $reciverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, message: $message)';
+    return 'FiTextMessage(messageId: $messageId, senderId: $senderId, receiverId: $receiverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, message: $message, disappearingDuration: $disappearingDuration, msgSeenTime: $msgSeenTime)';
   }
 
   @override
@@ -73,19 +85,23 @@ class FiTextMessage {
     return other is FiTextMessage &&
         other.messageId == messageId &&
         other.senderId == senderId &&
-        other.reciverId == reciverId &&
+        other.receiverId == receiverId &&
         other.sentTimestamp == sentTimestamp &&
         other.messageStatus == messageStatus &&
-        other.message == message;
+        other.message == message &&
+        other.disappearingDuration == disappearingDuration &&
+        other.msgSeenTime == msgSeenTime;
   }
 
   @override
   int get hashCode {
     return messageId.hashCode ^
         senderId.hashCode ^
-        reciverId.hashCode ^
+        receiverId.hashCode ^
         sentTimestamp.hashCode ^
         messageStatus.hashCode ^
-        message.hashCode;
+        message.hashCode ^
+        disappearingDuration.hashCode ^
+        msgSeenTime.hashCode;
   }
 }

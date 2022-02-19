@@ -12,10 +12,12 @@ class MessageHelper {
 
   static const columnMessageId = 'columnMessageId';
   static const columnSenderId = 'columnSenderId';
-  static const columnReciverId = 'columnReciverId';
+  static const columnReceiverId = 'columnReceiverId';
   static const columnSentTimestamp = 'columnSentTimestamp';
   static const columnMessageStatus = 'columnMessageStatus';
   static const columnMessage = 'columnMessage';
+  static const columnDisappearingDuration = 'columnDisappearingDuration';
+  static const columnMsgSeenTime = 'columnMsgSeenTime';
 
   static Database? _database;
   static Future<Database?> get database async {
@@ -35,10 +37,12 @@ class MessageHelper {
         await db.execute("CREATE TABLE $table ("
             "$columnMessageId PRIMARY KEY,"
             "$columnSenderId TEXT,"
-            "$columnReciverId TEXT,"
+            "$columnReceiverId TEXT,"
             "$columnSentTimestamp TEXT,"
             "$columnMessageStatus TEXT,"
-            "$columnMessage TEXT"
+            "$columnMessage TEXT,"
+            "$columnDisappearingDuration TEXT,"
+            "$columnMsgSeenTime TEXT"
             ")");
       });
       return database;
@@ -55,14 +59,16 @@ class MessageHelper {
           where: "$columnMessageId = ?", whereArgs: [fiVoiceMessage.messageId]);
       if (results.isEmpty) {
         await db.rawInsert(
-            "INSERT INTO $table ($columnMessageId, $columnSenderId, $columnReciverId, $columnSentTimestamp, $columnMessageStatus, $columnMessage) VALUES(?, ?, ?, ?, ?, ?)",
+            "INSERT INTO $table ($columnMessageId, $columnSenderId, $columnReceiverId, $columnSentTimestamp, $columnMessageStatus, $columnMessage, $columnDisappearingDuration, $columnMsgSeenTime) VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
             [
               fiVoiceMessage.messageId,
               fiVoiceMessage.senderId,
-              fiVoiceMessage.reciverId,
+              fiVoiceMessage.receiverId,
               fiVoiceMessage.sentTimestamp,
               fiVoiceMessage.messageStatus,
-              fiVoiceMessage.audioFilePath
+              fiVoiceMessage.audioFilePath,
+              fiVoiceMessage.disappearingDuration,
+              fiVoiceMessage.msgSeenTime
             ]);
       }
     } catch (e) {
@@ -78,14 +84,16 @@ class MessageHelper {
           where: "$columnMessageId = ?", whereArgs: [fiTextMessage.messageId]);
       if (results.isEmpty) {
         await db.rawInsert(
-            "INSERT INTO $table ($columnMessageId, $columnSenderId, $columnReciverId, $columnSentTimestamp, $columnMessageStatus, $columnMessage) VALUES(?, ?, ?, ?, ?, ?)",
+            "INSERT INTO $table ($columnMessageId, $columnSenderId, $columnReceiverId, $columnSentTimestamp, $columnMessageStatus, $columnMessage, $columnDisappearingDuration, $columnMsgSeenTime) VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
             [
               fiTextMessage.messageId,
               fiTextMessage.senderId,
-              fiTextMessage.reciverId,
+              fiTextMessage.receiverId,
               fiTextMessage.sentTimestamp,
               fiTextMessage.messageStatus,
-              fiTextMessage.message
+              fiTextMessage.message,
+              fiTextMessage.disappearingDuration,
+              fiTextMessage.msgSeenTime
             ]);
       }
     } catch (e) {
@@ -114,13 +122,18 @@ class MessageHelper {
           .query(table, where: "$columnMessageId = ?", whereArgs: [messageId]);
       List<FiTextMessage> messages = [];
       for (var result in results) {
-        messages.add(FiTextMessage(
+        messages.add(
+          FiTextMessage(
             messageId: result[columnMessageId],
             senderId: result[columnSenderId],
-            reciverId: result[columnReciverId],
+            receiverId: result[columnReceiverId],
             sentTimestamp: result[columnSentTimestamp],
             messageStatus: result[columnMessageStatus],
-            message: result[columnMessage]));
+            message: result[columnMessage],
+            disappearingDuration: result[columnDisappearingDuration],
+            msgSeenTime: result[columnMsgSeenTime],
+          ),
+        );
       }
       if (messages.isNotEmpty) {
         return messages[0];
@@ -143,10 +156,12 @@ class MessageHelper {
           FiVoiceMessage(
             messageId: result[columnMessageId],
             senderId: result[columnSenderId],
-            reciverId: result[columnReciverId],
+            receiverId: result[columnReceiverId],
             sentTimestamp: result[columnSentTimestamp],
             messageStatus: result[columnMessageStatus],
             audioFilePath: result[columnMessage],
+            disappearingDuration: result[columnDisappearingDuration],
+            msgSeenTime: result[columnMsgSeenTime],
           ),
         );
       }
@@ -167,13 +182,18 @@ class MessageHelper {
           .query(table, where: "$columnMessageId = ?", whereArgs: [messageId]);
       List<FiTextMessage> messages = [];
       for (var result in results) {
-        messages.add(FiTextMessage(
+        messages.add(
+          FiTextMessage(
             messageId: result[columnMessageId],
             senderId: result[columnSenderId],
-            reciverId: result[columnReciverId],
+            receiverId: result[columnReceiverId],
             sentTimestamp: result[columnSentTimestamp],
             messageStatus: result[columnMessageStatus],
-            message: result[columnMessage]));
+            message: result[columnMessage],
+            disappearingDuration: result[columnDisappearingDuration],
+            msgSeenTime: result[columnMsgSeenTime],
+          ),
+        );
       }
       if (results.isNotEmpty) {
         return true;

@@ -4,41 +4,49 @@ class DownloadMessage {
   final String messageId;
   final bool isTextMsg;
   final String senderId;
-  final String reciverId;
+  final String receiverId;
   final String sentTimestamp;
   final String messageStatus;
   final String msgFilePath;
   final int messageLen;
+  final int disappearingDuration;
+  final String msgSeenTime;
   DownloadMessage({
     required this.messageId,
     required this.isTextMsg,
     required this.senderId,
-    required this.reciverId,
+    required this.receiverId,
     required this.sentTimestamp,
     required this.messageStatus,
     required this.msgFilePath,
     required this.messageLen,
+    required this.disappearingDuration,
+    required this.msgSeenTime,
   });
 
   DownloadMessage copyWith({
     String? messageId,
     bool? isTextMsg,
     String? senderId,
-    String? reciverId,
+    String? receiverId,
     String? sentTimestamp,
     String? messageStatus,
     String? msgFilePath,
     int? messageLen,
+    int? disappearingDuration,
+    String? msgSeenTime,
   }) {
     return DownloadMessage(
       messageId: messageId ?? this.messageId,
       isTextMsg: isTextMsg ?? this.isTextMsg,
       senderId: senderId ?? this.senderId,
-      reciverId: reciverId ?? this.reciverId,
+      receiverId: receiverId ?? this.receiverId,
       sentTimestamp: sentTimestamp ?? this.sentTimestamp,
       messageStatus: messageStatus ?? this.messageStatus,
       msgFilePath: msgFilePath ?? this.msgFilePath,
       messageLen: messageLen ?? this.messageLen,
+      disappearingDuration: disappearingDuration ?? this.disappearingDuration,
+      msgSeenTime: msgSeenTime ?? this.msgSeenTime,
     );
   }
 
@@ -47,11 +55,13 @@ class DownloadMessage {
       'messageId': messageId,
       'isTextMsg': isTextMsg,
       'senderId': senderId,
-      'reciverId': reciverId,
+      'receiverId': receiverId,
       'sentTimestamp': sentTimestamp,
       'messageStatus': messageStatus,
       'msgFilePath': msgFilePath,
       'messageLen': messageLen,
+      'disappearingDuration': disappearingDuration,
+      'msgSeenTime': msgSeenTime,
     };
   }
 
@@ -60,11 +70,13 @@ class DownloadMessage {
       messageId: map['messageId'] ?? '',
       isTextMsg: map['isTextMsg'] ?? false,
       senderId: map['senderId'] ?? '',
-      reciverId: map['reciverId'] ?? '',
+      receiverId: map['receiverId'] ?? '',
       sentTimestamp: map['sentTimestamp'] ?? '',
       messageStatus: map['messageStatus'] ?? '',
       msgFilePath: map['msgFilePath'] ?? '',
       messageLen: map['messageLen']?.toInt() ?? 0,
+      disappearingDuration: map['disappearingDuration']?.toInt() ?? 0,
+      msgSeenTime: map['msgSeenTime'] ?? '',
     );
   }
 
@@ -75,7 +87,7 @@ class DownloadMessage {
 
   @override
   String toString() {
-    return 'DownloadMessage(messageId: $messageId, isTextMsg: $isTextMsg, senderId: $senderId, reciverId: $reciverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, msgFilePath: $msgFilePath, messageLen: $messageLen)';
+    return 'DownloadMessage(messageId: $messageId, isTextMsg: $isTextMsg, senderId: $senderId, receiverId: $receiverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, msgFilePath: $msgFilePath, messageLen: $messageLen, disappearingDuration: $disappearingDuration, msgSeenTime: $msgSeenTime)';
   }
 
   @override
@@ -86,11 +98,13 @@ class DownloadMessage {
         other.messageId == messageId &&
         other.isTextMsg == isTextMsg &&
         other.senderId == senderId &&
-        other.reciverId == reciverId &&
+        other.receiverId == receiverId &&
         other.sentTimestamp == sentTimestamp &&
         other.messageStatus == messageStatus &&
         other.msgFilePath == msgFilePath &&
-        other.messageLen == messageLen;
+        other.messageLen == messageLen &&
+        other.disappearingDuration == disappearingDuration &&
+        other.msgSeenTime == msgSeenTime;
   }
 
   @override
@@ -98,10 +112,12 @@ class DownloadMessage {
     return messageId.hashCode ^
         isTextMsg.hashCode ^
         senderId.hashCode ^
-        reciverId.hashCode ^
+        receiverId.hashCode ^
         sentTimestamp.hashCode ^
         messageStatus.hashCode ^
         msgFilePath.hashCode ^
-        messageLen.hashCode;
+        messageLen.hashCode ^
+        disappearingDuration.hashCode ^
+        msgSeenTime.hashCode;
   }
 }

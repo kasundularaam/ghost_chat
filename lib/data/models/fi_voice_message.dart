@@ -3,34 +3,42 @@ import 'dart:convert';
 class FiVoiceMessage {
   final String messageId;
   final String senderId;
-  final String reciverId;
+  final String receiverId;
   final String sentTimestamp;
   final String messageStatus;
   final String audioFilePath;
+  final int disappearingDuration;
+  final String msgSeenTime;
   FiVoiceMessage({
     required this.messageId,
     required this.senderId,
-    required this.reciverId,
+    required this.receiverId,
     required this.sentTimestamp,
     required this.messageStatus,
     required this.audioFilePath,
+    required this.disappearingDuration,
+    required this.msgSeenTime,
   });
 
   FiVoiceMessage copyWith({
     String? messageId,
     String? senderId,
-    String? reciverId,
+    String? receiverId,
     String? sentTimestamp,
     String? messageStatus,
     String? audioFilePath,
+    int? disappearingDuration,
+    String? msgSeenTime,
   }) {
     return FiVoiceMessage(
       messageId: messageId ?? this.messageId,
       senderId: senderId ?? this.senderId,
-      reciverId: reciverId ?? this.reciverId,
+      receiverId: receiverId ?? this.receiverId,
       sentTimestamp: sentTimestamp ?? this.sentTimestamp,
       messageStatus: messageStatus ?? this.messageStatus,
       audioFilePath: audioFilePath ?? this.audioFilePath,
+      disappearingDuration: disappearingDuration ?? this.disappearingDuration,
+      msgSeenTime: msgSeenTime ?? this.msgSeenTime,
     );
   }
 
@@ -38,10 +46,12 @@ class FiVoiceMessage {
     return {
       'messageId': messageId,
       'senderId': senderId,
-      'reciverId': reciverId,
+      'receiverId': receiverId,
       'sentTimestamp': sentTimestamp,
       'messageStatus': messageStatus,
       'audioFilePath': audioFilePath,
+      'disappearingDuration': disappearingDuration,
+      'msgSeenTime': msgSeenTime,
     };
   }
 
@@ -49,10 +59,12 @@ class FiVoiceMessage {
     return FiVoiceMessage(
       messageId: map['messageId'] ?? '',
       senderId: map['senderId'] ?? '',
-      reciverId: map['reciverId'] ?? '',
+      receiverId: map['receiverId'] ?? '',
       sentTimestamp: map['sentTimestamp'] ?? '',
       messageStatus: map['messageStatus'] ?? '',
       audioFilePath: map['audioFilePath'] ?? '',
+      disappearingDuration: map['disappearingDuration']?.toInt() ?? 0,
+      msgSeenTime: map['msgSeenTime'] ?? '',
     );
   }
 
@@ -63,7 +75,7 @@ class FiVoiceMessage {
 
   @override
   String toString() {
-    return 'FiVoiceMessage(messageId: $messageId, senderId: $senderId, reciverId: $reciverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, audioFilePath: $audioFilePath)';
+    return 'FiVoiceMessage(messageId: $messageId, senderId: $senderId, receiverId: $receiverId, sentTimestamp: $sentTimestamp, messageStatus: $messageStatus, audioFilePath: $audioFilePath, disappearingDuration: $disappearingDuration, msgSeenTime: $msgSeenTime)';
   }
 
   @override
@@ -73,19 +85,23 @@ class FiVoiceMessage {
     return other is FiVoiceMessage &&
         other.messageId == messageId &&
         other.senderId == senderId &&
-        other.reciverId == reciverId &&
+        other.receiverId == receiverId &&
         other.sentTimestamp == sentTimestamp &&
         other.messageStatus == messageStatus &&
-        other.audioFilePath == audioFilePath;
+        other.audioFilePath == audioFilePath &&
+        other.disappearingDuration == disappearingDuration &&
+        other.msgSeenTime == msgSeenTime;
   }
 
   @override
   int get hashCode {
     return messageId.hashCode ^
         senderId.hashCode ^
-        reciverId.hashCode ^
+        receiverId.hashCode ^
         sentTimestamp.hashCode ^
         messageStatus.hashCode ^
-        audioFilePath.hashCode;
+        audioFilePath.hashCode ^
+        disappearingDuration.hashCode ^
+        msgSeenTime.hashCode;
   }
 }

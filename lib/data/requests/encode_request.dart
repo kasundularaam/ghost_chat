@@ -1,12 +1,12 @@
 class EncodeRequest {
   final String imagePath;
   final String message;
-  final String conversatioId;
+  final String conversationId;
   final String messageId;
   EncodeRequest({
     required this.imagePath,
     required this.message,
-    required this.conversatioId,
+    required this.conversationId,
     required this.messageId,
   });
 
@@ -17,7 +17,7 @@ class EncodeRequest {
     return other is EncodeRequest &&
         other.imagePath == imagePath &&
         other.message == message &&
-        other.conversatioId == conversatioId &&
+        other.conversationId == conversationId &&
         other.messageId == messageId;
   }
 
@@ -25,12 +25,12 @@ class EncodeRequest {
   int get hashCode {
     return imagePath.hashCode ^
         message.hashCode ^
-        conversatioId.hashCode ^
+        conversationId.hashCode ^
         messageId.hashCode;
   }
 
   @override
   String toString() {
-    return 'EncodeRequest(imagePath: $imagePath, message: $message, conversatioId: $conversatioId, messageId: $messageId)';
+    return 'EncodeRequest(imagePath: $imagePath, message: $message, conversationId: $conversationId, messageId: $messageId)';
   }
 }

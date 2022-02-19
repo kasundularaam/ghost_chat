@@ -6,6 +6,7 @@ import 'package:ghost_chat/data/models/encoded_message_model.dart';
 import 'package:firebase_storage/firebase_storage.dart' as storage;
 import 'package:ghost_chat/data/models/fi_voice_message.dart';
 
+import '../../core/constants/strings.dart';
 import 'auth_repo.dart';
 
 class MessageRepo {
@@ -38,8 +39,8 @@ class MessageRepo {
           conversationRef
               .doc(conversationId)
               .collection("message")
-              .where("reciverId", isEqualTo: AuthRepo.currentUid)
-              .where("messageStatus", isNotEqualTo: "Seen")
+              .where("receiverId", isEqualTo: AuthRepo.currentUid)
+              .where("messageStatus", isNotEqualTo: Strings.seen)
               .snapshots();
 
       Stream<int> countStream = querySnapshot.map((snapshot) => snapshot.docs
@@ -66,12 +67,14 @@ class MessageRepo {
       DownloadMessage downloadMessage = DownloadMessage(
         messageId: message.messageId,
         senderId: message.senderId,
-        reciverId: message.reciverId,
+        receiverId: message.receiverId,
         sentTimestamp: message.sentTimestamp,
         messageStatus: message.messageStatus,
         msgFilePath: stImageStoragePath,
         messageLen: message.messageLen,
         isTextMsg: true,
+        disappearingDuration: message.disappearingDuration,
+        msgSeenTime: message.msgSeenTime,
       );
 
       await conversationRef
@@ -96,12 +99,14 @@ class MessageRepo {
       DownloadMessage downloadMessage = DownloadMessage(
         messageId: message.messageId,
         senderId: message.senderId,
-        reciverId: message.reciverId,
+        receiverId: message.receiverId,
         sentTimestamp: message.sentTimestamp,
         messageStatus: message.messageStatus,
         msgFilePath: audioFilePath,
         messageLen: 0,
         isTextMsg: false,
+        disappearingDuration: message.disappearingDuration,
+        msgSeenTime: message.msgSeenTime,
       );
 
       await conversationRef

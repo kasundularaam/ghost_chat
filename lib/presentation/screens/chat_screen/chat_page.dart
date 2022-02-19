@@ -63,7 +63,7 @@ class _ChatPageState extends State<ChatPage> {
         voiceMessage: FiVoiceMessage(
             messageId: voiceMsgId,
             senderId: AuthRepo.currentUid,
-            reciverId: widget.args.friendId,
+            receiverId: widget.args.friendId,
             sentTimestamp: sentTimestamp,
             messageStatus: "Sending",
             audioFilePath: audioFilePath),
@@ -85,7 +85,7 @@ class _ChatPageState extends State<ChatPage> {
         messageToSend: FiTextMessage(
           messageId: messageId,
           senderId: AuthRepo.currentUid,
-          reciverId: widget.args.friendId,
+          receiverId: widget.args.friendId,
           sentTimestamp: sentTimestamp,
           messageStatus: "Sending",
           message: message,

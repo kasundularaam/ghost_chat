@@ -27,7 +27,7 @@ Future<String> handleEncodeRequest({required EncodeRequest request}) async {
 
   Directory dir = await getApplicationSupportDirectory();
   String filePath =
-      "${dir.path}/send/${request.conversatioId}/${request.messageId}.png";
+      "${dir.path}/send/${request.conversationId}/${request.messageId}.png";
 
   image_lib.Image newImage = coder.encodeMessage(request.message);
   try {

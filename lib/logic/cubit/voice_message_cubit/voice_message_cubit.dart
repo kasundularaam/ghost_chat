@@ -105,14 +105,17 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
           emit(
             VoiceMessageUploading(
               uploadingMsg: DownloadMessage(
-                  messageId: messageToUpload.messageId,
-                  senderId: messageToUpload.senderId,
-                  reciverId: messageToUpload.reciverId,
-                  sentTimestamp: messageToUpload.sentTimestamp,
-                  messageStatus: messageToUpload.messageStatus,
-                  msgFilePath: messageToUpload.audioFilePath,
-                  messageLen: 0,
-                  isTextMsg: false),
+                messageId: messageToUpload.messageId,
+                senderId: messageToUpload.senderId,
+                receiverId: messageToUpload.receiverId,
+                sentTimestamp: messageToUpload.sentTimestamp,
+                messageStatus: messageToUpload.messageStatus,
+                msgFilePath: messageToUpload.audioFilePath,
+                messageLen: 0,
+                isTextMsg: false,
+                disappearingDuration: messageToUpload.disappearingDuration,
+                msgSeenTime: messageToUpload.msgSeenTime,
+              ),
             ),
           );
           await MessageRepo.sendVoiceMessage(
@@ -120,7 +123,7 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
             conversationId: conversationId,
           );
           await ConversationRepo.updateConversation(
-            friendId: messageToUpload.reciverId,
+            friendId: messageToUpload.receiverId,
             lastUpdate: messageToUpload.sentTimestamp,
             conversationId: conversationId,
             friendNumber: friendNumber,
