@@ -9,6 +9,8 @@ import 'package:ghost_chat/data/repositories/message_repo.dart';
 import 'package:ghost_chat/data/sqlite/message_helper.dart';
 import 'package:meta/meta.dart';
 
+import '../../../data/models/msg_status.dart';
+
 part 'message_state.dart';
 
 class MessageCubit extends Cubit<MessageState> {
@@ -62,14 +64,18 @@ class MessageCubit extends Cubit<MessageState> {
             messageStatus: Strings.seen,
             message: decryptedMsg,
             disappearingDuration: downloadMessage.disappearingDuration,
-            msgSeenTime: downloadMessage.msgSeenTime,
+            msgSeenTime: DateTime.now().millisecondsSinceEpoch.toString(),
           );
           emit(MessageLoading(loadingMsg: "finalizing..."));
           await MessageHelper.addTextMessage(fiTextMessage: decodedMessage);
           await MessageRepo.updateMessageStatus(
-              conversationId: conversationId,
-              messageId: decodedMessage.messageId,
-              messageStatus: Strings.seen);
+            conversationId: conversationId,
+            messageId: decodedMessage.messageId,
+            msgStatus: MsgStatus(
+              msgStatus: Strings.seen,
+              msgSeenTime: decodedMessage.msgSeenTime,
+            ),
+          );
           loadTextMessage(
               downloadMessage: downloadMessage, conversationId: conversationId);
         }
@@ -119,14 +125,17 @@ class MessageCubit extends Cubit<MessageState> {
             messageStatus: Strings.seen,
             audioFilePath: downloadedAudioPath,
             disappearingDuration: downloadMessage.disappearingDuration,
-            msgSeenTime: downloadMessage.msgSeenTime,
+            msgSeenTime: DateTime.now().millisecondsSinceEpoch.toString(),
           );
           emit(MessageLoading(loadingMsg: "finalizing..."));
           await MessageHelper.addVoiceMessage(fiVoiceMessage: fiVoiceMessage);
           await MessageRepo.updateMessageStatus(
             conversationId: conversationId,
             messageId: fiVoiceMessage.messageId,
-            messageStatus: Strings.seen,
+            msgStatus: MsgStatus(
+              msgStatus: Strings.seen,
+              msgSeenTime: fiVoiceMessage.msgSeenTime,
+            ),
           );
           loadTextMessage(
               downloadMessage: downloadMessage, conversationId: conversationId);

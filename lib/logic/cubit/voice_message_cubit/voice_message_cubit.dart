@@ -13,6 +13,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../core/constants/strings.dart';
+import '../../../data/models/msg_status.dart';
+
 part 'voice_message_state.dart';
 
 class VoiceMessageCubit extends Cubit<VoiceMessageState> {
@@ -130,9 +133,13 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
             active: true,
           );
           await MessageRepo.updateMessageStatus(
-              conversationId: conversationId,
-              messageId: messageToUpload.messageId,
-              messageStatus: "Sent");
+            conversationId: conversationId,
+            messageId: messageToUpload.messageId,
+            msgStatus: MsgStatus(
+              msgStatus: Strings.sent,
+              msgSeenTime: "null",
+            ),
+          );
           emit(VoiceMessageSent());
         } catch (e) {
           emit(VoiceMessageFailed(errorMsg: e.toString()));

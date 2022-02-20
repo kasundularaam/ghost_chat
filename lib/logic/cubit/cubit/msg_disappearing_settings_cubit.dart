@@ -12,7 +12,7 @@ class MsgDisappearingSettingsCubit extends Cubit<MsgDisappearingSettingsState> {
     try {
       emit(MsgDisappearingSettingsLoading());
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      int time = prefs.getInt(Strings.msgDisappearingTimeKey) ?? 10;
+      int time = prefs.getInt(Strings.msgDisappearingDurationKey) ?? 60;
       emit(MsgDisappearingSettingsLoaded(disappearingTime: time));
     } catch (e) {
       emit(MsgDisappearingSettingsFailed(errorMsg: e.toString()));
@@ -23,7 +23,7 @@ class MsgDisappearingSettingsCubit extends Cubit<MsgDisappearingSettingsState> {
     try {
       emit(MsgDisappearingSettingsUpdating());
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setInt(Strings.msgDisappearingTimeKey, newTime);
+      await prefs.setInt(Strings.msgDisappearingDurationKey, newTime);
       emit(MsgDisappearingSettingsUpdated());
       loadTime();
     } catch (e) {

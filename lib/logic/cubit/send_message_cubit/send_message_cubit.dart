@@ -6,6 +6,7 @@ import 'package:ghost_chat/data/encrypt_services/handle_encode.dart';
 import 'package:ghost_chat/data/models/fi_text_message.dart';
 import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/data/models/encoded_message_model.dart';
+import 'package:ghost_chat/data/models/msg_status.dart';
 import 'package:ghost_chat/data/repositories/conversation_repo.dart';
 import 'package:ghost_chat/data/repositories/local_repo.dart';
 import 'package:ghost_chat/data/repositories/message_repo.dart';
@@ -84,7 +85,10 @@ class SendMessageCubit extends Cubit<SendMessageState> {
       await MessageRepo.updateMessageStatus(
         conversationId: conversationId,
         messageId: encodedMessage.messageId,
-        messageStatus: Strings.sent,
+        msgStatus: MsgStatus(
+          msgStatus: Strings.sent,
+          msgSeenTime: "null",
+        ),
       );
       emit(SendMessageSent());
     } catch (e) {

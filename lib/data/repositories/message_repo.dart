@@ -5,6 +5,7 @@ import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/data/models/encoded_message_model.dart';
 import 'package:firebase_storage/firebase_storage.dart' as storage;
 import 'package:ghost_chat/data/models/fi_voice_message.dart';
+import 'package:ghost_chat/data/models/msg_status.dart';
 
 import '../../core/constants/strings.dart';
 import 'auth_repo.dart';
@@ -122,13 +123,13 @@ class MessageRepo {
   static Future<void> updateMessageStatus(
       {required String conversationId,
       required String messageId,
-      required String messageStatus}) async {
+      required MsgStatus msgStatus}) async {
     try {
       await conversationRef
           .doc(conversationId)
           .collection("message")
           .doc(messageId)
-          .update({"messageStatus": messageStatus});
+          .update(msgStatus.toMap());
     } catch (e) {
       throw e.toString();
     }

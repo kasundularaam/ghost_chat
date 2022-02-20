@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghost_chat/core/constants/strings.dart';
 import 'package:ghost_chat/data/models/fi_text_message.dart';
 import 'package:ghost_chat/data/models/fi_voice_message.dart';
 import 'package:ghost_chat/data/repositories/auth_repo.dart';
@@ -11,6 +12,7 @@ import 'package:ghost_chat/presentation/screens/chat_screen/widgets/message_box.
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/send_button.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/voice_box.dart';
 import 'package:ghost_chat/presentation/screens/chat_screen/widgets/voice_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:ghost_chat/core/constants/app_colors.dart';
@@ -56,17 +58,23 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
   }
 
-  void sendVoiceMessage() {
+  void sendVoiceMessage() async {
     if (audioFilePath.isNotEmpty && voiceMsgId.isNotEmpty) {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      int disappearingDuration =
+          preferences.getInt(Strings.msgDisappearingDurationKey) ?? 60;
       String sentTimestamp = DateTime.now().millisecondsSinceEpoch.toString();
       BlocProvider.of<VoiceMessageCubit>(context).sendVoiceMsg(
         voiceMessage: FiVoiceMessage(
-            messageId: voiceMsgId,
-            senderId: AuthRepo.currentUid,
-            receiverId: widget.args.friendId,
-            sentTimestamp: sentTimestamp,
-            messageStatus: "Sending",
-            audioFilePath: audioFilePath),
+          messageId: voiceMsgId,
+          senderId: AuthRepo.currentUid,
+          receiverId: widget.args.friendId,
+          sentTimestamp: sentTimestamp,
+          messageStatus: "Sending",
+          audioFilePath: audioFilePath,
+          disappearingDuration: disappearingDuration,
+          msgSeenTime: "null",
+        ),
         conversationId: widget.args.conversationId,
         friendNumber: widget.args.friendNumber,
       );
@@ -75,8 +83,11 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  void sendTextMessage({required message}) {
+  void sendTextMessage({required message}) async {
     if (message.isNotEmpty) {
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      int disappearingDuration =
+          preferences.getInt(Strings.msgDisappearingDurationKey) ?? 60;
       Uuid uuid = const Uuid();
       String messageId = uuid.v1();
       messageId = messageId.replaceAll(RegExp(r'[^\w\s]+'), '');
@@ -89,6 +100,8 @@ class _ChatPageState extends State<ChatPage> {
           sentTimestamp: sentTimestamp,
           messageStatus: "Sending",
           message: message,
+          disappearingDuration: disappearingDuration,
+          msgSeenTime: "null",
         ),
         conversationId: widget.args.conversationId,
         friendNumber: widget.args.friendNumber,
