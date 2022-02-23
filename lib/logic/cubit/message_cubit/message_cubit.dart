@@ -31,13 +31,14 @@ class MessageCubit extends Cubit<MessageState> {
           DateTime seenTime = DateTime.fromMillisecondsSinceEpoch(int.parse(
             downloadMessage.msgSeenTime,
           ));
+
           int disappearTime = seenTime
               .add(Duration(minutes: downloadMessage.disappearingDuration))
               .millisecondsSinceEpoch;
 
-          if (disappearTime < DateTime.now().millisecondsSinceEpoch) {
+          if (disappearTime > DateTime.now().millisecondsSinceEpoch) {
             _myTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-              if (disappearTime < DateTime.now().millisecondsSinceEpoch) {
+              if (disappearTime > DateTime.now().millisecondsSinceEpoch) {
                 emit(
                   MessageLoadedText(
                     message: _loadedMsgText!,
@@ -50,6 +51,8 @@ class MessageCubit extends Cubit<MessageState> {
               }
             });
           } else {
+            _myTimer!.cancel();
+            _myTimer = null;
             await MessageRepo.deleteMessage(
                 messageId: downloadMessage.messageId,
                 conversationId: conversationId);
@@ -131,11 +134,43 @@ class MessageCubit extends Cubit<MessageState> {
       required String conversationId}) async {
     try {
       if (_loadedMsgVoice != null) {
-        emit(
-          MessageLoadedVoice(
-            message: _loadedMsgVoice!,
-          ),
-        );
+        if (downloadMessage.msgSeenTime != "null") {
+          DateTime seenTime = DateTime.fromMillisecondsSinceEpoch(int.parse(
+            downloadMessage.msgSeenTime,
+          ));
+          int disappearTime = seenTime
+              .add(Duration(minutes: downloadMessage.disappearingDuration))
+              .millisecondsSinceEpoch;
+
+          if (disappearTime > DateTime.now().millisecondsSinceEpoch) {
+            _myTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+              if (disappearTime > DateTime.now().millisecondsSinceEpoch) {
+                emit(
+                  MessageLoadedVoice(
+                    message: _loadedMsgVoice!,
+                  ),
+                );
+              } else {
+                loadVoiceMessage(
+                    downloadMessage: downloadMessage,
+                    conversationId: conversationId);
+              }
+            });
+          } else {
+            _myTimer!.cancel();
+            _myTimer = null;
+            await MessageRepo.deleteMessage(
+                messageId: downloadMessage.messageId,
+                conversationId: conversationId);
+            emit(MessageDisappeared(message: "This message was disappeared"));
+          }
+        } else {
+          emit(
+            MessageLoadedVoice(
+              message: _loadedMsgVoice!,
+            ),
+          );
+        }
       } else {
         emit(MessageLoading(loadingMsg: "checking..."));
         bool exist = await MessageHelper.checkMessageExist(
@@ -145,7 +180,7 @@ class MessageCubit extends Cubit<MessageState> {
           FiVoiceMessage messageFromDb = await MessageHelper.getVoiceMsg(
               messageId: downloadMessage.messageId);
           _loadedMsgVoice = messageFromDb;
-          loadTextMessage(
+          loadVoiceMessage(
               downloadMessage: downloadMessage, conversationId: conversationId);
         } else {
           emit(MessageLoading(loadingMsg: "downloading voice message..."));
@@ -175,7 +210,7 @@ class MessageCubit extends Cubit<MessageState> {
               msgSeenTime: fiVoiceMessage.msgSeenTime,
             ),
           );
-          loadTextMessage(
+          loadVoiceMessage(
               downloadMessage: downloadMessage, conversationId: conversationId);
         }
       }

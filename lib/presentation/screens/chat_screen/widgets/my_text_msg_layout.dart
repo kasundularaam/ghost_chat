@@ -105,7 +105,6 @@ class MyTextMsgLayout extends StatelessWidget {
                             BlocBuilder<MessageStatusCubit, MessageStatusState>(
                               builder: (context, state) {
                                 if (state is MessageStatusLoaded) {
-                                  print(state.status);
                                   if (state.status == Strings.sent) {
                                     return Icon(
                                       Icons.check_rounded,

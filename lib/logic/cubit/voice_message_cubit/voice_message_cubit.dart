@@ -105,6 +105,7 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
           FiVoiceMessage messageToUpload = await MessageHelper.getVoiceMsg(
             messageId: voiceMessage.messageId,
           );
+
           emit(
             VoiceMessageUploading(
               uploadingMsg: DownloadMessage(
