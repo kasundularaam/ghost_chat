@@ -83,6 +83,21 @@ class FriendTextMsgLayout extends StatelessWidget {
                         ),
                       ],
                     );
+                  } else if (state is MessageDisappeared) {
+                    return Container(
+                      padding: EdgeInsets.all(2.w),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColor,
+                        borderRadius: BorderRadius.circular(2.w),
+                      ),
+                      child: Text(
+                        state.message,
+                        style: TextStyle(
+                          color: AppColors.lightColor,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    );
                   } else {
                     return Container(
                       padding: EdgeInsets.all(2.w),

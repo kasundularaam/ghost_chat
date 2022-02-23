@@ -27,28 +27,41 @@ class MessageCubit extends Cubit<MessageState> {
       required String conversationId}) async {
     try {
       if (_loadedMsgText != null) {
-        DateTime seenTime = DateTime.fromMillisecondsSinceEpoch(int.parse(
-          downloadMessage.msgSeenTime,
-        ));
-        int disappearTime = seenTime
-            .add(Duration(minutes: downloadMessage.disappearingDuration))
-            .millisecondsSinceEpoch;
+        if (downloadMessage.msgSeenTime != "null") {
+          DateTime seenTime = DateTime.fromMillisecondsSinceEpoch(int.parse(
+            downloadMessage.msgSeenTime,
+          ));
+          int disappearTime = seenTime
+              .add(Duration(minutes: downloadMessage.disappearingDuration))
+              .millisecondsSinceEpoch;
 
-        if (disappearTime < DateTime.now().millisecondsSinceEpoch) {
-          _myTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-            if (disappearTime < DateTime.now().millisecondsSinceEpoch) {
-              emit(
-                MessageLoadedText(
-                  message: _loadedMsgText!,
-                ),
-              );
-            } else {
-              loadTextMessage(
-                  downloadMessage: downloadMessage,
-                  conversationId: conversationId);
-            }
-          });
-        } else {}
+          if (disappearTime < DateTime.now().millisecondsSinceEpoch) {
+            _myTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+              if (disappearTime < DateTime.now().millisecondsSinceEpoch) {
+                emit(
+                  MessageLoadedText(
+                    message: _loadedMsgText!,
+                  ),
+                );
+              } else {
+                loadTextMessage(
+                    downloadMessage: downloadMessage,
+                    conversationId: conversationId);
+              }
+            });
+          } else {
+            await MessageRepo.deleteMessage(
+                messageId: downloadMessage.messageId,
+                conversationId: conversationId);
+            emit(MessageDisappeared(message: "This message was disappeared"));
+          }
+        } else {
+          emit(
+            MessageLoadedText(
+              message: _loadedMsgText!,
+            ),
+          );
+        }
       } else {
         emit(MessageLoading(loadingMsg: "checking..."));
         bool exist = await MessageHelper.checkMessageExist(

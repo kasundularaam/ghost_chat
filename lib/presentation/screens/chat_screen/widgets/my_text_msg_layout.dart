@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ghost_chat/core/constants/strings.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -104,21 +105,21 @@ class MyTextMsgLayout extends StatelessWidget {
                             BlocBuilder<MessageStatusCubit, MessageStatusState>(
                               builder: (context, state) {
                                 if (state is MessageStatusLoaded) {
-                                  if (state.status.toLowerCase() == "sent") {
+                                  print(state.status);
+                                  if (state.status == Strings.sent) {
                                     return Icon(
                                       Icons.check_rounded,
                                       color: AppColors.lightColor,
                                       size: 14.sp,
                                     );
-                                  } else if (state.status.toLowerCase() ==
-                                      "seen") {
+                                  } else if (state.status == Strings.seen) {
                                     return Icon(
                                       Icons.done_all_rounded,
                                       color: AppColors.primaryColor,
                                       size: 14.sp,
                                     );
-                                  } else if (state.status.toLowerCase() ==
-                                      "delevered") {
+                                  } else if (state.status ==
+                                      Strings.delivered) {
                                     return Icon(
                                       Icons.done_all_rounded,
                                       color: AppColors.lightColor,
@@ -143,6 +144,25 @@ class MyTextMsgLayout extends StatelessWidget {
                           ],
                         ),
                       ],
+                    );
+                  } else if (state is MessageDisappeared) {
+                    return Container(
+                      padding: EdgeInsets.all(2.w),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(2.w),
+                        border: Border.all(
+                          width: 0.05.w,
+                          color: AppColors.lightColor.withOpacity(0.4),
+                        ),
+                      ),
+                      child: Text(
+                        state.message,
+                        style: TextStyle(
+                          color: AppColors.lightColor,
+                          fontSize: 12.sp,
+                        ),
+                      ),
                     );
                   } else {
                     return Container(

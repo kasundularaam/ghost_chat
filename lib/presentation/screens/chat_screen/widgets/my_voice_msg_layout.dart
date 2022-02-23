@@ -155,12 +155,35 @@ class _MyVoiceMsgLayoutState extends State<MyVoiceMsgLayout> {
                         ),
                       ],
                     );
+                  } else if (state is MessageDisappeared) {
+                    return Container(
+                      padding: EdgeInsets.all(2.w),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(2.w),
+                        border: Border.all(
+                          width: 0.05.w,
+                          color: AppColors.lightColor.withOpacity(0.4),
+                        ),
+                      ),
+                      child: Text(
+                        state.message,
+                        style: TextStyle(
+                          color: AppColors.lightColor,
+                          fontSize: 12.sp,
+                        ),
+                      ),
+                    );
                   } else {
                     return Container(
                       padding: EdgeInsets.all(2.w),
                       decoration: BoxDecoration(
-                        color: Colors.black,
+                        color: AppColors.lightColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(2.w),
+                        border: Border.all(
+                          width: 0.05.w,
+                          color: AppColors.lightColor.withOpacity(0.4),
+                        ),
                       ),
                       child: Text(
                         "Cant load message at the moment!",

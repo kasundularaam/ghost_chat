@@ -95,22 +95,10 @@ class MessageHelper {
               fiTextMessage.disappearingDuration,
               fiTextMessage.msgSeenTime
             ]);
+        print("MESSAGE ADDED");
       }
     } catch (e) {
       throw e.toString();
-    }
-  }
-
-  static Future<void> updateMessage(
-      {required Stream<FiTextMessage> messageStream}) async {
-    try {
-      messageStream.listen((message) async {
-        final db = await database;
-        await db?.update(table, message.toMap(),
-            where: "$columnMessageId = ?", whereArgs: [message.messageId]);
-      });
-    } catch (e) {
-      e.toString();
     }
   }
 
@@ -130,7 +118,7 @@ class MessageHelper {
             sentTimestamp: result[columnSentTimestamp],
             messageStatus: result[columnMessageStatus],
             message: result[columnMessage],
-            disappearingDuration: result[columnDisappearingDuration],
+            disappearingDuration: int.parse(result[columnDisappearingDuration]),
             msgSeenTime: result[columnMsgSeenTime],
           ),
         );
@@ -160,7 +148,7 @@ class MessageHelper {
             sentTimestamp: result[columnSentTimestamp],
             messageStatus: result[columnMessageStatus],
             audioFilePath: result[columnMessage],
-            disappearingDuration: result[columnDisappearingDuration],
+            disappearingDuration: int.parse(result[columnDisappearingDuration]),
             msgSeenTime: result[columnMsgSeenTime],
           ),
         );
@@ -190,7 +178,7 @@ class MessageHelper {
             sentTimestamp: result[columnSentTimestamp],
             messageStatus: result[columnMessageStatus],
             message: result[columnMessage],
-            disappearingDuration: result[columnDisappearingDuration],
+            disappearingDuration: int.parse(result[columnDisappearingDuration]),
             msgSeenTime: result[columnMsgSeenTime],
           ),
         );

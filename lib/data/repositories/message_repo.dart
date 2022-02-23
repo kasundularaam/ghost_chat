@@ -129,7 +129,12 @@ class MessageRepo {
           .doc(conversationId)
           .collection("message")
           .doc(messageId)
-          .update(msgStatus.toMap());
+          .update({"messageStatus": msgStatus.msgStatus});
+      await conversationRef
+          .doc(conversationId)
+          .collection("message")
+          .doc(messageId)
+          .update({"msgSeenTime": msgStatus.msgSeenTime});
     } catch (e) {
       throw e.toString();
     }
@@ -152,6 +157,23 @@ class MessageRepo {
       yield* messageStatus;
     } catch (e) {
       throw e.toString();
+    }
+  }
+
+  static Future<void> deleteMessage(
+      {required String messageId, required String conversationId}) async {
+    try {
+      String imageFilePath = "conversation/$conversationId/$messageId.png";
+      storage.Reference stImageRef =
+          storage.FirebaseStorage.instance.ref(imageFilePath);
+      await stImageRef.delete();
+      await conversationRef
+          .doc(conversationId)
+          .collection("message")
+          .doc(messageId)
+          .delete();
+    } catch (e) {
+      print(e);
     }
   }
 }

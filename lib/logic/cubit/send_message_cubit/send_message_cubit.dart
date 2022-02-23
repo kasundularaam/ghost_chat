@@ -32,7 +32,6 @@ class SendMessageCubit extends Cubit<SendMessageState> {
       FiTextMessage messageToEncode = await MessageHelper.getTextMessage(
         messageId: messageToSend.messageId,
       );
-
       emit(
         SendMessageUploading(
           sendingMsg: DownloadMessage(

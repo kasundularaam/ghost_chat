@@ -84,3 +84,23 @@ class MessageFailed extends MessageState {
   @override
   String toString() => 'MessageFailed(errorMsg: $errorMsg)';
 }
+
+class MessageDisappeared extends MessageState {
+  final String message;
+  MessageDisappeared({
+    required this.message,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is MessageDisappeared && other.message == message;
+  }
+
+  @override
+  int get hashCode => message.hashCode;
+
+  @override
+  String toString() => 'MessageDisappeared(message: $message)';
+}
