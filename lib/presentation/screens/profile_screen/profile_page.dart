@@ -3,16 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ghost_chat/core/constants/app_colors.dart';
 import 'package:ghost_chat/core/constants/strings.dart';
 import 'package:ghost_chat/logic/cubit/add_pro_pic_cubit/add_pro_pic_cubit.dart';
-import 'package:ghost_chat/logic/cubit/cubit/msg_disappearing_settings_cubit.dart';
 import 'package:ghost_chat/logic/cubit/edit_bio_cubit/edit_bio_cubit.dart';
 import 'package:ghost_chat/logic/cubit/edit_name_cubit/edit_name_cubit.dart';
 import 'package:ghost_chat/logic/cubit/home_action_bar_cubit/home_action_bar_cubit.dart';
+
 import 'package:ghost_chat/logic/cubit/profile_page_cubit/profile_page_cubit.dart';
 import 'package:ghost_chat/logic/cubit/signout_cubit/signout_cubit.dart';
 import 'package:ghost_chat/presentation/glob_widgets/app_button.dart';
 import 'package:ghost_chat/presentation/glob_widgets/app_text_input.dart';
 import 'package:sizer/sizer.dart';
 
+import '../../../logic/cubit/msg_disappearing_settings_cubit/msg_disappearing_settings_cubit.dart';
 import '../../router/app_router.dart';
 
 class ProfilePage extends StatefulWidget {

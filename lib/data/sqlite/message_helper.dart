@@ -204,4 +204,13 @@ class MessageHelper {
       throw e.toString();
     }
   }
+
+  static Future<void> delete({required int messageId}) async {
+    final db = await database;
+    db!.delete(
+      table,
+      where: "$columnMessageId = ?",
+      whereArgs: [messageId],
+    );
+  }
 }

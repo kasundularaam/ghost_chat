@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:ghost_chat/core/constants/strings.dart';
 import 'package:ghost_chat/data/encrypt_services/handle_decode.dart';
@@ -18,17 +20,35 @@ class MessageCubit extends Cubit<MessageState> {
 
   FiTextMessage? _loadedMsgText;
   FiVoiceMessage? _loadedMsgVoice;
+  Timer? _myTimer;
 
   Future<void> loadTextMessage(
       {required DownloadMessage downloadMessage,
       required String conversationId}) async {
     try {
       if (_loadedMsgText != null) {
-        emit(
-          MessageLoadedText(
-            message: _loadedMsgText!,
-          ),
-        );
+        DateTime seenTime = DateTime.fromMillisecondsSinceEpoch(int.parse(
+          downloadMessage.msgSeenTime,
+        ));
+        int disappearTime = seenTime
+            .add(Duration(minutes: downloadMessage.disappearingDuration))
+            .millisecondsSinceEpoch;
+
+        if (disappearTime < DateTime.now().millisecondsSinceEpoch) {
+          _myTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+            if (disappearTime < DateTime.now().millisecondsSinceEpoch) {
+              emit(
+                MessageLoadedText(
+                  message: _loadedMsgText!,
+                ),
+              );
+            } else {
+              loadTextMessage(
+                  downloadMessage: downloadMessage,
+                  conversationId: conversationId);
+            }
+          });
+        } else {}
       } else {
         emit(MessageLoading(loadingMsg: "checking..."));
         bool exist = await MessageHelper.checkMessageExist(
@@ -38,11 +58,8 @@ class MessageCubit extends Cubit<MessageState> {
           FiTextMessage messageFromDb = await MessageHelper.getTextMessage(
               messageId: downloadMessage.messageId);
           _loadedMsgText = messageFromDb;
-          emit(
-            MessageLoadedText(
-              message: _loadedMsgText!,
-            ),
-          );
+          loadTextMessage(
+              downloadMessage: downloadMessage, conversationId: conversationId);
         } else {
           emit(MessageLoading(loadingMsg: "downloading..."));
           String encodedImgPath = await LocalRepo.getStImagePath(
@@ -55,7 +72,6 @@ class MessageCubit extends Cubit<MessageState> {
             imagePath: encodedImgPath,
             messageLength: downloadMessage.messageLen,
           );
-
           FiTextMessage decodedMessage = FiTextMessage(
             messageId: downloadMessage.messageId,
             senderId: downloadMessage.senderId,
@@ -66,8 +82,14 @@ class MessageCubit extends Cubit<MessageState> {
             disappearingDuration: downloadMessage.disappearingDuration,
             msgSeenTime: DateTime.now().millisecondsSinceEpoch.toString(),
           );
-          emit(MessageLoading(loadingMsg: "finalizing..."));
-          await MessageHelper.addTextMessage(fiTextMessage: decodedMessage);
+          emit(
+            MessageLoading(
+              loadingMsg: "finalizing...",
+            ),
+          );
+          await MessageHelper.addTextMessage(
+            fiTextMessage: decodedMessage,
+          );
           await MessageRepo.updateMessageStatus(
             conversationId: conversationId,
             messageId: decodedMessage.messageId,
@@ -77,11 +99,17 @@ class MessageCubit extends Cubit<MessageState> {
             ),
           );
           loadTextMessage(
-              downloadMessage: downloadMessage, conversationId: conversationId);
+            downloadMessage: downloadMessage,
+            conversationId: conversationId,
+          );
         }
       }
     } catch (e) {
-      emit(MessageFailed(errorMsg: e.toString()));
+      emit(
+        MessageFailed(
+          errorMsg: e.toString(),
+        ),
+      );
     }
   }
 
@@ -104,11 +132,8 @@ class MessageCubit extends Cubit<MessageState> {
           FiVoiceMessage messageFromDb = await MessageHelper.getVoiceMsg(
               messageId: downloadMessage.messageId);
           _loadedMsgVoice = messageFromDb;
-          emit(
-            MessageLoadedVoice(
-              message: _loadedMsgVoice!,
-            ),
-          );
+          loadTextMessage(
+              downloadMessage: downloadMessage, conversationId: conversationId);
         } else {
           emit(MessageLoading(loadingMsg: "downloading voice message..."));
           String downloadedAudioPath = await LocalRepo.getAudioFilePath(
