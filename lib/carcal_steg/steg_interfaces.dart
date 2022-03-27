@@ -11,18 +11,20 @@ abstract class ErrorCorrectionClass {
   ErrorCorrectionClass([this.codeSize = 0]);
 
   Iterable<int> encodeString(String string) sync* {
-    var codec = AsciiCodec();
+    var codec = const AsciiCodec();
     var ascii = codec.encode(string);
-    for(var byte in ascii) {
-      for(var bit in encodeByte(byte)) {
+    for (var byte in ascii) {
+      for (var bit in encodeByte(byte)) {
         yield bit;
       }
     }
   }
 
   String decodeString(Iterable<int> code) {
-    var codec = AsciiCodec(allowInvalid: true);
-    return codec.decode(partition(code, codeSize).map((codeUnit) => decodeByte(codeUnit)).toList());
+    var codec = const AsciiCodec(allowInvalid: true);
+    return codec.decode(partition(code, codeSize)
+        .map((codeUnit) => decodeByte(codeUnit))
+        .toList());
   }
 }
 

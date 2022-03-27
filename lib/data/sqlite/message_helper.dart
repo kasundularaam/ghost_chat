@@ -95,7 +95,6 @@ class MessageHelper {
               fiTextMessage.disappearingDuration,
               fiTextMessage.msgSeenTime
             ]);
-        print("MESSAGE ADDED");
       }
     } catch (e) {
       throw e.toString();

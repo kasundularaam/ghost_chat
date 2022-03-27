@@ -14,7 +14,7 @@ class ChatCrdImgCubit extends Cubit<ChatCrdImgState> {
 
       emit(ChatCrdImgLoaded(friendImage: friend.userImg));
     } catch (e) {
-      print(e);
+      throw e.toString();
     }
   }
 }

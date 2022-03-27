@@ -173,7 +173,7 @@ class MessageRepo {
           .doc(messageId)
           .delete();
     } catch (e) {
-      print(e);
+      throw e.toString();
     }
   }
 }

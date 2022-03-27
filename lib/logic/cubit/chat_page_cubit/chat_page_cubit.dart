@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ghost_chat/data/models/download_message.dart';
 import 'package:ghost_chat/data/repositories/message_repo.dart';
-import 'package:meta/meta.dart';
 
 part 'chat_page_state.dart';
 
@@ -23,7 +22,7 @@ class ChatPageCubit extends Cubit<ChatPageState> {
         if (allMessages.isNotEmpty) {
           emit(
             ChatPageShowMessages(
-              messegesList: allMessages.reversed.toList(),
+              messagesList: allMessages.reversed.toList(),
             ),
           );
         } else {
@@ -31,7 +30,7 @@ class ChatPageCubit extends Cubit<ChatPageState> {
         }
       });
     } catch (e) {
-      print(e.toString());
+      throw e.toString();
     }
   }
 
@@ -41,7 +40,7 @@ class ChatPageCubit extends Cubit<ChatPageState> {
       if (allMessages.isNotEmpty) {
         emit(
           ChatPageShowMessages(
-            messegesList: allMessages.reversed.toList(),
+            messagesList: allMessages.reversed.toList(),
           ),
         );
       } else {

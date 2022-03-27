@@ -8,9 +8,9 @@ class ChatPageInitial extends ChatPageState {}
 class ChatPageLoading extends ChatPageState {}
 
 class ChatPageShowMessages extends ChatPageState {
-  final List<DownloadMessage> messegesList;
+  final List<DownloadMessage> messagesList;
   ChatPageShowMessages({
-    required this.messegesList,
+    required this.messagesList,
   });
 
   @override
@@ -18,14 +18,14 @@ class ChatPageShowMessages extends ChatPageState {
     if (identical(this, other)) return true;
 
     return other is ChatPageShowMessages &&
-        listEquals(other.messegesList, messegesList);
+        listEquals(other.messagesList, messagesList);
   }
 
   @override
-  int get hashCode => messegesList.hashCode;
+  int get hashCode => messagesList.hashCode;
 
   @override
-  String toString() => 'ChatPageShowMessages(messegesList: $messegesList)';
+  String toString() => 'ChatPageShowMessages(messagesList: $messagesList)';
 }
 
 class ChatPageNoMessages extends ChatPageState {}

@@ -152,12 +152,12 @@ class _ChatPageState extends State<ChatPage> {
                           height: 1.h,
                         ),
                         ListView.builder(
-                          itemCount: state.messegesList.length,
+                          itemCount: state.messagesList.length,
                           padding: EdgeInsets.symmetric(horizontal: 3.w),
                           physics: const BouncingScrollPhysics(),
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
-                            DownloadMessage message = state.messegesList[index];
+                            DownloadMessage message = state.messagesList[index];
                             return MultiBlocProvider(
                               providers: [
                                 BlocProvider(

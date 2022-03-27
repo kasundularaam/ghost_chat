@@ -64,7 +64,7 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
           });
         }
       } catch (e) {
-        print(e);
+        throw e.toString();
       }
     }
   }
@@ -82,7 +82,7 @@ class VoiceMessageCubit extends Cubit<VoiceMessageState> {
         }
       }
     } catch (e) {
-      print(e);
+      throw e.toString();
     }
   }
 

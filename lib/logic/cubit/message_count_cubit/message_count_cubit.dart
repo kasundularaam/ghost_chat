@@ -15,7 +15,7 @@ class MessageCountCubit extends Cubit<MessageCountState> {
         emit(MessageCountShow(unreadMsgCount: msgCount));
       });
     } catch (e) {
-      print(e);
+      throw e.toString();
     }
   }
 }
