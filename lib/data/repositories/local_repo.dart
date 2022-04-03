@@ -47,7 +47,6 @@ class LocalRepo {
       await storage.FirebaseStorage.instance
           .ref(messageFilePath)
           .writeToFile(file);
-
       return file.path;
     } catch (e) {
       throw e.toString();
@@ -66,7 +65,6 @@ class LocalRepo {
       await storage.FirebaseStorage.instance
           .ref(messageFilePath)
           .writeToFile(file);
-
       return file.path;
     } catch (e) {
       throw e.toString();

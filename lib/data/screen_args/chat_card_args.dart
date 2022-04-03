@@ -1,15 +1,14 @@
-import 'package:ghost_chat/core/constants/app_enums.dart';
+import 'dart:convert';
+
 import 'package:ghost_chat/data/models/friend_model.dart';
 
 class ChatCardArgs {
   final Friend friend;
-  final MsgType msgType;
   final String lastMsgTime;
   final String lastMsg;
   final int unreadMsgCount;
   ChatCardArgs({
     required this.friend,
-    required this.msgType,
     required this.lastMsgTime,
     required this.lastMsg,
     required this.unreadMsgCount,
@@ -17,23 +16,44 @@ class ChatCardArgs {
 
   ChatCardArgs copyWith({
     Friend? friend,
-    MsgType? msgType,
     String? lastMsgTime,
     String? lastMsg,
     int? unreadMsgCount,
   }) {
     return ChatCardArgs(
       friend: friend ?? this.friend,
-      msgType: msgType ?? this.msgType,
       lastMsgTime: lastMsgTime ?? this.lastMsgTime,
       lastMsg: lastMsg ?? this.lastMsg,
       unreadMsgCount: unreadMsgCount ?? this.unreadMsgCount,
     );
   }
 
+  Map<String, dynamic> toMap() {
+    return {
+      'friend': friend.toMap(),
+      'lastMsgTime': lastMsgTime,
+      'lastMsg': lastMsg,
+      'unreadMsgCount': unreadMsgCount,
+    };
+  }
+
+  factory ChatCardArgs.fromMap(Map<String, dynamic> map) {
+    return ChatCardArgs(
+      friend: Friend.fromMap(map['friend']),
+      lastMsgTime: map['lastMsgTime'] ?? '',
+      lastMsg: map['lastMsg'] ?? '',
+      unreadMsgCount: map['unreadMsgCount']?.toInt() ?? 0,
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory ChatCardArgs.fromJson(String source) =>
+      ChatCardArgs.fromMap(json.decode(source));
+
   @override
   String toString() {
-    return 'ChatCardArgs(friend: $friend, msgType: $msgType, lastMsgTime: $lastMsgTime, lastMsg: $lastMsg, unreadMsgCount: $unreadMsgCount)';
+    return 'ChatCardArgs(friend: $friend, lastMsgTime: $lastMsgTime, lastMsg: $lastMsg, unreadMsgCount: $unreadMsgCount)';
   }
 
   @override
@@ -42,7 +62,6 @@ class ChatCardArgs {
 
     return other is ChatCardArgs &&
         other.friend == friend &&
-        other.msgType == msgType &&
         other.lastMsgTime == lastMsgTime &&
         other.lastMsg == lastMsg &&
         other.unreadMsgCount == unreadMsgCount;
@@ -51,7 +70,6 @@ class ChatCardArgs {
   @override
   int get hashCode {
     return friend.hashCode ^
-        msgType.hashCode ^
         lastMsgTime.hashCode ^
         lastMsg.hashCode ^
         unreadMsgCount.hashCode;

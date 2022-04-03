@@ -10,11 +10,14 @@ String handleDecodeRequest(
   var inputImage = image_lib.decodeImage(File(imagePath).readAsBytesSync())!;
   var repetitions = (inputImage.length * 3) ~/ (messageLength * 256 * 64);
   var coder = DWTStegnanography.withECC(
-      inputImage,
-      ValuePluralityRepetitionCorrection(HadamardErrorCorrection(), repetitions,
-          (value) {
+    inputImage,
+    ValuePluralityRepetitionCorrection(
+      HadamardErrorCorrection(),
+      repetitions,
+      (value) {
         return ((value >= 32) && (value <= 126));
-      }));
+      },
+    ),
+  );
   return coder.decodeMessage(messageLength);
-  //BitMajorityRepetitionCorrection(HadamardErrorCorrection(), repetitions),);
 }
